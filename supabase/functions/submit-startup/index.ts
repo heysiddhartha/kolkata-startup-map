@@ -80,6 +80,39 @@ Deno.serve(async req => {
       return json({ error: "We already have a submission for this startup under review." }, 409, origin);
     }
 
+    const slugBase = startup_name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80) || "startup";
+    let slug = slugBase;
+    for (let i = 0; i < 5; i++) {
+      const { data: slugMatch } = await supabase.from("startups").select("id").eq("slug", slug).limit(1);
+      if (!slugMatch?.length) break;
+      slug = `${slugBase}-${crypto.randomUUID().slice(0, 6)}`;
+    }
+
+    const { data: insertedStartup, error: startupError } = await supabase.from("startups").insert({
+      name: startup_name,
+      slug,
+      website: normalizedWebsite,
+      founder: clean(body?.founder, 200) || null,
+      public_email: clean(body?.email, 254) || null,
+      sector: clean(body?.sector, 120) || null,
+      area: clean(body?.locality, 120) || "Kolkata",
+      description: clean(body?.description, 1200) || null,
+      linkedin_url: clean(body?.linkedin_url, 500) || null,
+      careers_url: clean(body?.careers_url, 500) || null,
+      lat: null,
+      lng: null,
+      location_confidence: "unknown",
+      location_type: "kolkata_roots",
+      verified: false,
+      status: "approved",
+      source_url: normalizedWebsite,
+      verification_source_url: normalizedWebsite,
+      verification_checked_at: new Date().toISOString(),
+      last_checked_at: new Date().toISOString()
+    }).select("id").single();
+
+    if (startupError) return json({ error: "Could not publish the startup listing" }, 500, origin);
+
     const { data: inserted, error } = await supabase.from("submissions").insert({
       startup_name,
       website: normalizedWebsite,
@@ -90,12 +123,29 @@ Deno.serve(async req => {
       description: clean(body?.description, 1200) || null,
       linkedin_url: clean(body?.linkedin_url, 500) || null,
       careers_url: clean(body?.careers_url, 500) || null,
-      status: "pending"
+      status: "approved",
+      reviewed_at: new Date().toISOString()
     }).select("id").single();
 
-    if (error) return json({ error: "Could not save submission" }, 500, origin);
-    const reference = inserted?.[0]?.id ? String(inserted[0].id).slice(0, 8).toUpperCase() : "KSM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-    return json({ ok: true, message: "Submission received for review.", reference }, 201, origin);
+    if (error) {
+      await supabase.from("startups").delete().eq("id", insertedStartup.id);
+      return json({ error: "Could not complete the submission" }, 500, origin);
+    }
+
+    await supabase.from("audit_log").insert({
+      actor_id: null,
+      action: "auto_approve_submission",
+      entity_type: "startup",
+      entity_id: insertedStartup.id,
+      metadata: { submission_id: inserted.id, source: "public_submission", verified: false }
+    });
+
+    const reference = inserted?.id ? String(inserted.id).slice(0, 8).toUpperCase() : "KSM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
+    return json({
+      ok: true,
+      message: "Your startup is now live in the directory. Verification and map location may be completed separately.",
+      reference
+    }, 201, origin);
   } catch {
     return json({ error: "Invalid request" }, 400, origin);
   }
