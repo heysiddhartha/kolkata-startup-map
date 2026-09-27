@@ -95,6 +95,9 @@
         <option>Media</option><option>Other</option>
       </select>
       <input name="locality" placeholder="Kolkata locality">
+      <input name="linkedin_url" type="url" placeholder="LinkedIn URL (optional)">
+      <input name="careers_url" type="url" placeholder="Careers / jobs page (optional)">
+      <textarea name="description" placeholder="What does the startup do?" rows="4"></textarea>
       <button type="submit" class="primary">Submit for review</button>
     </form>
     <div id="thanks" class="thanks hidden">Thanks — your submission has been captured for review.</div>
@@ -102,6 +105,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
