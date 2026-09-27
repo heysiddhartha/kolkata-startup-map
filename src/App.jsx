@@ -54,7 +54,7 @@ function App(){
        const nr=await fetch(SUPABASE_URL+'/rest/v1/news_items?select=id,title,category,source_name,source_url,published_at,verified&status=eq.published&order=published_at.desc&limit=30',{headers})
        if(!nr.ok)throw new Error('News feed unavailable')
        const n=await nr.json()
-       setNews((n||[]).map(x=>({cat:x.category,date:x.published_at?new Date(x.published_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'',title:x.title,source:x.source_name,url:safeUrl(x.source_url)})))
+       setNews(n?.length?(n||[]).map(x=>({cat:x.category,date:x.published_at?new Date(x.published_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'',title:x.title,source:x.source_name,url:safeUrl(x.source_url)})):seedNewsItems)
        setNewsPage(0)
        setNewsError('')
      }catch(err){setNewsError(err.message||'News feed unavailable')}
