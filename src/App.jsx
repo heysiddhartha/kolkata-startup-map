@@ -52,18 +52,20 @@ function App(){
    const headers={apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
    Promise.all([
      fetch(SUPABASE_URL+'/rest/v1/startups?select=name,area,sector,stage,lat,lng,verified,description,website,linkedin_url,public_email,address,founder,careers_url,hiring_status,hiring_source_url,location_type&status=eq.approved&order=name',{headers}),
-     fetch(SUPABASE_URL+'/rest/v1/jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,startups(name)&status=eq.live&order=created_at.desc',{headers}),
-     fetch(SUPABASE_URL+'/rest/v1/news_items?select=id,title,category,source_name,source_url,published_at,verified&status=eq.published&order=published_at.desc&limit=30',{headers})
-   ]).then(async([sr,jr,nr])=>{
-     if(!sr.ok||!jr.ok||!nr.ok)throw new Error('Live directory could not be reached')
-     const [s,j,n]=await Promise.all([sr.json(),jr.json(),nr.json()])
+     fetch(SUPABASE_URL+'/rest/v1/jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,startups(name)&status=eq.live&order=created_at.desc',{headers})
+   ]).then(async([sr,jr])=>{
+     if(!sr.ok||!jr.ok)throw new Error('Live directory could not be reached')
+     const [s,j]=await Promise.all([sr.json(),jr.json()])
      const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:safeUrl(x.website||''),linkedin:x.linkedin_url||'',email:x.public_email||'',address:x.address||'',founder:x.founder||'',careers:x.careers_url||'',hiring:x.hiring_status||'unknown',hiringSource:x.hiring_source_url||'',locationType:x.location_type||'headquarters'})
      const normalizeJob=x=>({company:x.startups?.name||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:safeUrl(x.apply_url||x.source_url||'#')})
      setStartups(s?.length?s.map(normalizeStartup):seedStartups)
      setJobs((j||[]).map(normalizeJob))
-     setNews((n||[]).map(x=>({cat:x.category,date:x.published_at?new Date(x.published_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'',title:x.title,source:x.source_name,url:safeUrl(x.source_url)})))
      setDataSource('live')
-   }).catch(err=>setDataError(err.message||'Live directory unavailable')).finally(()=>setDataLoading(false))
+   }).then(()=>fetch(SUPABASE_URL+'/rest/v1/news_items?select=id,title,category,source_name,source_url,published_at,verified&status=eq.published&order=published_at.desc&limit=30',{headers}))
+   .then(async nr=>{if(!nr.ok)throw new Error('News feed unavailable');const n=await nr.json();setNews((n||[]).map(x=>({cat:x.category,date:x.published_at?new Date(x.published_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'',title:x.title,source:x.source_name,url:safeUrl(x.source_url)})));setNewsPage(0)})
+   .catch(err=>setDataError(err.message||'Live directory unavailable'))
+   .finally(()=>setDataLoading(false))
+
  },[])
  const sectors=[...new Set(startups.map(s=>s.sector))].sort(),areas=[...new Set(startups.map(s=>s.area))].sort(),stages=[...new Set(startups.map(s=>s.stage))].sort()
  const isOfficialUrl=url=>{if(!url||url==='#')return false;try{const h=new URL(url).hostname.toLowerCase();return !h.includes('echai.ventures')&&!h.includes('echai')&&!h.includes('crunchbase.com')&&!h.includes('tracxn.com')&&!h.includes('yourstory.com')&&!h.includes('inc42.com')}catch{return false}}
