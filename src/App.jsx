@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useState} from 'react'
+import {Component,useEffect,useMemo,useState} from 'react'
 import {MapContainer,TileLayer,Marker,Popup,useMap} from 'react-leaflet'
 import L from 'leaflet'
 import {startups as seedStartups,jobs as seedJobs} from './data'
@@ -113,4 +113,11 @@ function App(){
   {showSubmit&&<div className="detail-backdrop" onClick={()=>setShowSubmit(false)}><div className="detail" onClick={e=>e.stopPropagation()}><button onClick={()=>setShowSubmit(false)}>×</button><div className="eyebrow">ADD TO THE MAP</div><h2>What are you building?</h2>{submitState==='success'?<><p className="submit-success">Submitted. We’ll review it before it appears on the map.</p><button className="primary" onClick={()=>{setSubmitState('idle');setShowSubmit(false)}}>Done</button></>:<form className="submit-form" onSubmit={submitStartup}><input name="startup_name" required placeholder="Startup name"/><input name="website" required type="url" placeholder="Website"/><div className="form-grid"><input name="founder" placeholder="Founder(s)"/><input name="email" type="email" placeholder="Contact email"/><input name="sector" placeholder="Sector"/><input name="locality" placeholder="Kolkata locality"/></div><input name="linkedin_url" type="url" placeholder="LinkedIn URL"/><input name="careers_url" type="url" placeholder="Careers URL"/><textarea name="description" rows="4" placeholder="What does the startup build?"></textarea>{submitState!=='idle'&&submitState!=='sending'&&<p className="submit-error">{submitState}</p>}<button className="primary" disabled={submitState==='sending'}>{submitState==='sending'?'Submitting…':'Submit startup'}</button></form>}</div></div>}
  </div>
 }
-export default App
+
+class AppErrorBoundary extends Component{
+ constructor(props){super(props);this.state={hasError:false}}
+ static getDerivedStateFromError(){return {hasError:true}}
+ componentDidCatch(error){console.error('Kolkata Startup Map error',error)}
+ render(){return this.state.hasError?<div className="app-error"><div><b>Something went wrong.</b><p>The map could not finish loading. Refresh the page to try again.</p><button onClick={()=>window.location.reload()}>Refresh</button></div></div>:this.props.children}
+}
+export default function AppRoot(){return <AppErrorBoundary><App/></AppErrorBoundary>}
