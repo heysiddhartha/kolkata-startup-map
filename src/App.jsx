@@ -1,7 +1,7 @@
 import {useEffect,useMemo,useState} from 'react'
 import {MapContainer,TileLayer,Marker,Popup,useMap} from 'react-leaflet'
 import L from 'leaflet'
-import {startups,jobs} from './data'
+import {startups as seedStartups,jobs as seedJobs} from './data'
 
 const bounds=[[22.43,88.20],[22.75,88.62]]
 const center=[22.5726,88.3639]
@@ -58,10 +58,22 @@ function VehicleLayer(){
 }
 
 function App(){
+ const [startups,setStartups]=useState(seedStartups),[jobs,setJobs]=useState(seedJobs),[dataSource,setDataSource]=useState('seed')
  const [theme,setTheme]=useState(localStorage.getItem('ksm-theme')||'light')
  const [view,setView]=useState('map'),[query,setQuery]=useState(''),[area,setArea]=useState(''),[sector,setSector]=useState(''),[stage,setStage]=useState(''),[hiring,setHiring]=useState(''),[selected,setSelected]=useState(null)
  const [showSubmit,setShowSubmit]=useState(false),[submitState,setSubmitState]=useState('idle'),[jobMode,setJobMode]=useState(''),[jobType,setJobType]=useState('')
  useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem('ksm-theme',theme)},[theme])
+ useEffect(()=>{
+   const base=import.meta.env.VITE_API_URL
+   if(!base)return
+   Promise.all([fetch(base+'/api/startups').then(r=>r.ok?r.json():null),fetch(base+'/api/jobs').then(r=>r.ok?r.json():null)]).then(([s,j])=>{
+     const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:x.website||x.source_url||'#'})
+     const normalizeJob=x=>({company:x.startup?.name||x.company||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:x.apply_url||x.source_url||'#'})
+     if(s?.startups?.length)setStartups(s.startups.map(normalizeStartup))
+     if(j?.jobs?.length)setJobs(j.jobs.map(normalizeJob))
+     if(s?.startups?.length||j?.jobs?.length)setDataSource('live')
+   }).catch(()=>{})
+ },[])
  const sectors=[...new Set(startups.map(s=>s.sector))].sort(),areas=[...new Set(startups.map(s=>s.area))].sort(),stages=[...new Set(startups.map(s=>s.stage))].sort()
  const companyJobs=name=>jobs.filter(j=>j.company.toLowerCase()===name.toLowerCase())
  const filtered=useMemo(()=>startups.filter(s=>{const hay=(s.name+' '+s.sector+' '+s.area+' '+s.stage+' '+s.desc).toLowerCase();const js=companyJobs(s.name);return (!query||hay.includes(query.toLowerCase()))&&(!area||s.area===area)&&(!sector||s.sector===sector)&&(!stage||s.stage===stage)&&(!hiring||(hiring==='hiring'&&js.length)||(hiring==='freshers'&&js.some(j=>j.freshers)))}),[query,area,sector,stage,hiring])
@@ -81,7 +93,7 @@ function App(){
  return <div className="app">
   <header className="topbar"><div className="brand"><span className="brand-mark">K</span><div><b>Kolkata Startup Map</b></div></div><nav><button onClick={()=>setTheme(theme==='dark'?'light':'dark')}>{theme==='dark'?'☀':'◐'}</button><button onClick={()=>setShowSubmit(true)} className="add">Add startup <b>+</b></button><a href="#jobs">Jobs <strong>{jobs.length}</strong></a></nav></header>
   <main>
-   <section className="hero"><div className="hero-copy"><div className="eyebrow"><i/> KOLKATA · STARTUP ECOSYSTEM</div><h1>Find what’s being built<br/><em>in Kolkata.</em></h1><p>Startups, sectors, locations and live hiring signals — in one map.</p></div><div className="stats"><div><b>{startups.length}</b><span>startups</span></div><div><b>{jobs.length}</b><span>job signals</span></div><div><b>{sectors.length}</b><span>sectors</span></div></div></section>
+   <section className="hero"><div className="hero-copy"><div className="eyebrow"><i/> KOLKATA · STARTUP ECOSYSTEM</div><h1>Find what’s being built<br/><em>in Kolkata.</em></h1><p>Startups, sectors, locations and live hiring signals — in one map.</p>{dataSource==='live'&&<small className="live-badge">LIVE DIRECTORY</small>}</div><div className="stats"><div><b>{startups.length}</b><span>startups</span></div><div><b>{jobs.length}</b><span>job signals</span></div><div><b>{sectors.length}</b><span>sectors</span></div></div></section>
    <section className="toolbar"><div className="search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search startups, sectors, founders…"/><kbd>⌘ K</kbd></div><div className="toggle"><button className={view==='map'?'active':''} onClick={()=>setView('map')}>Map</button><button className={view==='grid'?'active':''} onClick={()=>setView('grid')}>Grid</button></div><select value={area} onChange={e=>setArea(e.target.value)}><option value="">All areas</option>{areas.map(x=><option key={x}>{x}</option>)}</select><select value={sector} onChange={e=>setSector(e.target.value)}><option value="">All sectors</option>{sectors.map(x=><option key={x}>{x}</option>)}</select><select value={stage} onChange={e=>setStage(e.target.value)}><option value="">All stages</option>{stages.map(x=><option key={x}>{x}</option>)}</select><select value={hiring} onChange={e=>setHiring(e.target.value)}><option value="">Hiring status</option><option value="hiring">Hiring now</option><option value="freshers">Fresher friendly</option></select></section>
    <section className="content">{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="© OpenStreetMap contributors"/>{filtered.map(s=><Marker key={s.name} position={[s.lat,s.lng]} icon={markerIcon} eventHandlers={{click:()=>setSelected(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/><a href={s.url} target="_blank" rel="noreferrer">Source / website →</a></Popup></Marker>)}<VehicleLayer/><ThemeMap/></MapContainer><aside className="side"><div className="side-head"><b>{filtered.length}</b> startups <button onClick={clear}>Clear</button></div>{filtered.map(s=><article className="card" key={s.name} onClick={()=>setSelected(s)}><h3>{s.name}</h3><p>{s.sector} · {s.area} · {s.stage}</p><div><span>{s.verified?'Verified':'Seed record'}</span>{companyJobs(s.name).length>0&&<span className="hire">Hiring</span>}</div></article>)}</aside></>:<div className="grid">{filtered.map(s=><article className="grid-card" key={s.name} onClick={()=>setSelected(s)}><h3>{s.name}</h3><p>{s.desc}</p><small>{s.sector} · {s.area} · {s.stage}</small></article>)}</div>}</section>
    <section id="jobs" className="jobs"><div className="jobs-head"><div><h2>Hiring in the ecosystem</h2><p>Public-source job signals currently attached to the directory.</p></div><div className="job-filters"><select value={jobMode} onChange={e=>setJobMode(e.target.value)}><option value="">All work modes</option>{[...new Set(jobs.map(j=>j.mode))].map(x=><option key={x}>{x}</option>)}</select><select value={jobType} onChange={e=>setJobType(e.target.value)}><option value="">All job types</option>{[...new Set(jobs.map(j=>j.type))].map(x=><option key={x}>{x}</option>)}</select></div></div><div className="job-list">{visibleJobs.map(j=><a className="job" key={j.company+j.title} href={j.url} target="_blank" rel="noreferrer"><div><b>{j.title}</b><span>{j.company} · {j.mode}</span></div><em>{j.freshers?'Fresher':'Open'} →</em></a>)}</div></section>
