@@ -4,3 +4,26 @@
 .topbar .brand>div{display:flex;align-items:center}
 .topbar .brand b{line-height:1}
 .topbar .brand-mark{flex:none}
+
+/* Bengali / Kolkata visual layer */
+.topbar{background:#fff7e8;border-bottom:0;box-shadow:0 2px 0 #e0aa21,0 5px 0 rgba(166,42,42,.14);overflow:hidden}
+.topbar:before,.topbar:after{content:"";position:absolute;left:0;right:0;height:5px;background:#dca91f;opacity:.95;pointer-events:none}
+.topbar:before{top:0;background:repeating-linear-gradient(90deg,#241b16 0 3px,transparent 3px 9px,#a52c2c 9px 11px,transparent 11px 18px)}
+.topbar:after{bottom:0;height:3px;background:linear-gradient(90deg,#237b57 0 20%,#e5b82d 20% 80%,#a52c2c 80%)}
+.hero{max-width:none;min-height:300px;padding:44px 5vw 38px;background:linear-gradient(135deg,#f0b72d 0%,#f7c94d 38%,#e9a927 100%);border-bottom:0;isolation:isolate;box-shadow:inset 0 -10px 0 rgba(35,123,87,.12)}
+.hero:before{content:"";position:absolute;inset:0;z-index:-2;opacity:.2;background:repeating-linear-gradient(0deg,transparent 0 23px,rgba(36,27,22,.16) 24px,transparent 25px),repeating-linear-gradient(90deg,transparent 0 37px,rgba(36,27,22,.08) 38px,transparent 39px)}
+.hero:after{content:"কলকাতা";right:2vw;top:-35px;font:900 190px/.9 serif;color:rgba(255,249,236,.20);z-index:-1}
+.hero-copy{position:relative;z-index:3}
+.hero .eyebrow{color:#8e2424;background:rgba(255,249,236,.32);width:max-content;padding:6px 10px;border-radius:999px;border:1px solid rgba(142,36,36,.18)}
+.hero h1{font-size:clamp(42px,5vw,74px);text-shadow:1px 2px 0 rgba(255,249,236,.18)}
+.hero h1 em{color:#a52c2c}
+.hero p{color:#4b3522;font-weight:600}
+.hero-art{position:absolute;pointer-events:none;z-index:0}
+.hero-art-sun{width:210px;height:210px;border-radius:50%;right:34%;top:22px;background:#a52c2c;opacity:.16;box-shadow:0 0 0 28px rgba(255,249,236,.08)}
+.hero-art-bridge{right:7%;bottom:25px;width:48%;height:80px;border-bottom:7px solid #237b57;opacity:.55}
+.bridge-line{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0 44%,#241b16 45% 49%,transparent 50%);clip-path:polygon(0 0,8% 58%,20% 5%,34% 58%,50% 0,66% 58%,80% 5%,92% 58%,100% 0,100% 14%,92% 72%,80% 20%,66% 72%,50% 14%,34% 72%,20% 20%,8% 72%,0 14%)}
+.folk-corner{position:absolute;z-index:2;color:#a52c2c;font-size:52px;line-height:1;opacity:.9;font-family:Georgia,serif}.folk-corner-left{left:22px;bottom:18px}.folk-corner-right{right:24px;top:28px;color:#237b57;transform:rotate(35deg)}
+.stats{position:relative;z-index:4;background:rgba(255,249,236,.94);border-color:#c9a96b;box-shadow:0 12px 35px rgba(78,48,25,.16)}
+.toolbar{border-top:3px solid #a52c2c;background:#fff7e8}
+.jobs{border-top-color:#237b57}
+@media(max-width:800px){.hero{min-height:340px;padding:30px 22px}.hero-art-bridge{right:-15%;width:80%}.hero-art-sun{right:8%;top:90px;width:150px;height:150px}.hero:after{font-size:110px}.folk-corner{font-size:34px}}
