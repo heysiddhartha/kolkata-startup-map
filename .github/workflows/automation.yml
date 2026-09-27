@@ -16,6 +16,6 @@ jobs:
       - run: pip install requests beautifulsoup4
       - name: Check official career pages
         env:
-          SUPABASE_URL: \${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: \${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python scripts/check_jobs.py
