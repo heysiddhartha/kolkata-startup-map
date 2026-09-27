@@ -10,40 +10,6 @@ const mapTileUrl=CARTO_KEY?'https://basemaps.cartocdn.com/rastertiles/voyager/{z
 const mapAttribution=CARTO_KEY?'© OpenStreetMap contributors, © CARTO':'© OpenStreetMap contributors'
 
 const markerIcon=L.divIcon({className:'',html:'<div class="startup-marker">•</div>',iconSize:[28,28],iconAnchor:[14,14]})
-const taxiIcon=L.icon({
-  iconUrl:'https://p1.hiclipart.com/preview/443/706/508/classic-car-hindustan-ambassador-kolkata-taxi-motor-vehicle-model-car-transport-automotive-design-png-clipart.jpg',
-  iconSize:[48,34],
-  iconAnchor:[24,17],
-  className:'map-vehicle-image map-taxi-image'
-})
-const tramIcon=L.icon({
-  iconUrl:'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTExL3Jhd3BpeGVsX29mZmljZV8zMV9waG90b19vZl9hX3RyYW1fc2lkZV92aWV3X2lzb2xhdGVkX3N1YmplY3RzX18wOTVhNzg1Ni05MjFkLTRiODctOWI2Zi1hYWIzYTQ0YTkwZjYucG5n.png',
-  iconSize:[68,42],
-  iconAnchor:[34,21],
-  className:'map-vehicle-image map-tram-image'
-})
-
-
-
-const seedNewsItems=[
- {cat:'Ecosystem',date:'8 Sep 2026',title:'IIM Calcutta Innovation Park partners with Army Institute of Management Kolkata',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
- {cat:'Cohort',date:'1 Sep 2026',title:'SPJIMR WISE Tech India Pitchathon — West Bengal Edition brings startups to IIM Calcutta',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/events/?y=2022'},
- {cat:'Event',date:'6–7 Sep 2026',title:'RISE Conclave connects research, industry, startups and investors in Kolkata',source:'RISE Conclave',url:'https://riseconclave.immt.res.in/schedule'},
- {cat:'Event',date:'12–13 Sep 2026',title:'Machine Learning Accelerator Summit 4.0 takes place at Jadavpur University',source:'IEEE JUSB',url:'https://mlas.ieee-jaduniv.in/'},
- {cat:'Funding',date:'24 Aug 2026',title:'IDFC FIRST Bank and IIMCIP launch ₹2 crore incubation programme',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
- {cat:'AI',date:'10 Aug 2026',title:'AI Day for Startups India 2026 comes to Kolkata',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
- {cat:'Funding',date:'6 Aug 2026',title:'Five social enterprises selected for implementation grants of up to ₹20 lakh',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
- {cat:'Cohort',date:'13 Jul 2026',title:'Bengal Business Accelerator Programme Cohort 3 concludes with Demo Day',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/events/?y=2022'},
- {cat:'Cohort',date:'14 Jul 2026',title:'AIC Techno invites startups into its incubation ecosystem',source:'AIC Techno',url:'https://technotimes.info/index.php/2026/07/14/aic-techno-final-startup-applications-august-2026/'}
-]
-
-const routes=[
-{type:'taxi',duration:18000,route:[[22.5668,88.3512],[22.5625,88.3560],[22.5578,88.3625],[22.5525,88.3690],[22.5488,88.3755],[22.5452,88.3820]]},
-{type:'taxi',duration:22000,route:[[22.5752,88.3650],[22.5792,88.3728],[22.5825,88.3815],[22.5858,88.3915],[22.5890,88.4025],[22.5922,88.4140]]},
-{type:'taxi',duration:20000,route:[[22.5560,88.3485],[22.5598,88.3420],[22.5640,88.3360],[22.5690,88.3310],[22.5740,88.3260]]},
-{type:'tram',duration:26000,route:[[22.5697,88.3500],[22.5718,88.3550],[22.5744,88.3608],[22.5778,88.3665],[22.5810,88.3720],[22.5840,88.3780]]}
-]
-
 function ThemeMap(){const map=useMap();useEffect(()=>{setTimeout(()=>map.invalidateSize(),50)},[]);return null}
 
 function VehicleLayer(){
@@ -123,7 +89,7 @@ function App(){
    <section className="hero"><div className="hero-copy"><div className="eyebrow"><i/> KOLKATA · STARTUP & COMPANY ECOSYSTEM</div><h1>Find what’s being built<br/><em>in Kolkata.</em></h1><p>Startups, companies, agencies, sectors and live hiring signals — in one map.</p>{dataSource==='live'&&<small className="live-badge">LIVE DIRECTORY</small>}</div><div className="stats"><div><b>{startups.length}</b><span>listings</span></div><div><b>{jobs.length}</b><span>open roles</span></div><div><b>{sectors.length}</b><span>sectors</span></div></div></section>
    {dataError&&<div className="data-notice" role="status"><b>Using cached directory data.</b> Live updates are temporarily unavailable. <button onClick={()=>window.location.reload()}>Retry</button></div>}
    <section className="toolbar"><div className="search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search companies, sectors, founders…"/><kbd>⌘ K</kbd></div><div className="toggle"><button className={view==='map'?'active':''} onClick={()=>setView('map')}>Map</button><button className={view==='grid'?'active':''} onClick={()=>setView('grid')}>Grid</button></div><select value={area} onChange={e=>setArea(e.target.value)}><option value="">All areas</option>{areas.map(x=><option key={x}>{x}</option>)}</select><select value={sector} onChange={e=>setSector(e.target.value)}><option value="">All sectors</option>{sectors.map(x=><option key={x}>{x}</option>)}</select><select value={stage} onChange={e=>setStage(e.target.value)}><option value="">All stages</option>{stages.map(x=><option key={x}>{x}</option>)}</select><select value={hiring} onChange={e=>setHiring(e.target.value)}><option value="">Hiring status</option><option value="hiring">Hiring now</option><option value="freshers">Fresher friendly</option></select></section>
-   <section className="content">{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url={mapTileUrl} attribution={mapAttribution} maxZoom={20}/>{filtered.map(s=><Marker key={s.name} position={[s.lat,s.lng]} icon={markerIcon} eventHandlers={{click:()=>setSelected(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>)}<VehicleLayer/><ThemeMap/></MapContainer>
+   <section className="content">{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url={mapTileUrl} attribution={mapAttribution} maxZoom={20} subdomains="abcd"/>{filtered.map(s=><Marker key={s.name} position={[s.lat,s.lng]} icon={markerIcon} eventHandlers={{click:()=>setSelected(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>)}<ThemeMap/></MapContainer>
 {view==='map'&&<aside className="news-panel">
  <div className="news-head"><div><b>Latest news</b><span>Kolkata startup ecosystem</span></div><button onClick={()=>setNewsPage(0)} aria-label="Reset news">×</button></div>
  <div className="news-list">{news.slice(newsPage*5,newsPage*5+5).map(item=><a className="news-item" key={item.title} href={item.url} target="_blank" rel="noreferrer"><h4>{item.title}</h4><div><span className="news-source">{item.source}</span><span>{item.date}</span><span className="news-cat">{item.cat}</span></div></a>)}</div>
