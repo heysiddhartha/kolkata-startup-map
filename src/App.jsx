@@ -8,7 +8,7 @@ const center=[22.5726,88.3639]
 
 const markerIcon=L.divIcon({className:'',html:'<div class="startup-marker">•</div>',iconSize:[28,28],iconAnchor:[14,14]})
 const taxiIcon=L.icon({
-  iconUrl:'https://cdn.80.lv/api/upload/content/45/images/65b10493bcf73/widen_1840x0.jpeg',
+  iconUrl:'https://p1.hiclipart.com/preview/443/706/508/classic-car-hindustan-ambassador-kolkata-taxi-motor-vehicle-model-car-transport-automotive-design-png-clipart.jpg',
   iconSize:[48,34],
   iconAnchor:[24,17],
   className:'map-vehicle-image map-taxi-image'
