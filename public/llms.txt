@@ -1,0 +1,12 @@
+# Kolkata Startup Map
+
+Kolkata Startup Map is an interactive directory of startups, companies, locations and hiring opportunities across Kolkata and the surrounding startup ecosystem.
+
+## Main resource
+- https://heysiddhartha.github.io/kolkata-startup-map/
+
+## What the site contains
+- Kolkata startup profiles
+- Startup locations and sectors
+- Hiring and job signals
+- Startup discovery and ecosystem filters
