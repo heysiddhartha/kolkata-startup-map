@@ -15,7 +15,6 @@ SESSION.headers.update({"User-Agent": "KolkataStartupMap/1.0 (+public ecosystem 
 SOURCES = [
     ("eChai Kolkata Startup Grid", "https://echai.ventures/kolkata/grid", "echai.ventures"),
     ("StartupBlink Kolkata", "https://www.startupblink.com/top-startups/kolkata-in", "startupblink.com"),
-    # Startup India is kept as a verification/reference source for now; its search UI is dynamic.
 ]
 EXCLUDED = {"events", "people", "startups", "vcs", "incubators", "coworking", "communities", "cafes", "login", "sign in", "home", "view full page", "website", "visit", "load more", "download csv file"}
 
@@ -46,7 +45,10 @@ def discover_echai(html, base):
         name = clean_name(" ".join(node.stripped_strings))
         if not name or href.startswith("https://echai.ventures"):
             continue
-        host = re.sub(r"^www\\.", "", href.split("/")[2].lower()) if href.startswith("http") else ""
+        try:
+            host = re.sub(r"^www\.", "", href.split("/")[2].lower()) if href.startswith("http") else ""
+        except IndexError:
+            host = ""
         if not host or host in {"linkedin.com", "facebook.com", "instagram.com", "x.com", "twitter.com"}:
             continue
         found.setdefault(name.lower(), {"name": name, "website": href, "source_url": base})
@@ -66,38 +68,35 @@ def discover_startupblink(html, base):
     return list(found.values())
 
 
-def discover_startup_india(html, base):
-    soup = BeautifulSoup(html, "html.parser")
-    found = {}
-    for a in soup.find_all("a", href=True):
-        name = clean_name(" ".join(a.stripped_strings))
-        href = urljoin(base, a["href"])
-        if not name or len(name.split()) > 12:
-            continue
-        if "startup" not in href.lower() and "entity" not in href.lower():
-            continue
-        if name.lower() in EXCLUDED:
-            continue
-        found.setdefault(name.lower(), {"name": name, "website": "", "source_url": base})
-    return list(found.values())
-
-
 def existing_slugs():
-    r = SESSION.get(f"{SUPABASE_URL}/rest/v1/startups", headers=HEADERS, params={"select":"slug", "limit":"5000"}, timeout=30)
+    r = SESSION.get(f"{SUPABASE_URL}/rest/v1/startups", headers=HEADERS, params={"select": "slug", "limit": "5000"}, timeout=30)
     r.raise_for_status()
     return {row.get("slug") for row in r.json() if row.get("slug")}
 
 
 def insert_candidate(item, slug):
+    # Discovery is intentionally non-public. A candidate must be reviewed before appearing on the map.
     payload = {
-        "name": item["name"], "slug": slug, "website": item.get("website") or None,
-        "area": "Kolkata", "sector": "Other", "stage": "Unknown",
-        "description": "Discovered through a public Kolkata startup ecosystem directory. Verification and location details are pending.",
-        "verified": False, "status": "approved", "source_url": item["source_url"],
-        "verification_source_url": item["source_url"], "location_type": "district",
+        "name": item["name"],
+        "slug": slug,
+        "website": item.get("website") or None,
+        "area": "Kolkata",
+        "sector": "Other",
+        "stage": "Unknown",
+        "description": "Discovered through a public Kolkata startup ecosystem directory. Verification and location details are pending review.",
+        "verified": False,
+        "status": "needs_review",
+        "source_url": item["source_url"],
+        "verification_source_url": item["source_url"],
+        "location_type": "kolkata_roots",
         "last_checked_at": datetime.now(timezone.utc).isoformat(),
     }
-    r = SESSION.post(f"{SUPABASE_URL}/rest/v1/startups", headers={**HEADERS, "Prefer":"return=minimal"}, json=payload, timeout=30)
+    r = SESSION.post(
+        f"{SUPABASE_URL}/rest/v1/startups",
+        headers={**HEADERS, "Prefer": "return=minimal"},
+        json=payload,
+        timeout=30,
+    )
     if r.status_code in (409, 422):
         return False
     r.raise_for_status()
@@ -105,10 +104,12 @@ def insert_candidate(item, slug):
 
 
 def main():
-    known = existing_slugs(); added = 0
+    known = existing_slugs()
+    added = 0
     for source_name, url, source_host in SOURCES:
         try:
-            response = SESSION.get(url, timeout=30); response.raise_for_status()
+            response = SESSION.get(url, timeout=30)
+            response.raise_for_status()
             if source_host == "echai.ventures":
                 items = discover_echai(response.text, url)
             else:
@@ -119,10 +120,12 @@ def main():
                 if slug in known:
                     continue
                 if insert_candidate(item, slug):
-                    known.add(slug); added += 1; print(f"[ADD] {item['name']}")
+                    known.add(slug)
+                    added += 1
+                    print(f"[REVIEW] {item['name']}")
         except Exception as exc:
             print(f"[WARN] {source_name}: {exc}")
-    print(f"Company discovery complete: added={added}")
+    print(f"Company discovery complete: added_for_review={added}")
 
 
 if __name__ == "__main__":
