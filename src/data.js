@@ -43,17 +43,4 @@ export const jobs = [
   {company:'Xempla',title:'Software Development Engineer - I (DevOps)',mode:'Kolkata / In office',type:'Full-time',freshers:true,source:'Official careers',url:'https://stage.xempla.io/career'},
   {company:'mPokket',title:'iOS Developer',mode:'Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://www.linkedin.com/company/mpokket/'},
   {company:'InSync Tech-Fin Solutions',title:'Current Job Openings',mode:'New Town, Kolkata',type:'Full-time',freshers:false,source:'Official careers',url:'https://insync.co.in/careers/'}
-,
-  {company:'Dot & Key Skincare',title:'Growth Manager',mode:'Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
-  {company:'Turnip Innovations',title:'Lead Generation Specialist',mode:'Greater Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
-  {company:'Web Spiders',title:'Marketing Manager – AI Products & Digital Growth',mode:'Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
-  {company:'Qynko',title:'Influencer Marketing Manager',mode:'Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
-  {company:'Kisah',title:'Chief of Staff',mode:'Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
-  {company:'GameGenesis',title:'Business Development Executive Intern',mode:'Greater Kolkata',type:'Internship',freshers:true,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
-  {company:'YouFindGo',title:'Content & Operations Intern',mode:'New Town / Remote',type:'Internship',freshers:true,source:'LinkedIn',url:'https://in.linkedin.com/jobs/view/%F0%9F%9A%80-we%E2%80%99re-hiring-content-operations-intern-part-time-at-youfindgo-4357445437'},
-  {company:'Instainker',title:'Growth & Operations Intern',mode:'Kolkata / Remote',type:'Internship',freshers:true,source:'LinkedIn',url:'https://in.linkedin.com/jobs/view/growth-operations-intern-at-instainker-4445533748'},
-  {company:'Wazo Pulse',title:'GTM & Growth Intern',mode:'Greater Kolkata',type:'Internship',freshers:true,source:'LinkedIn',url:'https://in.linkedin.com/jobs/view/gtm-growth-intern-at-wazo-pulse-4446255110'},
-  {company:'Azymant Systems',title:'Sales & Operations Executive Intern',mode:'Greater Kolkata',type:'Internship',freshers:true,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-jobs-kolkata-area-india?f_EA=true'},
-  {company:'Qubrid AI',title:'Junior AI Engineer',mode:'Kolkata / WFH',type:'Full-time',freshers:true,source:'LinkedIn',url:'https://in.linkedin.com/jobs/jobs-at-startup-jobs-greater-kolkata-area'},
-  {company:'Portcast',title:'Data Analyst',mode:'Greater Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'}
 ];
