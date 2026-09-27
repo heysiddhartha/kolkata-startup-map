@@ -2,61 +2,45 @@
 
 **Live:** https://heysiddhartha.github.io/kolkata-startup-map/
 
-A map-first public directory for discovering Kolkata's startup and company ecosystem, with hiring signals and curated ecosystem news.
+A public-source directory for discovering Kolkata and West Bengal's startup and company ecosystem, with hiring signals and curated ecosystem news.
 
 ## What is included
 
-- Interactive Kolkata map + grid directory
-- Search by company, sector, area and stage
-- Hiring and fresher-friendly filters
-- Public-source job listings with direct application/source links
-- Company profiles with website, LinkedIn, contact and location information
-- Startup submission flow with moderation
-- Latest ecosystem news, funding, cohorts, grants and events
-- Daily data maintenance workflow
-- Supabase-backed public directory
-- Production SEO, sitemap, robots.txt, privacy page and GitHub Pages deployment
-- CARTO Voyager basemap support
+- Interactive map and grid directory
+- Search and filters by company, locality, sector, stage and hiring signal
+- Public company websites, LinkedIn profiles and careers links where verified
+- Direct application sources for public job listings
+- Curated ecosystem news covering funding, launches, programmes, cohorts, grants, demo days and events
+- Startup submission and review workflow
+- Crawlable startup and job profile pages
+- Daily maintenance automation for public hiring signals and ecosystem news
 
-## Data quality
+## Data standards
 
-The map is a curated public-source directory, not a claim of exhaustive coverage. Company and job information can change. Official company sources are preferred for company and hiring verification; established publications and official ecosystem organizations are used for independent news coverage.
+Company identity and Kolkata connection should be verified from primary or reliable public sources before publication.
 
-Hiring status is only shown when supported by the available evidence. Unknown is used when there is not enough evidence to make a current hiring claim.
+eChai and other directories may help discover companies, but they are not treated as the company source of truth.
 
-## Updating the ecosystem
+Hiring is kept separate from company existence. If a reliable current hiring signal is unavailable, the directory shows the status as unknown rather than claiming that a company is not hiring.
 
-The project uses Supabase for live companies, jobs and news. A daily maintenance task searches for new or changed Kolkata companies, job openings and ecosystem developments, verifies sources, and updates the database.
+Job availability can change quickly. The linked employer/application source is the final authority before applying.
 
-Primary ecosystem sources include company websites, incubators, universities, government/programme pages, event organizers and direct employer career pages.
+The directory is curated and useful, not an exhaustive census of every registered company in Kolkata.
 
-## Local development
+## Maintainer
 
-Install dependencies and start Vite:
+Built and maintained by **Siddhartha Sarkar**.
+
+LinkedIn: https://www.linkedin.com/in/heysiddhartha/
+
+If the project is useful, support is available through the UPI option on the site.
+
+## Development
 
 ```bash
 npm install
 npm run dev
-```
-
-Build for production:
-
-```bash
 npm run build
 ```
 
-The production Pages build uses `VITE_CARTO_API_KEY` from GitHub Actions repository secrets when available.
-
-## Contributing
-
-Use the **Add startup** flow on the live site to submit a company for review. Public-source corrections and improvements are welcome through GitHub.
-
-## Maintainer
-
-Built and maintained by [Siddhartha Sarkar](https://www.linkedin.com/in/heysiddhartha/).
-
-Support the project via the UPI ID shown in the live site's footer.
-
-## License
-
-MIT
+The scheduled GitHub Actions workflow refreshes public job signals and curated ecosystem news when the required Supabase secrets are configured.
