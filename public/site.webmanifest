@@ -1,0 +1,11 @@
+{
+  "name":"Kolkata Startup Map",
+  "short_name":"Kolkata Startup Map",
+  "start_url":"/kolkata-startup-map/",
+  "scope":"/kolkata-startup-map/",
+  "display":"standalone",
+  "background_color":"#f3ead7",
+  "theme_color":"#f3ead7",
+  "description":"Interactive directory and map of Kolkata startups, companies, sectors and public hiring signals.",
+  "lang":"en-IN"
+}
