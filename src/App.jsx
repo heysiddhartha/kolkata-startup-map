@@ -8,7 +8,7 @@ const center=[22.5726,88.3639]
 
 const markerIcon=L.divIcon({className:'',html:'<div class="startup-marker">•</div>',iconSize:[28,28],iconAnchor:[14,14]})
 const taxiIcon=L.icon({
-  iconUrl:'https://w3.pngaura.com/assets/images/posts/transparent/66063842d192f_nazim121_taxi_cab_ride-hailing_driver_fare_transportation_on_is_05e753dd-f557-40a1-9aea-d24b77dcbd93_clipdrop-background-removal.png',
+  iconUrl:'https://cdn.80.lv/api/upload/content/45/images/65b10493bcf73/widen_1840x0.jpeg',
   iconSize:[48,34],
   iconAnchor:[24,17],
   className:'map-vehicle-image map-taxi-image'
