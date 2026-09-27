@@ -244,3 +244,58 @@ html[data-theme=dark]{
 @media(prefers-reduced-motion:reduce){
   .hero-art,.hero:after{transition:none}
 }
+
+.kolkata-strip{
+  height:46px;
+  display:flex;
+  align-items:center;
+  gap:0;
+  padding:0 22px;
+  overflow:hidden;
+  white-space:nowrap;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+  color:var(--muted);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+.kolkata-strip>span{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:0 18px;
+  height:22px;
+  border-right:1px solid var(--line);
+}
+.kolkata-strip>span:first-child{padding-left:0}
+.kolkata-strip b{
+  display:grid;
+  place-items:center;
+  width:21px;height:21px;
+  border-radius:50%;
+  font-size:9px;
+  color:#111;
+  background:var(--surface2);
+}
+.sig-bridge{background:var(--kol-red)!important;color:#fff!important}
+.sig-tram{background:var(--kol-green)!important;color:#fff!important}
+.sig-taxi{background:var(--kol-yellow)!important}
+.sig-rickshaw{border:1px solid var(--kol-red);color:var(--kol-red)!important}
+.sig-pujo{border:1px solid var(--kol-red);color:var(--kol-red)!important}
+.sig-mishti{background:var(--kol-yellow)!important}
+.sig-fish{border:1px solid var(--kol-green);color:var(--kol-green)!important}
+.sig-bengali{
+  font-family:"Noto Serif Bengali","Nirmala UI",serif;
+  text-transform:none;
+  letter-spacing:0;
+  font-size:10px;
+  color:var(--kol-red);
+}
+@media(max-width:800px){
+  .kolkata-strip{padding:0 12px}
+  .kolkata-strip>span{padding:0 11px}
+  .kolkata-strip .sig-bengali{display:none}
+}
