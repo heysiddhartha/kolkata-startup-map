@@ -45,11 +45,49 @@ let jobs = [
   {company:'Portcast',title:'Data Analyst',mode:'Greater Kolkata',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'}
 ];
 
-const map = L.map('map',{zoomControl:false,scrollWheelZoom:true,doubleClickZoom:true,touchZoom:true,zoomAnimation:true,fadeAnimation:true,markerZoomAnimation:true,zoomSnap:.25,zoomDelta:.5,wheelDebounceTime:30,wheelPxPerZoomLevel:90}).setView([22.5726,88.3639],11);
+const kolkataBounds = L.latLngBounds([22.43,88.20],[22.75,88.62]);
+const map = L.map('map',{
+  zoomControl:false,
+  scrollWheelZoom:true,
+  doubleClickZoom:true,
+  touchZoom:true,
+  zoomAnimation:true,
+  fadeAnimation:true,
+  markerZoomAnimation:true,
+  zoomSnap:.25,
+  zoomDelta:.5,
+  wheelDebounceTime:30,
+  wheelPxPerZoomLevel:90,
+  minZoom:11,
+  maxZoom:18,
+  maxBounds:kolkataBounds,
+  maxBoundsViscosity:1
+}).setView([22.5726,88.3639],12);
 L.control.zoom({position:'bottomright'}).addTo(map);
 map.options.zoomAnimation=true;
 map.options.fadeAnimation=true;
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
+
+const lightTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap contributors',
+  maxZoom:19
+}).addTo(map);
+
+const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap contributors © CARTO',
+  maxZoom:19
+});
+
+function syncMapTiles(){
+  const dark=document.documentElement.dataset.theme==='dark';
+  if(dark){
+    if(map.hasLayer(lightTiles)) map.removeLayer(lightTiles);
+    if(!map.hasLayer(darkTiles)) darkTiles.addTo(map);
+  }else{
+    if(map.hasLayer(darkTiles)) map.removeLayer(darkTiles);
+    if(!map.hasLayer(lightTiles)) lightTiles.addTo(map);
+  }
+}
+syncMapTiles();
 
 const layer = L.layerGroup().addTo(map);
 const markers = new Map();
@@ -71,6 +109,7 @@ themeToggle.addEventListener('click',()=>{
   root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';
   localStorage.setItem('ksm-theme',root.dataset.theme);
   syncThemeButton();
+  syncMapTiles();
   setTimeout(()=>map.invalidateSize(),50);
 });
 
