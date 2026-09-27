@@ -316,3 +316,155 @@ body{
 .art-puja:after{content:"";position:absolute;left:10px;top:10px;width:20px;height:20px;border:2px solid currentColor;border-radius:50%;box-shadow:0 0 0 5px color-mix(in srgb,var(--kol-red) 9%,transparent)}
 .art-sweets:after{content:"";position:absolute;left:8px;top:8px;width:13px;height:13px;border-radius:50%;border:2px dashed var(--kol-brown)}
 .art-tram:before{content:"";position:absolute;left:-20px;right:-20px;top:50%;border-top:2px solid var(--kol-green);box-shadow:0 7px 0 var(--kol-green)}
+
+/* Cinematic Kolkata street layer */
+.hero{
+  min-height:390px;
+  padding:42px 34px 36px;
+  overflow:hidden;
+  isolation:isolate;
+}
+.hero-copy,.hero-stats,.hero-art{z-index:5}
+.city-background{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:0;
+  background:
+    linear-gradient(180deg,color-mix(in srgb,#f6d99a 78%,var(--bg)) 0%,color-mix(in srgb,#f0c875 32%,var(--bg)) 58%,var(--bg) 100%);
+}
+html[data-theme=dark] .city-background{
+  background:
+    linear-gradient(180deg,#3b2b20 0%,#282019 58%,var(--bg) 100%);
+}
+.scene-skyline{
+  position:absolute;
+  inset:auto 0 68px;
+  height:150px;
+  opacity:.28;
+  background:
+    linear-gradient(90deg,transparent 0 4%,var(--kol-brown) 4% 8%,transparent 8% 12%,var(--kol-brown) 12% 16%,transparent 16% 20%,var(--kol-brown) 20% 26%,transparent 26% 30%,var(--kol-brown) 30% 36%,transparent 36% 42%,var(--kol-brown) 42% 47%,transparent 47% 54%,var(--kol-brown) 54% 60%,transparent 60% 67%,var(--kol-brown) 67% 72%,transparent 72% 79%,var(--kol-brown) 79% 85%,transparent 85% 91%,var(--kol-brown) 91% 96%,transparent 96%),
+    linear-gradient(180deg,transparent 0 45%,var(--kol-brown) 45% 100%);
+  mask-image:linear-gradient(180deg,transparent,#000);
+}
+.scene-bridge{
+  position:absolute;
+  right:29%;
+  bottom:102px;
+  width:270px;
+  height:105px;
+  border-top:6px solid var(--kol-brown);
+  opacity:.5;
+  transform:perspective(250px) rotateX(4deg);
+}
+.scene-bridge:before,.scene-bridge:after{
+  content:"";position:absolute;bottom:0;width:58px;height:92px;
+  border:5px solid var(--kol-brown);border-bottom:0;
+}
+.scene-bridge:before{left:18px}.scene-bridge:after{right:18px}
+.scene-bridge span,.scene-bridge i,.scene-bridge b{
+  position:absolute;left:26px;right:26px;height:42px;border-bottom:4px solid var(--kol-brown);border-radius:50%;
+}
+.scene-bridge span{top:6px}.scene-bridge i{left:70px;right:70px;top:19px}.scene-bridge b{left:112px;right:112px;top:30px}
+.scene-market,.scene-tea,.scene-mishti{
+  position:absolute;
+  bottom:76px;
+  width:190px;
+  padding:12px 14px;
+  background:color-mix(in srgb,var(--surface) 78%,transparent);
+  border:1px solid color-mix(in srgb,var(--kol-brown) 45%,var(--line));
+  box-shadow:0 12px 30px rgba(70,40,20,.13);
+  backdrop-filter:blur(5px);
+  border-radius:12px 12px 5px 5px;
+  color:var(--kol-brown);
+}
+.scene-market{left:22px;border-top:4px solid var(--kol-red);transform:rotate(-1deg)}
+.scene-tea{left:235px;width:205px;border-top:4px solid var(--kol-green);transform:rotate(.7deg)}
+.scene-mishti{right:22px;border-top:4px solid var(--kol-yellow);transform:rotate(1deg)}
+.scene-market strong,.scene-tea strong,.scene-mishti strong{display:block;font-family:"Noto Serif Bengali","Nirmala UI",serif;font-size:16px}
+.scene-market small,.scene-tea small,.scene-mishti small{display:block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.fish-row,.sweet-row,.tea-cups{display:block;letter-spacing:9px;font-size:22px;line-height:1;color:var(--kol-red);margin-top:6px}
+.sweet-row{color:var(--kol-yellow);letter-spacing:8px}
+.tea-cups{color:var(--kol-green)}
+.uncle{
+  position:absolute;
+  bottom:-13px;
+  width:29px;height:43px;
+  background:var(--kol-brown);
+  border-radius:15px 15px 4px 4px;
+}
+.uncle:before{content:"";position:absolute;left:6px;top:-13px;width:17px;height:17px;border-radius:50%;background:#b77f59}
+.uncle-a{left:30px}.uncle-b{left:74px;transform:scale(.9)}.uncle-c{left:116px;transform:scale(.78)}
+.street{
+  position:absolute;
+  left:-4%;
+  right:-4%;
+  bottom:-8px;
+  height:84px;
+  background:#3c342e;
+  transform:perspective(500px) rotateX(18deg);
+  box-shadow:0 -7px 0 rgba(255,255,255,.1);
+}
+.street:before{
+  content:"";position:absolute;inset:25px 0 auto;
+  height:4px;
+  background:repeating-linear-gradient(90deg,#d8c79b 0 42px,transparent 42px 85px);
+  opacity:.75;
+}
+.lane{position:absolute;left:0;right:0;border-top:2px solid rgba(255,255,255,.18)}
+.lane-a{top:20px}.lane-b{top:53px}
+.vehicle{
+  position:absolute;
+  z-index:4;
+  font-size:7px;font-weight:900;letter-spacing:.08em;
+  will-change:transform;
+}
+.taxi{
+  width:68px;height:29px;
+  border-radius:11px 14px 6px 6px;
+  background:var(--kol-yellow);
+  color:#20170f;
+  border:2px solid #6b4f13;
+  box-shadow:0 6px 0 -3px #20170f;
+  display:grid;place-items:center;
+}
+.taxi:before{content:"";position:absolute;left:15px;right:15px;top:-7px;height:9px;border:2px solid #6b4f13;border-bottom:0;border-radius:8px 8px 0 0}
+.taxi:after{content:"";position:absolute;left:7px;bottom:-7px;width:9px;height:9px;border-radius:50%;background:#20170f;box-shadow:45px 0 0 #20170f}
+.taxi-a{top:9px;animation:driveRight 15s linear infinite}
+.taxi-b{top:46px;animation:driveLeft 18s linear infinite}
+.tram{
+  left:51%;top:11px;width:104px;height:34px;
+  background:var(--kol-green);
+  color:#fff9ec;
+  border:2px solid #173e2d;
+  border-radius:5px;
+  display:grid;place-items:center;
+  animation:tramRide 24s linear infinite;
+}
+.tram:before{content:"";position:absolute;left:15px;right:15px;top:-15px;border-top:2px solid #d8c79b}
+.tram:after{content:"";position:absolute;left:25px;top:-15px;width:42px;height:14px;border-left:2px solid #d8c79b;border-right:2px solid #d8c79b}
+.rickshaw{
+  position:absolute;right:39%;bottom:19px;width:31px;height:34px;
+  border:3px solid var(--kol-red);border-radius:15px 15px 3px 3px;
+  opacity:.8;
+}
+.rickshaw:before{content:"";position:absolute;left:-8px;top:4px;width:8px;height:2px;background:var(--kol-red);box-shadow:47px 0 0 var(--kol-red)}
+@keyframes driveRight{from{transform:translateX(-120px)}to{transform:translateX(calc(100vw + 120px))}}
+@keyframes driveLeft{from{transform:translateX(calc(100vw + 120px))}to{transform:translateX(-120px)}}
+@keyframes tramRide{from{transform:translateX(-30vw)}to{transform:translateX(45vw)}}
+@media(max-width:1000px){
+  .scene-market{left:12px}.scene-tea{left:180px}.scene-mishti{right:12px}
+  .scene-bridge{right:18%;width:210px}
+}
+@media(max-width:800px){
+  .hero{min-height:430px;padding:28px 18px}
+  .scene-market,.scene-mishti{opacity:.38;transform:scale(.78)}
+  .scene-market{left:-35px}.scene-mishti{right:-35px}
+  .scene-tea{left:50%;transform:translateX(-50%) scale(.82);opacity:.55}
+  .scene-bridge{right:50%;transform:translateX(50%) scale(.72);bottom:125px}
+  .street{height:72px}
+}
+@media(prefers-reduced-motion:reduce){
+  .vehicle{animation:none!important}
+}
