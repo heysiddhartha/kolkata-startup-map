@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json, os, re, time
 from datetime import datetime, timezone, timedelta
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
@@ -59,19 +59,26 @@ def main():
     startups=api("startups?select=id,name,website,careers_url&status=eq.approved")
     checked=0
     for s in startups:
+        started=datetime.now(timezone.utc)
         url=discover(s)
-        if not url: continue
+        if not url:
+            api("source_checks","POST",{"startup_id":s["id"],"source_url":s.get("website") or "unknown","source_type":"careers_discovery","checked_at":started.isoformat(),"jobs_found":0,"success":False,"error":"No careers page discovered"})
+            continue
         try:
             r=session.get(url,timeout=20,allow_redirects=True)
             jobs=parse_jobs(BeautifulSoup(r.text,"html.parser"),r.url) if r.ok else []
             for j in jobs:
                 api("jobs?on_conflict=startup_id,external_id","POST",{**j,"startup_id":s["id"],"last_seen_at":datetime.now(timezone.utc).isoformat(),"status":"live"})
-            api(f"startups?id=eq.{s['id']}","PATCH",{"careers_url":r.url,"last_checked_at":datetime.now(timezone.utc).isoformat(),"hiring_status":"hiring" if jobs else "unknown","hiring_source_url":r.url,"hiring_checked_at":datetime.now(timezone.utc).isoformat()})
+            now=datetime.now(timezone.utc).isoformat()
+            api("source_checks","POST",{"startup_id":s["id"],"source_url":r.url,"source_type":"careers","checked_at":now,"http_status":r.status_code,"jobs_found":len(jobs),"success":bool(r.ok),"error":None if r.ok else f"HTTP {r.status_code}"})
+            api(f"startups?id=eq.{s['id']}","PATCH",{"careers_url":r.url,"last_checked_at":now,"hiring_status":"hiring" if jobs else "unknown","hiring_source_url":r.url,"hiring_checked_at":now})
             checked+=1
-            time.sleep(1)
-        except Exception as e: print("[WARN]",s["name"],e)
+            time.sleep(0.7)
+        except Exception as e:
+            api("source_checks","POST",{"startup_id":s["id"],"source_url":url,"source_type":"careers","checked_at":datetime.now(timezone.utc).isoformat(),"jobs_found":0,"success":False,"error":str(e)[:500]})
+            print("[WARN]",s["name"],e)
     cutoff=(datetime.now(timezone.utc)-timedelta(days=7)).isoformat()
     api(f"jobs?last_seen_at=lt.{cutoff}&status=eq.live","PATCH",{"status":"stale"})
-    print("Checked",checked,"career pages.")
+    print("Checked",checked,"career pages; stale jobs marked after 7 days unseen.")
 
 if __name__=="__main__": main()
