@@ -26,7 +26,8 @@ export const startups = [
   {name:'GoBCI',area:'Kolkata',sector:'Medtech / AI',stage:'Early',lat:22.5726,lng:88.3639,verified:true,desc:'Medtech startup focused on brain-computer interfaces, assistive technology, healthcare AI and intelligent medical devices.',url:'#',linkedin:'https://in.linkedin.com/company/altrio-global-official',address:'Kolkata, West Bengal',hiring:'unknown'},
   {name:'Decodya Concept',area:'New Alipore',sector:'Digital Marketing / Technology',stage:'Growth',lat:22.4990,lng:88.3290,verified:true,desc:'Kolkata-based web, branding, social media and digital marketing company.',url:'https://decodya.com',linkedin:'https://www.linkedin.com/company/decodya',address:'271 New Alipore Road, Kolkata, West Bengal 700053',hiring:'unknown'},
   {name:'Digital Aptech',area:'Salt Lake Sector V',sector:'Technology / Digital',stage:'Growth',lat:22.5740,lng:88.4337,verified:true,desc:'Kolkata technology company providing web, mobile, ecommerce, digital marketing and IT consulting services.',url:'https://www.digitalaptech.com/',linkedin:'https://in.linkedin.com/company/digital-aptech',address:'EN-34, 9th Floor, Sector V, Salt Lake City, Kolkata, West Bengal 700091',hiring:'unknown'},
-];\nexport const jobs = [
+];
+export const jobs = [
   {company:'Dot & Key Skincare',title:'Growth Manager',mode:'Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
   {company:'Turnip Innovations',title:'Lead Generation Specialist',mode:'Greater Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
   {company:'Web Spiders',title:'Marketing Manager – AI Products & Digital Growth',mode:'Kolkata',type:'Full-time',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
