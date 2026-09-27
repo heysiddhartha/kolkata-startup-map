@@ -1,5 +1,5 @@
 import {Component,useEffect,useMemo,useState} from 'react'
-import {MapContainer,TileLayer,CircleMarker,Popup,useMap} from 'react-leaflet'
+import {MapContainer,TileLayer,Marker,Popup,useMap} from 'react-leaflet'
 import L from 'leaflet'
 import {startups as seedStartups,jobs as seedJobs} from './data'
 
@@ -74,6 +74,23 @@ function App(){
  const isOfficialUrl=url=>{if(!url||url==='#')return false;try{const h=new URL(url).hostname.toLowerCase();return !h.includes('echai.ventures')&&!h.includes('echai')&&!h.includes('crunchbase.com')&&!h.includes('tracxn.com')&&!h.includes('yourstory.com')&&!h.includes('inc42.com')}catch{return false}}
  const safeUrl=url=>isOfficialUrl(url)?url:'#'
  const sourceUrl=url=>{if(!url||url==='#')return '#';try{return /^https?:$/.test(new URL(url).protocol)?url:'#'}catch{return '#'}}
+ const companyLogoUrl=url=>{
+   try{
+     const host=new URL(url).hostname.replace(/^www\\./,'')
+     return host?\`https://www.google.com/s2/favicons?domain=\${host}&sz=128\`:'' 
+   }catch{return ''}
+ }
+ const companyIcon=s=>{
+   const logo=companyLogoUrl(s.url)
+   const initial=(s.name||'K').trim().charAt(0).toUpperCase()
+   return L.divIcon({
+     className:'company-map-icon-wrap',
+     html:\`<span class="company-map-icon"><span class="company-map-fallback">\${initial}</span>\${logo?\`<img src="\${logo}" alt="" loading="lazy" onerror="this.style.display='none'">\`:''}</span>\`,
+     iconSize:[38,38],
+     iconAnchor:[19,19],
+     popupAnchor:[0,-20]
+   })
+ }
  const companyJobs=name=>jobs.filter(j=>j.company.toLowerCase()===name.toLowerCase())
  const filtered=useMemo(()=>startups.filter(s=>{const hay=(s.name+' '+s.sector+' '+s.area+' '+s.stage+' '+s.desc).toLowerCase();const js=companyJobs(s.name);return (!query||hay.includes(query.toLowerCase()))&&(!area||s.area===area)&&(!sector||s.sector===sector)&&(!stage||s.stage===stage)&&(!hiring||(hiring==='hiring'&&((s.hiring||'unknown')==='hiring'))||(hiring==='freshers'&&js.some(j=>j.freshers)))}),[query,area,sector,stage,hiring])
  const clear=()=>{setQuery('');setArea('');setSector('');setStage('');setHiring('');setJobMode('');setJobType('')}
@@ -95,7 +112,7 @@ function App(){
    <section className="hero"><div className="hero-copy"><div className="eyebrow"><i/> KOLKATA · STARTUP & COMPANY ECOSYSTEM</div><h1>Find what’s being built<br/><em>in Kolkata.</em></h1><p>Startups, companies, agencies, sectors and live hiring signals — in one map.</p>{dataSource==='live'&&<small className="live-badge">LIVE DIRECTORY</small>}</div><div className="stats"><div><b>{startups.length}</b><span>listings</span></div><div><b>{jobs.length}</b><span>open roles</span></div><div><b>{sectors.length}</b><span>sectors</span></div></div></section>
    {dataError&&<div className="data-notice" role="status"><b>Using cached directory data.</b> Live company/job updates are temporarily unavailable. <button onClick={()=>window.location.reload()}>Retry</button></div>}{newsError&&<div className="data-notice" role="status"><b>News feed temporarily unavailable.</b> Showing the last available news set.</div>}
    <section className="toolbar"><div className="search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search companies, sectors, founders…"/><kbd>⌘ K</kbd></div><div className="toggle"><button className={view==='map'?'active':''} onClick={()=>setView('map')}>Map</button><button className={view==='grid'?'active':''} onClick={()=>setView('grid')}>Grid</button></div><select value={area} onChange={e=>setArea(e.target.value)}><option value="">All areas</option>{areas.map(x=><option key={x}>{x}</option>)}</select><select value={sector} onChange={e=>setSector(e.target.value)}><option value="">All sectors</option>{sectors.map(x=><option key={x}>{x}</option>)}</select><select value={stage} onChange={e=>setStage(e.target.value)}><option value="">All stages</option>{stages.map(x=><option key={x}>{x}</option>)}</select><select value={hiring} onChange={e=>setHiring(e.target.value)}><option value="">Hiring status</option><option value="hiring">Hiring now</option><option value="freshers">Fresher friendly</option></select></section>
-   <section className="content">{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url={mapTileUrl} attribution={mapAttribution} maxZoom={20} subdomains="abcd"/>{filtered.map(s=><CircleMarker key={s.name} center={[Number(s.lat)||22.5726,Number(s.lng)||88.3639]} radius={7} pathOptions={{className:"startup-marker"}} eventHandlers={{click:()=>setSelected(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></CircleMarker>)}<ThemeMap/></MapContainer>
+   <section className="content">{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url={mapTileUrl} attribution={mapAttribution} maxZoom={20} subdomains="abcd"/>{filtered.map(s=><Marker key={s.name} position={[Number(s.lat)||22.5726,Number(s.lng)||88.3639]} icon={companyIcon(s)} eventHandlers={{click:()=>setSelected(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>)}<ThemeMap/></MapContainer>
 {view==='map'&&<aside className="news-panel">
  <div className="news-head"><div><b>Latest news</b><span>Kolkata startup ecosystem</span></div><button onClick={()=>setNewsPage(0)} aria-label="Reset news">×</button></div>
  <div className="news-list">{news.slice(newsPage*5,newsPage*5+5).map(item=><a className="news-item" key={item.title} href={item.url} target="_blank" rel="noreferrer"><h4>{item.title}</h4>{item.summary&&<p>{item.summary}</p>}<div><span className="news-source">{item.source}</span><span>{item.date}</span><span className="news-cat">{item.cat}</span></div></a>)}</div>
