@@ -45,12 +45,34 @@ Deno.serve(async req => {
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { error } = await supabase.from("submissions").insert({
+    const normalizedWebsite = parsedWebsite.toString().replace(/\/$/, "").toLowerCase();
+    const { data: existingStartup } = await supabase
+      .from("startups")
+      .select("id,name,status")
+      .or(`name.ilike.${startup_name.replace(/,/g, " ")},website.ilike.${normalizedWebsite}`)
+      .limit(1)
+      .maybeSingle();
+    if (existingStartup) {
+      return json({ error: "This startup already appears to be in the directory or under review." }, 409, origin);
+    }
+
+    const { data: existingSubmission } = await supabase
+      .from("submissions")
+      .select("id,status")
+      .or(`startup_name.ilike.${startup_name.replace(/,/g, " ")},website.ilike.${normalizedWebsite}`)
+      .in("status", ["pending", "needs_review"])
+      .limit(1)
+      .maybeSingle();
+    if (existingSubmission) {
+      return json({ error: "We already have a submission for this startup under review." }, 409, origin);
+    }
+
+    const { data: inserted, error } = await supabase.from("submissions").insert({
       startup_name,
-      website: parsedWebsite.toString(),
+      website: normalizedWebsite,
       founder: clean(body?.founder, 200) || null,
       email: clean(body?.email, 254) || null,
       sector: clean(body?.sector, 120) || null,
@@ -62,7 +84,8 @@ Deno.serve(async req => {
     });
 
     if (error) return json({ error: "Could not save submission" }, 500, origin);
-    return json({ ok: true, message: "Submission received for review." }, 201, origin);
+    const reference = inserted?.[0]?.id ? String(inserted[0].id).slice(0, 8).toUpperCase() : "KSM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
+    return json({ ok: true, message: "Submission received for review.", reference }, 201, origin);
   } catch {
     return json({ error: "Invalid request" }, 400, origin);
   }
