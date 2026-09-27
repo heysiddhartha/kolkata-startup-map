@@ -9,6 +9,15 @@ const CARTO_KEY=import.meta.env.VITE_CARTO_API_KEY||''
 const mapTileUrl=CARTO_KEY?'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key='+encodeURIComponent(CARTO_KEY):'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 const mapAttribution=CARTO_KEY?'© OpenStreetMap contributors, © CARTO':'© OpenStreetMap contributors'
 
+const ecosystemItems=[
+ {category:'Funding',date:'24 Aug 2026',title:'IDFC FIRST Bank and IIMCIP launch a ₹2 crore incubation programme',text:'A new incubation programme connecting founders with structured support and ecosystem access.',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
+ {category:'AI',date:'10 Aug 2026',title:'AI Day for Startups India 2026 comes to Kolkata',text:'A Kolkata ecosystem event focused on AI, startups, founders and emerging technology.',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
+ {category:'Cohort',date:'13 Jul 2026',title:'Bengal Business Accelerator Programme Cohort 3 reaches Demo Day',text:'Founders from the Bengal ecosystem present their businesses and progress at the end of the accelerator cycle.',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/events/?y=2022'},
+ {category:'Event',date:'6–7 Sep 2026',title:'RISE Conclave brings startups, research, industry and investors together',text:'A cross-ecosystem conclave connecting founders and institutions around innovation and entrepreneurship.',source:'RISE Conclave',url:'https://riseconclave.immt.res.in/schedule'},
+ {category:'Ecosystem',date:'8 Sep 2026',title:'IIM Calcutta Innovation Park partners with Army Institute of Management Kolkata',text:'The partnership expands collaboration between an innovation ecosystem institution and a Kolkata management institute.',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
+ {category:'Startup',date:'23 Sep 2026',title:'Startup nurtured at IIM Calcutta works on Bengal-specific antivenom',text:'An IIM Calcutta Innovation Park startup is working on a Bengal-specific approach to snakebite treatment.',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/topic/startup-sinks-teeth-into-bengal-specific-antivenom-for-tailored-snakebite-cure/'}
+]
+
 const seedNewsItems=[
  {cat:'Ecosystem',date:'23 Sep 2026',title:'Startup nurtured at IIM Calcutta works on Bengal-specific antivenom',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/topic/startup-sinks-teeth-into-bengal-specific-antivenom-for-tailored-snakebite-cure/'},
  {cat:'Ecosystem',date:'8 Sep 2026',title:'IIM Calcutta Innovation Park partners with Army Institute of Management Kolkata',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
