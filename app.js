@@ -54,6 +54,24 @@ const markers = new Map();
 const icon = () => L.divIcon({className:'',html:'<div class="marker" aria-hidden="true">•</div>',iconSize:[28,28],iconAnchor:[14,14]});
 const escapeHtml = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
+const themeToggle=document.getElementById('themeToggle');
+const root=document.documentElement;
+const savedTheme=localStorage.getItem('ksm-theme');
+if(savedTheme) root.dataset.theme=savedTheme;
+function syncThemeButton(){
+  const dark=root.dataset.theme==='dark';
+  themeToggle.textContent=dark?'☀':'◐';
+  themeToggle.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+  themeToggle.title=dark?'Light mode':'Dark mode';
+}
+syncThemeButton();
+themeToggle.addEventListener('click',()=>{
+  root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';
+  localStorage.setItem('ksm-theme',root.dataset.theme);
+  syncThemeButton();
+  setTimeout(()=>map.invalidateSize(),50);
+});
+
 const els={
   search:document.getElementById('search'),
   area:document.getElementById('area'),
@@ -165,6 +183,9 @@ function attachCards(root){
 
 function render(){
   const data=filtered();
+  document.getElementById('heroCount').textContent=startups.length;
+  document.getElementById('heroJobs').textContent=jobs.length;
+  document.getElementById('heroSectors').textContent=new Set(startups.map(s=>s.sector).filter(Boolean)).size;
   els.count.textContent=data.length;
   els.cards.innerHTML=data.length ? data.map(card).join('') : '<div class="empty">No startups match these filters.</div>';
   els.grid.innerHTML=data.length ? data.map(card).join('') : '<div class="empty">No startups match these filters.</div>';
