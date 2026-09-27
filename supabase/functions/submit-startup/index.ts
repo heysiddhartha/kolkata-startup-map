@@ -1,23 +1,46 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const cors = {
-  "Access-Control-Allow-Origin": "*",
+const allowedOrigins = new Set([
+  "https://heysiddhartha.github.io",
+  "http://localhost:5173",
+  "http://localhost:4173"
+]);
+
+const corsHeaders = (origin: string | null) => ({
+  "Access-Control-Allow-Origin": origin && allowedOrigins.has(origin) ? origin : "https://heysiddhartha.github.io",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json"
-};
+});
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: cors });
+const json = (body: unknown, status = 200, origin: string | null = null) =>
+  new Response(JSON.stringify(body), { status, headers: corsHeaders(origin) });
+
+const clean = (value: unknown, max = 500) => String(value ?? "").trim().slice(0, max);
 
 Deno.serve(async req => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+  const origin = req.headers.get("origin");
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(origin) });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405, origin);
+  if (origin && !allowedOrigins.has(origin)) return json({ error: "Origin not allowed" }, 403, origin);
 
   try {
     const body = await req.json();
-    for (const key of ["startup_name", "website"]) {
-      if (!String(body?.[key] ?? "").trim()) return json({ error: key + " is required" }, 400);
+    const startup_name = clean(body?.startup_name, 160);
+    const website = clean(body?.website, 500);
+
+    if (!startup_name || !website) return json({ error: "startup_name and website are required" }, 400, origin);
+
+    let parsedWebsite: URL;
+    try {
+      parsedWebsite = new URL(website);
+      if (!["http:", "https:"].includes(parsedWebsite.protocol)) throw new Error();
+    } catch {
+      return json({ error: "A valid website URL is required" }, 400, origin);
+    }
+
+    if (clean(body?._company_website, 100)) {
+      return json({ ok: true, message: "Submission received for review." }, 200, origin);
     }
 
     const supabase = createClient(
@@ -26,21 +49,21 @@ Deno.serve(async req => {
     );
 
     const { error } = await supabase.from("submissions").insert({
-      startup_name: String(body.startup_name).trim(),
-      website: String(body.website).trim(),
-      founder: body.founder || null,
-      email: body.email || null,
-      sector: body.sector || null,
-      locality: body.locality || null,
-      description: body.description || null,
-      linkedin_url: body.linkedin_url || null,
-      careers_url: body.careers_url || null,
+      startup_name,
+      website: parsedWebsite.toString(),
+      founder: clean(body?.founder, 200) || null,
+      email: clean(body?.email, 254) || null,
+      sector: clean(body?.sector, 120) || null,
+      locality: clean(body?.locality, 120) || null,
+      description: clean(body?.description, 1200) || null,
+      linkedin_url: clean(body?.linkedin_url, 500) || null,
+      careers_url: clean(body?.careers_url, 500) || null,
       status: "pending"
     });
 
-    if (error) return json({ error: "Could not save submission" }, 500);
-    return json({ ok: true, message: "Submission received for review." });
+    if (error) return json({ error: "Could not save submission" }, 500, origin);
+    return json({ ok: true, message: "Submission received for review." }, 201, origin);
   } catch {
-    return json({ error: "Invalid request" }, 400);
+    return json({ error: "Invalid request" }, 400, origin);
   }
 });
