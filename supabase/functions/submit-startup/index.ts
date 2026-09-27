@@ -49,24 +49,34 @@ Deno.serve(async req => {
     );
 
     const normalizedWebsite = parsedWebsite.toString().replace(/\/$/, "").toLowerCase();
-    const { data: existingStartup } = await supabase
+
+    const { data: existingByName } = await supabase
       .from("startups")
       .select("id,name,status")
-      .or(`name.ilike.${startup_name.replace(/,/g, " ")},website.ilike.${normalizedWebsite}`)
-      .limit(1)
-      .maybeSingle();
-    if (existingStartup) {
+      .ilike("name", startup_name)
+      .limit(1);
+    const { data: existingByWebsite } = await supabase
+      .from("startups")
+      .select("id,name,status")
+      .ilike("website", normalizedWebsite)
+      .limit(1);
+    if ((existingByName?.length ?? 0) > 0 || (existingByWebsite?.length ?? 0) > 0) {
       return json({ error: "This startup already appears to be in the directory or under review." }, 409, origin);
     }
 
-    const { data: existingSubmission } = await supabase
+    const { data: pendingByName } = await supabase
       .from("submissions")
       .select("id,status")
-      .or(`startup_name.ilike.${startup_name.replace(/,/g, " ")},website.ilike.${normalizedWebsite}`)
+      .ilike("startup_name", startup_name)
       .in("status", ["pending", "needs_review"])
-      .limit(1)
-      .maybeSingle();
-    if (existingSubmission) {
+      .limit(1);
+    const { data: pendingByWebsite } = await supabase
+      .from("submissions")
+      .select("id,status")
+      .ilike("website", normalizedWebsite)
+      .in("status", ["pending", "needs_review"])
+      .limit(1);
+    if ((pendingByName?.length ?? 0) > 0 || (pendingByWebsite?.length ?? 0) > 0) {
       return json({ error: "We already have a submission for this startup under review." }, 409, origin);
     }
 
@@ -81,7 +91,7 @@ Deno.serve(async req => {
       linkedin_url: clean(body?.linkedin_url, 500) || null,
       careers_url: clean(body?.careers_url, 500) || null,
       status: "pending"
-    });
+    }).select("id").single();
 
     if (error) return json({ error: "Could not save submission" }, 500, origin);
     const reference = inserted?.[0]?.id ? String(inserted[0].id).slice(0, 8).toUpperCase() : "KSM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
