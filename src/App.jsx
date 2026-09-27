@@ -68,7 +68,7 @@ function App(){
    const SUPABASE_KEY='sb_publishable_V7WzcNGV2x4J1OlDrepTnw_1sMgFz43'
    const headers={apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
    Promise.all([
-     fetch(SUPABASE_URL+'/rest/v1/startups?select=name,area,sector,stage,lat,lng,verified,description,website&status=eq.approved&order=name',{headers}).then(r=>r.ok?r.json():[]),
+     fetch(SUPABASE_URL+'/rest/v1/startups?select=name,area,sector,stage,lat,lng,verified,description,website,linkedin_url,public_email,address,hiring_status&status=eq.approved&order=name',{headers}).then(r=>r.ok?r.json():[]),
      fetch(SUPABASE_URL+'/rest/v1/jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,startups(name)&status=eq.live&order=created_at.desc',{headers}).then(r=>r.ok?r.json():[])
    ]).then(([s,j])=>{
      const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:safeUrl(x.website||''),linkedin:x.linkedin_url||'',email:x.public_email||'',address:x.address||'',hiring:x.hiring_status||'unknown'})
