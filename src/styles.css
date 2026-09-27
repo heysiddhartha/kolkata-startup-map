@@ -194,7 +194,7 @@
 .ecosystem-head h2{margin:7px 0 4px;font-size:26px;letter-spacing:-.035em;color:#241b16}
 .ecosystem-head p{margin:0;color:#75665a;font-size:11px}
 .ecosystem-head>a{font-size:10px;font-weight:800;color:#a52c2c;text-decoration:none;white-space:nowrap}
-.ecosystem-head>a:hover{text-decoration:underline}
+.refresh-button{border:1px solid #d1bea0;border-radius:9px;padding:8px 12px;background:#fffaf0;color:#a52c2c;font-size:10px;font-weight:850;letter-spacing:.01em;cursor:pointer;white-space:nowrap}.refresh-button:hover:not(:disabled){border-color:#a52c2c;background:#f8edd9}.refresh-button:disabled{opacity:.6;cursor:wait}
 .ecosystem-grid{max-width:1100px;margin:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .ecosystem-card{display:flex;flex-direction:column;min-height:190px;padding:16px;border:1px solid #d8c8a9;border-radius:12px;background:#fffaf0;color:#241b16;text-decoration:none;transition:.2s}
 .ecosystem-card:hover{transform:translateY(-2px);border-color:#a52c2c;box-shadow:0 10px 25px rgba(70,45,25,.08)}
