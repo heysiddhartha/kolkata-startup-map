@@ -105,7 +105,7 @@ async function act(id,action){
       name:s.startup_name,slug:slug(s.startup_name)+'-'+Math.random().toString(36).slice(2,7),
       website:s.website,founder:s.founder,public_email:s.email,sector:s.sector,area:s.locality||'Kolkata',
       description:s.description,linkedin_url:s.linkedin_url,careers_url:s.careers_url,
-      lat:22.5726,lng:88.3639,location_confidence:'approximate',verified:false,status:'approved',
+      lat:null,lng:null,location_confidence:'unknown',verified:false,status:'approved',
       source_url:s.website,location_type:'kolkata_roots'
     };
     const ins=await sb.from('startups').insert(startup);
