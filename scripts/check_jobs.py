@@ -66,7 +66,7 @@ def main():
             jobs=parse_jobs(BeautifulSoup(r.text,"html.parser"),r.url) if r.ok else []
             for j in jobs:
                 api("jobs?on_conflict=startup_id,external_id","POST",{**j,"startup_id":s["id"],"last_seen_at":datetime.now(timezone.utc).isoformat(),"status":"live"})
-            api(f"startups?id=eq.{s['id']}","PATCH",{"careers_url":r.url,"last_checked_at":datetime.now(timezone.utc).isoformat()})
+            api(f"startups?id=eq.{s['id']}","PATCH",{"careers_url":r.url,"last_checked_at":datetime.now(timezone.utc).isoformat(),"hiring_status":"hiring" if jobs else "unknown","hiring_source_url":r.url,"hiring_checked_at":datetime.now(timezone.utc).isoformat()})
             checked+=1
             time.sleep(1)
         except Exception as e: print("[WARN]",s["name"],e)
