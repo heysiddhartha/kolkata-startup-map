@@ -10,6 +10,19 @@ const mapTileUrl=CARTO_KEY?'https://basemaps.cartocdn.com/rastertiles/voyager/{z
 const mapAttribution=CARTO_KEY?'© OpenStreetMap contributors, © CARTO':'© OpenStreetMap contributors'
 
 const markerIcon=L.divIcon({className:'',html:'<div class="startup-marker">•</div>',iconSize:[28,28],iconAnchor:[14,14]})
+const seedNewsItems=[
+ {cat:'Ecosystem',date:'23 Sep 2026',title:'Startup nurtured at IIM Calcutta works on Bengal-specific antivenom',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/topic/startup-sinks-teeth-into-bengal-specific-antivenom-for-tailored-snakebite-cure/'},
+ {cat:'Ecosystem',date:'8 Sep 2026',title:'IIM Calcutta Innovation Park partners with Army Institute of Management Kolkata',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
+ {cat:'Event',date:'12–13 Sep 2026',title:'Machine Learning Accelerator Summit 4.0 takes place at Jadavpur University',source:'IEEE JUSB',url:'https://mlas.ieee-jaduniv.in/'},
+ {cat:'Event',date:'6–7 Sep 2026',title:'RISE Conclave connects startups, research, industry and investors in Kolkata',source:'RISE Conclave',url:'https://riseconclave.immt.res.in/schedule'},
+ {cat:'Cohort',date:'1 Sep 2026',title:'SPJIMR WISE Tech India Pitchathon — West Bengal Edition brings startups to IIM Calcutta',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/events/?y=2022'},
+ {cat:'Funding',date:'24 Aug 2026',title:'IDFC FIRST Bank and IIMCIP launch ₹2 crore incubation programme',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
+ {cat:'AI',date:'10 Aug 2026',title:'AI Day for Startups India 2026 comes to Kolkata',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
+ {cat:'Funding',date:'6 Aug 2026',title:'Five social enterprises selected for implementation grants of up to ₹20 lakh',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/news/'},
+ {cat:'Cohort',date:'13 Jul 2026',title:'Bengal Business Accelerator Programme Cohort 3 concludes with Demo Day',source:'IIM Calcutta Innovation Park',url:'https://iimcip.org/news-event/events/?y=2022'},
+ {cat:'Cohort',date:'14 Jul 2026',title:'AIC Techno invites startups into its incubation ecosystem',source:'AIC Techno',url:'https://technotimes.info/index.php/2026/07/14/aic-techno-final-startup-applications-august-2026/'}
+]
+
 function ThemeMap(){const map=useMap();useEffect(()=>{setTimeout(()=>map.invalidateSize(),50)},[]);return null}
 
 function VehicleLayer(){
