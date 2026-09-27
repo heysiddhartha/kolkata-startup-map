@@ -64,14 +64,18 @@ function App(){
  const [showSubmit,setShowSubmit]=useState(false),[submitState,setSubmitState]=useState('idle'),[jobMode,setJobMode]=useState(''),[jobType,setJobType]=useState('')
  useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem('ksm-theme',theme)},[theme])
  useEffect(()=>{
-   const base=import.meta.env.VITE_API_URL
-   if(!base)return
-   Promise.all([fetch(base+'/api/startups').then(r=>r.ok?r.json():null),fetch(base+'/api/jobs').then(r=>r.ok?r.json():null)]).then(([s,j])=>{
-     const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:x.website||x.source_url||'#'})
-     const normalizeJob=x=>({company:x.startup?.name||x.company||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:x.apply_url||x.source_url||'#'})
-     if(s?.startups?.length)setStartups(s.startups.map(normalizeStartup))
-     if(j?.jobs?.length)setJobs(j.jobs.map(normalizeJob))
-     if(s?.startups?.length||j?.jobs?.length)setDataSource('live')
+   const SUPABASE_URL='https://rkzkpwaexadlwxqdfjlm.supabase.co'
+   const SUPABASE_KEY='sb_publishable_V7WzcNGV2x4J1OlDrepTnw_1sMgFz43'
+   const headers={apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
+   Promise.all([
+     fetch(SUPABASE_URL+'/rest/v1/startups?select=name,area,sector,stage,lat,lng,verified,description,website&status=eq.approved&order=name',{headers}).then(r=>r.ok?r.json():[]),
+     fetch(SUPABASE_URL+'/rest/v1/jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,startups(name)&status=eq.live&order=created_at.desc',{headers}).then(r=>r.ok?r.json():[])
+   ]).then(([s,j])=>{
+     const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:x.website||'#'})
+     const normalizeJob=x=>({company:x.startups?.name||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:x.apply_url||x.source_url||'#'})
+     if(s?.length)setStartups(s.map(normalizeStartup))
+     if(j?.length)setJobs(j.map(normalizeJob))
+     if(s?.length||j?.length)setDataSource('live')
    }).catch(()=>{})
  },[])
  const sectors=[...new Set(startups.map(s=>s.sector))].sort(),areas=[...new Set(startups.map(s=>s.area))].sort(),stages=[...new Set(startups.map(s=>s.stage))].sort()
