@@ -58,3 +58,95 @@
 .stats b{display:block;color:#a52c2c;font-size:25px}.stats span{display:block;color:#806b50;font-size:9px;letter-spacing:.08em;text-transform:uppercase;margin-top:3px}
 @media(max-width:900px){.hero{padding:36px 24px;gap:28px}.hero h1{font-size:clamp(42px,7vw,62px)}}
 @media(max-width:680px){.hero{display:block;min-height:0}.stats{margin-top:26px;width:max-content;max-width:100%}.stats div{min-width:0;padding:13px 15px}}
+
+/* FINAL CLEAN BENGALI HERO — single source of truth */
+.hero,
+.hero:first-child{
+  max-width:none!important;
+  width:100%!important;
+  margin:0!important;
+  min-height:270px!important;
+  box-sizing:border-box!important;
+  padding:42px 5vw 38px!important;
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:48px!important;
+  position:relative!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,#f4c33d 0%,#eab32a 100%)!important;
+  border-top:3px solid #237b57!important;
+  border-bottom:4px solid #a52c2c!important;
+}
+.hero::before,
+.hero::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+.hero-copy{
+  position:relative!important;
+  z-index:2!important;
+  flex:1 1 auto!important;
+  max-width:800px!important;
+}
+.hero .eyebrow{
+  font-family:"Noto Sans Bengali","Noto Sans",sans-serif!important;
+  color:#8f2424!important;
+  background:#fff4d8!important;
+  border:1px solid #d7bd84!important;
+  padding:7px 12px!important;
+  border-radius:999px!important;
+  width:max-content!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  letter-spacing:.1em!important;
+}
+.hero h1{
+  font-family:"Noto Sans Bengali","Noto Sans",sans-serif!important;
+  margin:16px 0 12px!important;
+  font-size:clamp(44px,5vw,70px)!important;
+  line-height:.93!important;
+  letter-spacing:-.055em!important;
+  font-weight:900!important;
+  color:#241b16!important;
+}
+.hero h1 em{font-style:normal!important;color:#a52c2c!important}
+.hero p{
+  font-family:"Noto Sans Bengali","Noto Sans",sans-serif!important;
+  margin:0!important;
+  color:#59472f!important;
+  font-size:14px!important;
+  font-weight:550!important;
+}
+.hero .stats{
+  position:relative!important;
+  z-index:3!important;
+  display:flex!important;
+  flex:none!important;
+  width:auto!important;
+  margin:0!important;
+  background:#fff8e9!important;
+  border:1px solid #c8a86d!important;
+  border-radius:16px!important;
+  box-shadow:0 12px 28px rgba(75,48,20,.13)!important;
+}
+.hero .stats div{
+  min-width:105px!important;
+  padding:16px 18px!important;
+  border-left:1px solid #d8c49d!important;
+}
+.hero .stats div:first-child{border-left:0!important}
+.hero .stats b{display:block!important;color:#a52c2c!important;font-size:25px!important}
+.hero .stats span{display:block!important;color:#806b50!important;font-size:9px!important;letter-spacing:.08em!important;text-transform:uppercase!important;margin-top:3px!important}
+@media(max-width:900px){
+  .hero{padding:36px 24px!important;gap:28px!important}
+  .hero h1{font-size:clamp(42px,7vw,62px)!important}
+}
+@media(max-width:680px){
+  .hero{display:block!important;min-height:0!important}
+  .hero .stats{margin-top:26px!important;width:max-content!important;max-width:100%!important}
+  .hero .stats div{min-width:0!important;padding:13px 15px!important}
+}
