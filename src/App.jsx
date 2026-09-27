@@ -72,9 +72,9 @@ function App(){
      fetch(SUPABASE_URL+'/rest/v1/jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,startups(name)&status=eq.live&order=created_at.desc',{headers}).then(r=>r.ok?r.json():[])
    ]).then(([s,j])=>{
      const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:safeUrl(x.website||''),linkedin:x.linkedin_url||'',email:x.public_email||'',address:x.address||'',hiring:x.hiring_status||'unknown'})
-     const normalizeJob=x=>({company:x.startups?.name||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:x.apply_url||x.source_url||'#'})
+     const normalizeJob=x=>({company:x.startups?.name||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:safeUrl(x.apply_url||x.source_url||'#')})
      if(s?.length)setStartups(s.map(normalizeStartup))
-     if(j?.length)setJobs(j.map(normalizeJob))
+     setJobs((j||[]).map(normalizeJob))
      if(s?.length||j?.length)setDataSource('live')
    }).catch(()=>{})
  },[])
