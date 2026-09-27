@@ -77,7 +77,7 @@ function App(){
  const companyLogoUrl=url=>{
    try{
      const host=new URL(url).hostname.replace(/^www\\./,'')
-     return host?\`https://www.google.com/s2/favicons?domain=\${host}&sz=128\`:'' 
+     return host?`https://www.google.com/s2/favicons?domain=${host}&sz=128`:'' 
    }catch{return ''}
  }
  const companyIcon=s=>{
@@ -85,7 +85,7 @@ function App(){
    const initial=(s.name||'K').trim().charAt(0).toUpperCase()
    return L.divIcon({
      className:'company-map-icon-wrap',
-     html:\`<span class="company-map-icon"><span class="company-map-fallback">\${initial}</span>\${logo?\`<img src="\${logo}" alt="" loading="lazy" onerror="this.style.display='none'">\`:''}</span>\`,
+     html:`<span class="company-map-icon"><span class="company-map-fallback">${initial}</span>${logo?`<img src="${logo}" alt="" loading="lazy" onerror="this.style.display='none'">`:''}</span>`,
      iconSize:[38,38],
      iconAnchor:[19,19],
      popupAnchor:[0,-20]
