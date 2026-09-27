@@ -265,7 +265,7 @@ async function loadBackendData(){
     const liveJobs=await jobRes.json();
     if(Array.isArray(liveStartups)&&liveStartups.length){
       startups=liveStartups.map(s=>({
-        name:s.name,area:s.area||'Kolkata',sector:s.sector||'Other',stage:s.stage||'Unknown',
+        id:s.id,name:s.name,area:s.area||'Kolkata',sector:s.sector||'Other',stage:s.stage||'Unknown',
         lat:Number(s.lat)||22.5726,lng:Number(s.lng)||88.3639,verified:!!s.verified,
         desc:s.description||'Kolkata startup',url:s.website||s.source_url||'#'
       }));
