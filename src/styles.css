@@ -11,7 +11,7 @@
 .topbar{background:#fff8e9;border-bottom:3px solid #d7a51d;box-shadow:0 2px 0 rgba(165,44,44,.2)}
 .topbar:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:#a52c2c}
 .topbar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#237b57 0 25%,#e5b82d 25% 75%,#a52c2c 75%)}
-.hero{max-width:none;min-height:300px;padding:42px 5vw 34px;display:grid;grid-template-columns:minmax(420px,.9fr) minmax(500px,1.1fr) auto;align-items:center;gap:24px;background:linear-gradient(115deg,#e6aa20,#f4c33d 52%,#eab129);border-bottom:4px solid #a52c2c;position:relative;overflow:hidden}
+.hero{max-width:none;min-height:300px;padding:42px 5vw 34px;display:grid;grid-template-columns:minmax(420px,.9fr) minmax(500px,1.1fr) auto;align-items:center;gap:24px;background:#f3ead7;border-bottom:4px solid #a52c2c;position:relative;overflow:hidden}
 .hero:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(36,27,22,.04) 0 1px,transparent 1px 18px);pointer-events:none}
 .hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;background:repeating-linear-gradient(90deg,#241b16 0 14px,transparent 14px 28px,#a52c2c 28px 34px,transparent 34px 48px);opacity:.75;pointer-events:none}
 .hero-copy{position:relative;z-index:2;max-width:780px}
@@ -45,7 +45,7 @@
 @media(max-width:760px){.hero{grid-template-columns:1fr;gap:28px;padding:50px 22px 36px}.hero-rule{left:22px;right:22px}.hero .stats{width:100%}.hero .stats div{flex:1;min-width:0}}
 
 /* Clean Bengali editorial hero — no illustration */
-.hero{max-width:none;margin:0;padding:42px 5vw 38px;display:flex;align-items:center;justify-content:space-between;gap:48px;min-height:270px;background:linear-gradient(180deg,#f4c33d 0%,#eab32a 100%);border-top:3px solid #237b57;border-bottom:4px solid #a52c2c;position:relative;overflow:hidden}
+.hero{max-width:none;margin:0;padding:42px 5vw 38px;display:flex;align-items:center;justify-content:space-between;gap:48px;min-height:270px;background:#f3ead7;border-top:3px solid #237b57;border-bottom:4px solid #a52c2c;position:relative;overflow:hidden}
 .hero:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(36,27,22,.035) 0 1px,transparent 1px 20px);pointer-events:none}
 .hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:repeating-linear-gradient(90deg,#241b16 0 9px,transparent 9px 18px,#a52c2c 18px 23px,transparent 23px 34px);opacity:.45;pointer-events:none}
 .hero-copy{position:relative;z-index:2;max-width:800px}
@@ -75,7 +75,7 @@
   gap:48px!important;
   position:relative!important;
   overflow:hidden!important;
-  background:linear-gradient(180deg,#f4c33d 0%,#eab32a 100%)!important;
+  background:#f3ead7!important;
   border-top:3px solid #237b57!important;
   border-bottom:4px solid #a52c2c!important;
 }
