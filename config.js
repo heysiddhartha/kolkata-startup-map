@@ -1,0 +1,5 @@
+window.KSM_CONFIG = {
+  SUPABASE_URL: "",
+  SUPABASE_ANON_KEY: "",
+  SUBMIT_FUNCTION_URL: ""
+};
