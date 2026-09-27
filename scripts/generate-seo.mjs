@@ -12,6 +12,12 @@ const urls = new Map([
 ])
 for (const s of startups) urls.set('/startup/'+slug(s.name), ['weekly','0.8'])
 for (const j of jobs) urls.set('/job/'+slug(j.company+'-'+j.title), ['daily','0.7'])
+const sectors = [...new Set(startups.map(s => s.sector).filter(Boolean))].sort()
+for (const sector of sectors) {
+  const key = slug(sector)
+  urls.set('/sector/'+key, ['weekly','0.8'])
+}
+
 
 const body = [...urls].map(([u,m]) =>
   '<url><loc>'+esc(base+u)+'</loc><changefreq>'+m[0]+'</changefreq><priority>'+m[1]+'</priority></url>'
