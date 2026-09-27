@@ -17,16 +17,31 @@ SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "KolkataStartupMap/1.0 (+public ecosystem directory)"})
 
 SOURCES = [
+    # Kolkata / West Bengal ecosystem institutions
     ("IIM Calcutta Innovation Park", "https://iimcip.org/topic/", "Ecosystem"),
     ("IIM Calcutta Innovation Park", "https://iimcip.org/announce/", "Programme"),
     ("IIM Calcutta Innovation Park", "https://iimcip.org/news-event/events/?y=2022", "Event"),
+    ("Startup Bengal", "https://startupbengal.in/", "Policy"),
+    ("eChai Kolkata", "https://echai.ventures/kolkata", "Community"),
+    ("eChai Kolkata Startup Grid", "https://echai.ventures/kolkata/grid", "Startup"),
+    ("Kolkata Calling", "https://www.kolkatacalling.com/news/startups-entrepreneurship", "Local"),
+    # Business / startup media
+    ("Economic Times", "https://economictimes.indiatimes.com/topic/kolkata-startups/news", "Funding"),
+    ("Telegraph India", "https://www.telegraphindia.com/topic/startups", "Local"),
+    ("Business Standard", "https://www.business-standard.com/topic/kolkata-startups", "Business"),
+    ("Financial Express", "https://www.financialexpress.com/about/kolkata-startups/", "Business"),
+    ("Inc42", "https://inc42.com/buzz/", "Funding"),
+    ("YourStory", "https://yourstory.com/tag/kolkata", "Startup"),
+    ("Entrackr", "https://entrackr.com/tag/kolkata/", "Funding"),
+    ("BW Businessworld", "https://www.businessworld.in/topic/Startups", "Startup"),
 ]
 
 KOLKATA_TERMS = (
     "kolkata", "calcutta", "west bengal", "bengal", "joka", "salt lake",
     "jadavpur", "howrah", "barasat", "durgapur", "siliguri"
 )
-MAX_AGE_DAYS = 120
+MAX_AGE_DAYS = 180
+MAX_ITEMS_PER_SOURCE = 40
 
 
 def parse_date(text):
@@ -94,7 +109,7 @@ def fetch_candidates(source_name, page_url, category):
         })
 
     unique = {}
-    for item in candidates:
+    for item in candidates[:MAX_ITEMS_PER_SOURCE]:
         unique[item["source_url"]] = item
     return list(unique.values())
 
