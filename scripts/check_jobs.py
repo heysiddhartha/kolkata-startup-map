@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 SUPABASE_URL=os.environ["SUPABASE_URL"].rstrip("/")
 SUPABASE_KEY=os.environ["SUPABASE_SERVICE_ROLE_KEY"]
-HEADERS={"apikey":SUPABASE_KEY,"Authorization":f"Bearer {SUPABASE_KEY}","Content-Type":"application/json"}
+HEADERS={"apikey":SUPABASE_KEY,"Authorization":f"Bearer {SUPABASE_KEY}","Content-Type":"application/json","Prefer":"return=minimal,resolution=merge-duplicates"}
 session=requests.Session()
 session.headers.update({"User-Agent":"KolkataStartupMapBot/1.0 (public startup directory)"})
 
