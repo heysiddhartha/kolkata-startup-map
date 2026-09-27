@@ -25,34 +25,6 @@ const seedNewsItems=[
 
 function ThemeMap(){const map=useMap();useEffect(()=>{setTimeout(()=>map.invalidateSize(),50)},[]);return null}
 
-function VehicleLayer(){
- const [vehicles,setVehicles]=useState(routes.map(r=>({lat:r.route[0][0],lng:r.route[0][1]})))
- useEffect(()=>{
-   let frame
-   const started=performance.now()
-   const distances=routes.map(r=>{
-     const pts=r.route.map(p=>L.latLng(p))
-     const ds=[];let total=0
-     for(let i=1;i<pts.length;i++){const d=pts[i-1].distanceTo(pts[i]);ds.push(d);total+=d}
-     return {pts,ds,total}
-   })
-   const point=(spec,t)=>{
-     const d=distances[routes.indexOf(spec)]
-     let target=(t%d.total)
-     for(let i=0;i<d.ds.length;i++){if(target<=d.ds[i]){const a=d.pts[i],b=d.pts[i+1],q=target/d.ds[i];return [a.lat+(b.lat-a.lat)*q,a.lng+(b.lng-a.lng)*q]}target-=d.ds[i]}
-     return d.pts.at(-1)
-   }
-   const dists=r=>distances[routes.indexOf(r)].total
-   const tick=now=>{
-     setVehicles(routes.map((r,i)=>{const delay=i*4300;const elapsed=Math.max(0,now-started-delay);const p=point(r,elapsed%r.duration/r.duration*dists(r));return Array.isArray(p)?{lat:p[0],lng:p[1]}:{lat:p.lat,lng:p.lng}}))
-     frame=requestAnimationFrame(tick)
-   }
-   frame=requestAnimationFrame(tick)
-   return()=>cancelAnimationFrame(frame)
- },[])
- return <>{vehicles.map((v,i)=><Marker key={i} position={[v.lat,v.lng]} icon={routes[i].type==='tram'?tramIcon:taxiIcon} interactive={false}/>)}</>
-}
-
 function App(){
  const [startups,setStartups]=useState(seedStartups),[jobs,setJobs]=useState(seedJobs),[dataSource,setDataSource]=useState('seed'),[dataLoading,setDataLoading]=useState(true),[dataError,setDataError]=useState(''),[newsError,setNewsError]=useState('')
  const [theme,setTheme]=useState(localStorage.getItem('ksm-theme')||'light')
@@ -117,7 +89,7 @@ function App(){
 {view==='map'&&<aside className="news-panel">
  <div className="news-head"><div><b>Latest news</b><span>Kolkata startup ecosystem</span></div><button onClick={()=>setNewsPage(0)} aria-label="Reset news">×</button></div>
  <div className="news-list">{news.slice(newsPage*5,newsPage*5+5).map(item=><a className="news-item" key={item.title} href={item.url} target="_blank" rel="noreferrer"><h4>{item.title}</h4><div><span className="news-source">{item.source}</span><span>{item.date}</span><span className="news-cat">{item.cat}</span></div></a>)}</div>
- <div className="news-foot"><span>{newsPage*5+1}–{Math.min(newsPage*5+5,news.length)} of {newsItems.length}</span><button disabled={newsPage===0} onClick={()=>setNewsPage(p=>p-1)}>Prev</button><button disabled={(newsPage+1)*5>=newsItems.length} onClick={()=>setNewsPage(p=>p+1)}>Next</button></div>
+ <div className="news-foot"><span>{newsPage*5+1}–{Math.min(newsPage*5+5,news.length)} of {news.length}</span><button disabled={newsPage===0} onClick={()=>setNewsPage(p=>p-1)}>Prev</button><button disabled={(newsPage+1)*5>=news.length} onClick={()=>setNewsPage(p=>p+1)}>Next</button></div>
 </aside>}<aside className="side"><div className="side-head"><b>{filtered.length}</b> listings <button onClick={clear}>Clear</button></div>{dataLoading?<div className="empty-state"><b>Loading the directory…</b><span>Pulling the latest company and hiring data.</span></div>:filtered.length===0?<div className="empty-state"><b>No companies match these filters.</b><span>Try clearing a filter or searching for another company.</span><button onClick={clear}>Reset filters</button></div>:filtered.map(s=><article className="card" key={s.name} onClick={()=>setSelected(s)}><h3>{s.name}</h3>{s.hiring==='hiring'&&<div className="company-status status-hiring"><span>✓</span> HIRING NOW</div>}{s.hiring==='not_hiring'&&<div className="company-status status-not-hiring"><span>✓</span> NOT HIRING</div>}<p>{s.desc}</p><div className="company-meta">{s.sector} · {s.area} · {s.stage}</div><div className="company-links">{s.url&&s.url!=='#'&&<a href={s.url} target="_blank" rel="noreferrer">Website</a>}{s.linkedin&&<a href={s.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}{s.email&&<a href={'mailto:'+s.email}>Email</a>}</div>{s.address&&<div className="company-address">{s.address}</div>}</article>)}</aside></>:<div className="grid">{dataLoading?<div className="empty-state"><b>Loading the directory…</b><span>Pulling the latest company and hiring data.</span></div>:filtered.length===0?<div className="empty-state"><b>No companies match these filters.</b><span>Try clearing a filter or searching for another company.</span><button onClick={clear}>Reset filters</button></div>:filtered.map(s=><article className="grid-card" key={s.name} onClick={()=>setSelected(s)}><h3>{s.name}</h3><p>{s.desc}</p><small>{s.sector} · {s.area} · {s.stage}</small></article>)}</div>}</section>
    <section id="jobs" className="jobs"><div className="jobs-head"><div><h2>Hiring in the ecosystem</h2><p>Public-source job signals attached to the directory.</p></div><div className="job-filters"><select value={jobMode} onChange={e=>setJobMode(e.target.value)}><option value="">All work modes</option>{[...new Set(jobs.map(j=>j.mode))].map(x=><option key={x}>{x}</option>)}</select><select value={jobType} onChange={e=>setJobType(e.target.value)}><option value="">All job types</option>{[...new Set(jobs.map(j=>j.type))].map(x=><option key={x}>{x}</option>)}</select></div></div><div className="job-list">{visibleJobs.map(j=>j.url&&j.url!=='#'?<a className="job" key={j.company+j.title} href={j.url} target="_blank" rel="noreferrer"><div><b>{j.title}</b><span>{j.company} · {j.mode}</span></div><em>{j.freshers?'Fresher':'Open'} →</em></a>:<div className="job job-disabled" key={j.company+j.title}><div><b>{j.title}</b><span>{j.company} · {j.mode}</span></div><em>Source unavailable</em></div>)}</div></section>
 
