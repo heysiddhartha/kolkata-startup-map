@@ -41,7 +41,7 @@ function VehicleLayer(){
 }
 
 function App(){
- const [startups,setStartups]=useState(seedStartups),[jobs,setJobs]=useState(seedJobs),[dataSource,setDataSource]=useState('seed'),[dataLoading,setDataLoading]=useState(true),[dataError,setDataError]=useState('')
+ const [startups,setStartups]=useState(seedStartups),[jobs,setJobs]=useState(seedJobs),[dataSource,setDataSource]=useState('seed'),[dataLoading,setDataLoading]=useState(true),[dataError,setDataError]=useState(''),[newsError,setNewsError]=useState('')
  const [theme,setTheme]=useState(localStorage.getItem('ksm-theme')||'light')
  const [view,setView]=useState('map'),[query,setQuery]=useState(''),[area,setArea]=useState(''),[sector,setSector]=useState(''),[stage,setStage]=useState(''),[hiring,setHiring]=useState(''),[selected,setSelected]=useState(null)
  const [showSubmit,setShowSubmit]=useState(false),[submitState,setSubmitState]=useState('idle'),[jobMode,setJobMode]=useState(''),[jobType,setJobType]=useState(''),[news,setNews]=useState(seedNewsItems),[newsPage,setNewsPage]=useState(0),[copiedUpi,setCopiedUpi]=useState(false)
@@ -50,22 +50,31 @@ function App(){
    const SUPABASE_URL='https://rkzkpwaexadlwxqdfjlm.supabase.co'
    const SUPABASE_KEY='sb_publishable_V7WzcNGV2x4J1OlDrepTnw_1sMgFz43'
    const headers={apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
-   Promise.all([
-     fetch(SUPABASE_URL+'/rest/v1/startups?select=name,area,sector,stage,lat,lng,verified,description,website,linkedin_url,public_email,address,founder,careers_url,hiring_status,hiring_source_url,location_type&status=eq.approved&order=name',{headers}),
-     fetch(SUPABASE_URL+'/rest/v1/jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,startups(name)&status=eq.live&order=created_at.desc',{headers})
-   ]).then(async([sr,jr])=>{
-     if(!sr.ok||!jr.ok)throw new Error('Live directory could not be reached')
-     const [s,j]=await Promise.all([sr.json(),jr.json()])
-     const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:safeUrl(x.website||''),linkedin:x.linkedin_url||'',email:x.public_email||'',address:x.address||'',founder:x.founder||'',careers:x.careers_url||'',hiring:x.hiring_status||'unknown',hiringSource:x.hiring_source_url||'',locationType:x.location_type||'headquarters'})
-     const normalizeJob=x=>({company:x.startups?.name||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:safeUrl(x.apply_url||x.source_url||'#')})
-     setStartups(s?.length?s.map(normalizeStartup):seedStartups)
-     setJobs((j||[]).map(normalizeJob))
-     setDataSource('live')
-   }).then(()=>fetch(SUPABASE_URL+'/rest/v1/news_items?select=id,title,category,source_name,source_url,published_at,verified&status=eq.published&order=published_at.desc&limit=30',{headers}))
-   .then(async nr=>{if(!nr.ok)throw new Error('News feed unavailable');const n=await nr.json();setNews((n||[]).map(x=>({cat:x.category,date:x.published_at?new Date(x.published_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'',title:x.title,source:x.source_name,url:safeUrl(x.source_url)})));setNewsPage(0)})
-   .catch(err=>setDataError(err.message||'Live directory unavailable'))
-   .finally(()=>setDataLoading(false))
-
+   const loadDirectory=async()=>{
+     try{
+       const [sr,jr]=await Promise.all([
+         fetch(SUPABASE_URL+'/rest/v1/startups?select=name,area,sector,stage,lat,lng,verified,description,website,linkedin_url,public_email,address,founder,careers_url,hiring_status,hiring_source_url,location_type&status=eq.approved&order=name',{headers}),
+         fetch(SUPABASE_URL+'/rest/v1/jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,startups(name)&status=eq.live&order=created_at.desc',{headers})
+       ])
+       if(!sr.ok||!jr.ok)throw new Error('Live directory could not be reached')
+       const [s,j]=await Promise.all([sr.json(),jr.json()])
+       const normalizeStartup=x=>({name:x.name,area:x.area||'Kolkata',sector:x.sector||'Other',stage:x.stage||'Unknown',lat:x.lat||22.5726,lng:x.lng||88.3639,verified:!!x.verified,desc:x.description||'',url:safeUrl(x.website||''),linkedin:x.linkedin_url||'',email:x.public_email||'',address:x.address||'',founder:x.founder||'',careers:x.careers_url||'',hiring:x.hiring_status||'unknown',hiringSource:x.hiring_source_url||'',locationType:x.location_type||'headquarters'})
+       const normalizeJob=x=>({company:x.startups?.name||'',title:x.title,mode:x.mode||x.location||'Kolkata',type:x.employment_type||'Full-time',freshers:!!x.fresher,url:safeUrl(x.apply_url||x.source_url||'#')})
+       setStartups(s?.length?s.map(normalizeStartup):seedStartups)
+       setJobs((j||[]).map(normalizeJob))
+       setDataSource('live')
+     }catch(err){setDataError(err.message||'Live directory unavailable')}
+     finally{setDataLoading(false)}
+     try{
+       const nr=await fetch(SUPABASE_URL+'/rest/v1/news_items?select=id,title,category,source_name,source_url,published_at,verified&status=eq.published&order=published_at.desc&limit=30',{headers})
+       if(!nr.ok)throw new Error('News feed unavailable')
+       const n=await nr.json()
+       setNews((n||[]).map(x=>({cat:x.category,date:x.published_at?new Date(x.published_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'',title:x.title,source:x.source_name,url:safeUrl(x.source_url)})))
+       setNewsPage(0)
+       setNewsError('')
+     }catch(err){setNewsError(err.message||'News feed unavailable')}
+   }
+   loadDirectory()
  },[])
  const sectors=[...new Set(startups.map(s=>s.sector))].sort(),areas=[...new Set(startups.map(s=>s.area))].sort(),stages=[...new Set(startups.map(s=>s.stage))].sort()
  const isOfficialUrl=url=>{if(!url||url==='#')return false;try{const h=new URL(url).hostname.toLowerCase();return !h.includes('echai.ventures')&&!h.includes('echai')&&!h.includes('crunchbase.com')&&!h.includes('tracxn.com')&&!h.includes('yourstory.com')&&!h.includes('inc42.com')}catch{return false}}
@@ -89,7 +98,7 @@ function App(){
   <header className="topbar"><div className="brand"><span className="brand-mark">K</span><div><b>Kolkata Startup Map</b></div></div><nav><button onClick={()=>setTheme(theme==='dark'?'light':'dark')}>{theme==='dark'?'☀':'◐'}</button><button onClick={()=>setShowSubmit(true)} className="add">Add startup <b>+</b></button><a href="#jobs">Jobs <strong>{jobs.length}</strong></a></nav></header>
   <main>
    <section className="hero"><div className="hero-copy"><div className="eyebrow"><i/> KOLKATA · STARTUP & COMPANY ECOSYSTEM</div><h1>Find what’s being built<br/><em>in Kolkata.</em></h1><p>Startups, companies, agencies, sectors and live hiring signals — in one map.</p>{dataSource==='live'&&<small className="live-badge">LIVE DIRECTORY</small>}</div><div className="stats"><div><b>{startups.length}</b><span>listings</span></div><div><b>{jobs.length}</b><span>open roles</span></div><div><b>{sectors.length}</b><span>sectors</span></div></div></section>
-   {dataError&&<div className="data-notice" role="status"><b>Using cached directory data.</b> Live updates are temporarily unavailable. <button onClick={()=>window.location.reload()}>Retry</button></div>}
+   {dataError&&<div className="data-notice" role="status"><b>Using cached directory data.</b> Live company/job updates are temporarily unavailable. <button onClick={()=>window.location.reload()}>Retry</button></div>}{newsError&&<div className="data-notice" role="status"><b>News feed temporarily unavailable.</b> Showing the last available news set.</div>}
    <section className="toolbar"><div className="search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search companies, sectors, founders…"/><kbd>⌘ K</kbd></div><div className="toggle"><button className={view==='map'?'active':''} onClick={()=>setView('map')}>Map</button><button className={view==='grid'?'active':''} onClick={()=>setView('grid')}>Grid</button></div><select value={area} onChange={e=>setArea(e.target.value)}><option value="">All areas</option>{areas.map(x=><option key={x}>{x}</option>)}</select><select value={sector} onChange={e=>setSector(e.target.value)}><option value="">All sectors</option>{sectors.map(x=><option key={x}>{x}</option>)}</select><select value={stage} onChange={e=>setStage(e.target.value)}><option value="">All stages</option>{stages.map(x=><option key={x}>{x}</option>)}</select><select value={hiring} onChange={e=>setHiring(e.target.value)}><option value="">Hiring status</option><option value="hiring">Hiring now</option><option value="freshers">Fresher friendly</option></select></section>
    <section className="content">{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url={mapTileUrl} attribution={mapAttribution} maxZoom={20} subdomains="abcd"/>{filtered.map(s=><Marker key={s.name} position={[s.lat,s.lng]} icon={markerIcon} eventHandlers={{click:()=>setSelected(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>)}<ThemeMap/></MapContainer>
 {view==='map'&&<aside className="news-panel">
