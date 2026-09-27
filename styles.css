@@ -24,278 +24,287 @@ html,body{margin:0;background:var(--bg);color:var(--text);min-height:100%}body{t
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
-/* Kolkata visual identity */
+
+/* Kolkata visual system */
 :root{
-  --kol-yellow:#f4c542;
-  --kol-red:#c73b3b;
-  --kol-green:#238b62;
-  --kol-ink:#151515;
-  --tram-line:rgba(21,21,21,.10);
+  --bg:#f3ead7;
+  --surface:#fff9ec;
+  --surface2:#efe1c4;
+  --text:#241b16;
+  --muted:#75665a;
+  --line:#cdbda3;
+  --accent:#e6b72e;
+  --accentText:#241b16;
+  --green:#237b57;
+  --kol-yellow:#e5b82d;
+  --kol-red:#a52c2c;
+  --kol-green:#237b57;
+  --kol-blue:#28536b;
+  --kol-cream:#fff9ec;
+  --kol-brown:#5c4030;
+  --shadow:0 18px 55px rgba(78,48,25,.14);
 }
 html[data-theme=dark]{
-  --kol-yellow:#ffd34d;
-  --kol-red:#e45a5a;
-  --kol-green:#56d99a;
-  --tram-line:rgba(255,255,255,.10);
+  --bg:#171310;
+  --surface:#211a15;
+  --surface2:#2d231c;
+  --text:#f7ead2;
+  --muted:#b5a38d;
+  --line:#514237;
+  --accent:#e7b92e;
+  --accentText:#241b16;
+  --green:#4db982;
+  --kol-yellow:#e7b92e;
+  --kol-red:#d35a4e;
+  --kol-green:#4db982;
+  --kol-blue:#6b9eb7;
+  --kol-cream:#211a15;
+  --kol-brown:#d2b79a;
+  --shadow:0 20px 65px rgba(0,0,0,.4);
 }
-.topbar{
-  border-bottom-color:color-mix(in srgb,var(--kol-yellow) 35%,var(--line));
-}
-.brand-copy b{
-  margin-left:5px;
-  font-family:"Noto Serif Bengali","Nirmala UI",serif;
-  font-size:10px;
-  color:var(--kol-red);
-  letter-spacing:0;
-}
-.brand-mark{
-  border-radius:4px 10px 4px 10px;
-  background:var(--kol-yellow);
-  color:#111;
-  box-shadow:3px 3px 0 var(--kol-red);
-}
-.hero{
-  position:relative;
-  overflow:hidden;
+body{
   background:
-    linear-gradient(90deg,transparent 0 49.5%,var(--tram-line) 49.5% 50%,transparent 50%),
-    linear-gradient(0deg,transparent 0 72%,var(--tram-line) 72% 72.5%,transparent 72.5%),
+    radial-gradient(circle at 12% 18%,color-mix(in srgb,var(--kol-yellow) 10%,transparent) 0 90px,transparent 91px),
+    radial-gradient(circle at 92% 72%,color-mix(in srgb,var(--kol-red) 7%,transparent) 0 130px,transparent 131px),
     var(--bg);
 }
-.hero:after{
-  content:"";
-  position:absolute;
-  right:-70px;
-  bottom:-100px;
-  width:420px;
-  height:230px;
-  opacity:.7;
-  background:
-    linear-gradient(7deg,transparent 0 44%,var(--kol-yellow) 44% 46%,transparent 46%),
-    linear-gradient(-7deg,transparent 0 56%,var(--kol-red) 56% 58%,transparent 58%);
-  transform:rotate(-3deg);
-  pointer-events:none;
+.topbar{
+  background:var(--surface);
+  border-bottom:3px solid var(--kol-yellow);
+  box-shadow:0 3px 0 color-mix(in srgb,var(--kol-red) 70%,transparent);
 }
-.hero-copy{position:relative;z-index:2}
-.city-signatures{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  flex-wrap:wrap;
-  margin-top:17px;
-  color:var(--muted);
-  font-size:9px;
-  font-weight:800;
-  letter-spacing:.08em;
-  text-transform:uppercase;
+.brand-mark{
+  background:var(--kol-yellow);
+  color:#20170f;
+  border-radius:50% 45% 48% 42%;
+  box-shadow:4px 4px 0 var(--kol-red);
 }
-.city-signatures i{font-style:normal;color:var(--kol-red)}
-.hero-art{
-  position:absolute;
-  right:34px;
-  top:22px;
-  width:250px;
-  height:180px;
-  z-index:1;
-  pointer-events:none;
-  color:var(--text);
-}
-.hero-art span{
-  position:absolute;
-  display:grid;
-  place-items:center;
-  font-weight:900;
-  letter-spacing:.08em;
-}
-.art-taxi{
-  width:90px;height:36px;right:105px;top:24px;
-  border:3px solid var(--kol-yellow);
-  border-radius:14px 18px 8px 8px;
-  box-shadow:0 7px 0 -3px var(--text);
-  font-size:9px;
-}
-.art-taxi:before,.art-taxi:after{
-  content:"";position:absolute;bottom:-10px;width:13px;height:13px;
-  border-radius:50%;background:var(--text);border:3px solid var(--bg);
-}
-.art-taxi:before{left:10px}.art-taxi:after{right:10px}
-.art-fish{
-  width:48px;height:28px;right:28px;top:73px;
-  border:3px solid var(--kol-red);border-radius:70% 30% 30% 70%;
-  font-size:18px;transform:rotate(-12deg);
-}
-.art-fish:after{content:"";position:absolute;left:-13px;border-width:8px 13px 8px 0;border-style:solid;border-color:transparent var(--kol-red) transparent transparent}
-.art-puja{
-  width:46px;height:46px;left:20px;top:94px;
-  border:3px solid var(--kol-red);border-radius:50%;
-  font-size:19px;color:var(--kol-red);
-  box-shadow:0 0 0 7px color-mix(in srgb,var(--kol-red) 10%,transparent);
-}
-.art-sweets{
-  width:35px;height:35px;left:90px;top:112px;
-  background:var(--kol-yellow);border-radius:50%;
-  border:3px solid var(--text);font-size:8px;
-}
-.art-tram{
-  right:76px;bottom:4px;
-  font-size:9px;padding:7px 10px;border-top:3px solid var(--kol-green);
-  border-bottom:3px solid var(--kol-green);
-}
-.toolbar{
-  border-top:3px solid var(--kol-yellow);
-}
-.map-note{
-  border-color:color-mix(in srgb,var(--kol-yellow) 50%,var(--line));
-}
-.map-note b{
-  margin-left:5px;
+.brand-copy b{
   color:var(--kol-red);
   font-family:"Noto Serif Bengali","Nirmala UI",serif;
+  font-size:10px;
+}
+.icon-btn,.ghost,.view-toggle button,.side-head button{
+  background:var(--surface);
+  border-color:var(--line);
+}
+.icon-btn:hover,.ghost:hover,.view-toggle button:hover,.side-head button:hover{
+  background:var(--surface2);
+  border-color:var(--kol-yellow);
+}
+.jobs-link{
+  color:var(--text);
+}
+.hero{
+  background:
+    linear-gradient(90deg,transparent 0 24%,color-mix(in srgb,var(--kol-red) 7%,transparent) 24% 24.15%,transparent 24.15% 76%,color-mix(in srgb,var(--kol-green) 7%,transparent) 76% 76.15%,transparent 76.15%),
+    var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.55;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 44px,color-mix(in srgb,var(--kol-brown) 9%,transparent) 44px 45px),
+    repeating-linear-gradient(0deg,transparent 0 44px,color-mix(in srgb,var(--kol-brown) 6%,transparent) 44px 45px);
+  mask-image:linear-gradient(90deg,#000,transparent 70%);
+}
+.hero h1{
+  color:var(--text);
+}
+.hero h1 em{
+  color:var(--kol-red);
+}
+.eyebrow{
+  color:var(--kol-red);
+}
+.pulse,.live-dot{
+  background:var(--kol-green);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--kol-green) 14%,transparent);
+}
+.hero p{
+  color:var(--muted);
+}
+.hero-stats{
+  background:var(--surface);
+  border-color:var(--line);
+  box-shadow:var(--shadow);
+}
+.hero-stats strong:first-letter{
+  color:var(--kol-red);
+}
+.hero-art{
+  opacity:.95;
+}
+.art-taxi{
+  border-color:var(--kol-yellow);
+  background:color-mix(in srgb,var(--kol-yellow) 9%,transparent);
+}
+.art-fish{
+  border-color:var(--kol-red);
+  color:var(--kol-red);
+}
+.art-puja{
+  border-color:var(--kol-red);
+  color:var(--kol-red);
+}
+.art-sweets{
+  background:var(--kol-yellow);
+}
+.art-tram{
+  border-color:var(--kol-green);
+}
+.toolbar{
+  background:var(--surface);
+  border-top:4px solid var(--kol-red);
+  border-bottom:1px solid var(--line);
+}
+.search-wrap{
+  background:var(--surface);
+  border-color:var(--line);
+}
+.search-wrap:focus-within{
+  border-color:var(--kol-yellow);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--kol-yellow) 18%,transparent);
+}
+.filters select{
+  background:var(--surface);
+  border-color:var(--line);
+}
+.view-toggle .active{
+  background:var(--kol-yellow);
+  color:#241b16;
+  border-color:var(--kol-yellow);
+}
+.content{
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.map-note{
+  background:color-mix(in srgb,var(--surface) 92%,transparent);
+  border-color:var(--kol-yellow);
+  color:var(--text);
 }
 .map-city-stamp{
-  position:absolute;
-  left:405px;
-  bottom:22px;
-  z-index:600;
-  color:var(--text);
-  opacity:.58;
-  font-family:"Noto Serif Bengali","Nirmala UI",serif;
-  font-size:25px;
-  font-weight:800;
-  line-height:.9;
-  transform:rotate(-3deg);
-  pointer-events:none;
-  text-shadow:0 2px 10px rgba(0,0,0,.12);
+  color:var(--kol-red);
 }
-.map-city-stamp small{
-  display:block;
-  margin-top:7px;
-  font-family:inherit;
-  font-size:7px;
-  letter-spacing:.12em;
-  font-weight:800;
-}
-.marker{
-  background:var(--kol-yellow);
-  color:#111;
-  border-color:var(--surface);
-  box-shadow:0 2px 12px rgba(0,0,0,.25),0 0 0 2px color-mix(in srgb,var(--kol-yellow) 35%,transparent);
-}
-.marker:hover{
-  box-shadow:0 5px 18px rgba(0,0,0,.3),0 0 0 4px color-mix(in srgb,var(--kol-yellow) 30%,transparent);
+.side{
+  background:color-mix(in srgb,var(--surface) 96%,transparent);
+  border:1px solid var(--line);
+  border-top:4px solid var(--kol-yellow);
+  box-shadow:var(--shadow);
 }
 .side-head{
-  border-top:2px solid var(--kol-red);
+  border-bottom:1px solid var(--line);
+}
+.side-head strong{
+  color:var(--kol-red);
+}
+.card{
+  background:var(--surface);
 }
 .card:hover{
-  box-shadow:inset 3px 0 0 var(--kol-yellow);
+  background:var(--surface2);
+  box-shadow:inset 4px 0 0 var(--kol-yellow);
 }
 .card h3:before{
-  content:"";
-  display:inline-block;
-  width:5px;height:5px;
-  margin:0 7px 2px 0;
-  border-radius:50%;
   background:var(--kol-red);
 }
 .tag{
-  border-radius:4px;
+  background:var(--surface2);
+  color:var(--kol-brown);
 }
 .hiring{
+  background:color-mix(in srgb,var(--kol-green) 13%,transparent);
   color:var(--kol-green);
 }
-.jobs-panel{
-  border-top:3px solid var(--kol-green);
+.marker{
+  background:var(--kol-yellow);
+  color:#241b16;
+  border:3px solid var(--surface);
+}
+.grid{
   background:
-    linear-gradient(90deg,transparent 0 15%,var(--tram-line) 15% 15.2%,transparent 15.2% 85%,var(--tram-line) 85% 85.2%,transparent 85.2%),
+    radial-gradient(circle at 20% 20%,color-mix(in srgb,var(--kol-yellow) 7%,transparent),transparent 180px),
+    var(--bg);
+}
+.grid .card{
+  background:var(--surface);
+}
+.jobs-panel{
+  background:
+    linear-gradient(90deg,transparent 0 12%,color-mix(in srgb,var(--kol-green) 9%,transparent) 12% 12.15%,transparent 12.15% 88%,color-mix(in srgb,var(--kol-green) 9%,transparent) 88% 88.15%,transparent 88.15%),
     var(--surface);
+  border-top:4px solid var(--kol-green);
 }
 .jobs-head h2:before{
-  content:"TRAM / ";
-  color:var(--kol-red);
-  font-size:9px;
-  letter-spacing:.12em;
-  vertical-align:middle;
+  content:"";
+  display:inline-block;
+  width:28px;
+  height:5px;
+  margin:0 9px 3px 0;
+  border-top:2px solid var(--kol-green);
+  border-bottom:2px solid var(--kol-green);
+}
+.job{
+  background:var(--surface);
 }
 .job:hover{
-  border-color:color-mix(in srgb,var(--kol-yellow) 55%,var(--line));
+  border-color:var(--kol-yellow);
+  background:var(--surface2);
 }
 .news{
-  border-top:3px solid var(--kol-yellow);
+  background:var(--kol-red);
+  color:#fff9ec;
+  border-top:0;
 }
 .news-title{
-  color:var(--kol-red);
+  color:var(--kol-yellow);
+  border-color:rgba(255,255,255,.2);
 }
-.primary{
-  background:var(--kol-yellow);
-  color:#111;
+.ticker{
+  color:#fff4dc;
 }
-.primary:hover{
-  box-shadow:0 8px 22px color-mix(in srgb,var(--kol-yellow) 30%,transparent);
+.modal{
+  background:rgba(30,18,12,.68);
+}
+.modal-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-top:5px solid var(--kol-red);
+  box-shadow:0 30px 100px rgba(47,28,17,.3);
 }
 .modal-kicker{
   color:var(--kol-red);
 }
-@media(max-width:800px){
-  .hero-art{opacity:.18;right:-30px;top:15px;transform:scale(.85)}
-  .city-signatures{max-width:90%}
-  .map-city-stamp{left:auto;right:18px;bottom:15px;font-size:20px}
-}
-@media(prefers-reduced-motion:reduce){
-  .hero-art,.hero:after{transition:none}
-}
-
-.kolkata-strip{
-  height:46px;
-  display:flex;
-  align-items:center;
-  gap:0;
-  padding:0 22px;
-  overflow:hidden;
-  white-space:nowrap;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
+.modal input,.modal select,.modal textarea{
   background:var(--surface);
-  color:var(--muted);
-  font-size:9px;
-  font-weight:800;
-  letter-spacing:.07em;
-  text-transform:uppercase;
+  border-color:var(--line);
 }
-.kolkata-strip>span{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:0 18px;
-  height:22px;
-  border-right:1px solid var(--line);
+.modal input:focus,.modal select:focus,.modal textarea:focus{
+  border-color:var(--kol-yellow);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--kol-yellow) 14%,transparent);
 }
-.kolkata-strip>span:first-child{padding-left:0}
-.kolkata-strip b{
-  display:grid;
-  place-items:center;
-  width:21px;height:21px;
-  border-radius:50%;
-  font-size:9px;
-  color:#111;
-  background:var(--surface2);
+.primary{
+  background:var(--kol-yellow);
+  color:#241b16;
 }
-.sig-bridge{background:var(--kol-red)!important;color:#fff!important}
-.sig-tram{background:var(--kol-green)!important;color:#fff!important}
-.sig-taxi{background:var(--kol-yellow)!important}
-.sig-rickshaw{border:1px solid var(--kol-red);color:var(--kol-red)!important}
-.sig-pujo{border:1px solid var(--kol-red);color:var(--kol-red)!important}
-.sig-mishti{background:var(--kol-yellow)!important}
-.sig-fish{border:1px solid var(--kol-green);color:var(--kol-green)!important}
-.sig-bengali{
-  font-family:"Noto Serif Bengali","Nirmala UI",serif;
-  text-transform:none;
-  letter-spacing:0;
-  font-size:10px;
-  color:var(--kol-red);
+.leaflet-control-zoom a{
+  background:var(--surface)!important;
+  color:var(--text)!important;
+  border-color:var(--line)!important;
 }
+.leaflet-control-zoom a:hover{
+  background:var(--kol-yellow)!important;
+  color:#241b16!important;
+}
+.leaflet-control-attribution{
+  background:color-mix(in srgb,var(--surface) 90%,transparent)!important;
+}
+.kolkata-strip{display:none!important}
 @media(max-width:800px){
-  .kolkata-strip{padding:0 12px}
-  .kolkata-strip>span{padding:0 11px}
-  .kolkata-strip .sig-bengali{display:none}
+  .hero-art{opacity:.24}
 }
