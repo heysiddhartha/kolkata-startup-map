@@ -7,6 +7,7 @@ permissions:
   contents: read
 jobs:
   check-jobs:
+    if: ${{ secrets.SUPABASE_URL != '' && secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
