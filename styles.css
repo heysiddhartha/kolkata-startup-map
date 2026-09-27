@@ -319,6 +319,7 @@ body{
 
 /* Cinematic Kolkata street layer */
 .hero{
+  position:relative;
   min-height:390px;
   padding:42px 34px 36px;
   overflow:hidden;
@@ -468,3 +469,9 @@ html[data-theme=dark] .city-background{
 @media(prefers-reduced-motion:reduce){
   .vehicle{animation:none!important}
 }
+
+/* Ensure the Kolkata street illustration is anchored to the hero itself */
+.hero .city-background{position:absolute!important;inset:0!important;z-index:0!important}
+.hero .hero-copy,.hero .hero-stats,.hero .hero-art{position:relative;z-index:5}
+.hero .scene-market,.hero .scene-tea,.hero .scene-mishti{z-index:2}
+.hero .street{z-index:3}
