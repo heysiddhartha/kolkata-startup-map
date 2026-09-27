@@ -150,3 +150,25 @@
   .hero .stats{margin-top:26px!important;width:max-content!important;max-width:100%!important}
   .hero .stats div{min-width:0!important;padding:13px 15px!important}
 }
+
+/* Refined Bengali palette — cream-led, yellow as an accent */
+.hero{
+  background:linear-gradient(180deg,#f7efdf 0%,#efe1c5 100%)!important;
+  border-top:3px solid #237b57!important;
+  border-bottom:4px solid #a52c2c!important;
+}
+.hero .eyebrow{
+  background:#fffaf0!important;
+  border-color:#d8c8a9!important;
+  color:#8f2424!important;
+}
+.hero h1{color:#241b16!important}
+.hero h1 em{color:#a52c2c!important}
+.hero p{color:#655444!important}
+.hero .stats{
+  background:#fffaf0!important;
+  border-color:#cdbd9e!important;
+  box-shadow:0 10px 26px rgba(70,45,25,.10)!important;
+}
+.hero .stats b{color:#a52c2c!important}
+.topbar{background:#fffaf0!important;border-bottom:3px solid #d7a51d!important}
