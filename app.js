@@ -1,6 +1,6 @@
 let startups = [
   {name:'Arohan Financial Services',area:'Salt Lake',sector:'Fintech',stage:'Growth',lat:22.5746,lng:88.4312,verified:true,desc:'NBFC-microfinance institution headquartered in Kolkata.',url:'https://www.arohan.in/'},
-  {name:'Assessli',area:'Salt Lake',sector:'Edtech',stage:'Early',lat:22.5798,lng:88.4178,verified:true,desc:'AI-driven assessment platform headquartered in Kolkata.',url:'#'},
+  {name:'Assessli',area:'Salt Lake',sector:'AI / Edtech',stage:'Early',lat:22.5798,lng:88.4178,verified:true,desc:'Kolkata-based AI company building adaptive intelligence and personalized AI products.',url:'https://assessli.com/',linkedin:'https://www.linkedin.com/company/assessli',address:'ERGO Tower, Office 1704, Salt Lake Sector V, Kolkata 700091',email:'info@assessli.com'},
   {name:'Data Sutram',area:'Jodhpur Park',sector:'AI',stage:'Growth',lat:22.5118,lng:88.3594,verified:true,desc:'AI and alternative-data platform for risk, site selection and analytics.',url:'#'},
   {name:'Mihup',area:'Rajarhat',sector:'AI',stage:'Growth',lat:22.6208,lng:88.4522,verified:true,desc:'Conversational intelligence and voice-AI platform.',url:'https://mihup.com/'},
   {name:'Nestasia',area:'New Town',sector:'D2C',stage:'Growth',lat:22.5859,lng:88.4791,verified:true,desc:'Home decor and lifestyle commerce brand headquartered in Kolkata.',url:'https://www.nestasia.in/'},
