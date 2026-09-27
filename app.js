@@ -1,4 +1,4 @@
-const startups = [
+let startups = [
   {name:'Arohan Financial Services',area:'Salt Lake',sector:'Fintech',stage:'Growth',lat:22.5746,lng:88.4312,verified:true,desc:'NBFC-microfinance institution headquartered in Kolkata.',url:'https://www.arohan.in/'},
   {name:'Assessli',area:'Salt Lake',sector:'Edtech',stage:'Early',lat:22.5798,lng:88.4178,verified:true,desc:'AI-driven assessment platform headquartered in Kolkata.',url:'https://echai.ventures/kolkata'},
   {name:'Data Sutram',area:'Jodhpur Park',sector:'AI',stage:'Growth',lat:22.5118,lng:88.3594,verified:true,desc:'AI and alternative-data platform for risk, site selection and analytics.',url:'https://echai.ventures/kolkata'},
@@ -30,7 +30,7 @@ const startups = [
   {name:'Indus Net Technologies',area:'Sector V',sector:'Enterprise Tech',stage:'Established',lat:22.5740,lng:88.4337,verified:false,desc:'Digital transformation and technology services.',url:'https://www.indusnet.co.in/'}
 ];
 
-const jobs = [
+let jobs = [
   {company:'Dot & Key Skincare',title:'Growth Manager',mode:'Kolkata',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
   {company:'Turnip Innovations',title:'Lead Generation Specialist',mode:'Greater Kolkata',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
   {company:'Web Spiders',title:'Marketing Manager – AI Products & Digital Growth',mode:'Kolkata',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'},
@@ -221,8 +221,94 @@ document.getElementById('closeSide').addEventListener('click',()=>{
 const modal=document.getElementById('modal');
 document.getElementById('submitBtn').addEventListener('click',()=>modal.classList.remove('hidden'));
 document.getElementById('modalClose').addEventListener('click',()=>modal.classList.add('hidden'));
-document.getElementById('submitForm').addEventListener('submit',e=>{
+document.getElementById('submitForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  e.currentTarget.classList.add('hidden');
-  document.getElementById('thanks').classList.remove('hidden');
+  const form=e.currentTarget;
+  const button=form.querySelector('button[type="submit"]');
+  const data=Object.fromEntries(new FormData(form).entries());
+  const cfg=window.KSM_CONFIG||{};
+  if(!cfg.SUBMIT_FUNCTION_URL){
+    button.textContent='Backend not connected';
+    return;
+  }
+  button.disabled=true;
+  button.textContent='Submitting…';
+  try{
+    const response=await fetch(cfg.SUBMIT_FUNCTION_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    if(!response.ok) throw new Error('Submission failed');
+    form.reset();
+    form.classList.add('hidden');
+    document.getElementById('thanks').textContent='Thanks — your startup has been submitted for review.';
+    document.getElementById('thanks').classList.remove('hidden');
+  }catch(err){
+    button.disabled=false;
+    button.textContent='Submit for review';
+    alert('Could not submit right now. Please try again.');
+  }
 });
+
+async function loadBackendData(){
+  const cfg=window.KSM_CONFIG||{};
+  if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY) return;
+  const headers={apikey:cfg.SUPABASE_ANON_KEY,Authorization:'Bearer '+cfg.SUPABASE_ANON_KEY};
+  try{
+    const [startupRes,jobRes]=await Promise.all([
+      fetch(cfg.SUPABASE_URL+'/rest/v1/startups?select=*&status=eq.approved&order=name',{headers}),
+      fetch(cfg.SUPABASE_URL+'/rest/v1/jobs?select=*&status=eq.live&order=created_at.desc',{headers})
+    ]);
+    if(!startupRes.ok||!jobRes.ok) throw new Error('Backend request failed');
+    const liveStartups=await startupRes.json();
+    const liveJobs=await jobRes.json();
+    if(Array.isArray(liveStartups)&&liveStartups.length){
+      startups=liveStartups.map(s=>({
+        name:s.name,area:s.area||'Kolkata',sector:s.sector||'Other',stage:s.stage||'Unknown',
+        lat:Number(s.lat)||22.5726,lng:Number(s.lng)||88.3639,verified:!!s.verified,
+        desc:s.description||'Kolkata startup',url:s.website||s.source_url||'#'
+      }));
+    }
+    if(Array.isArray(liveJobs)){
+      const byId=new Map(startups.map(s=>[s.name.toLowerCase(),s.name]));
+      jobs=liveJobs.map(j=>{
+        const startup=startups.find(s=>s.id===j.startup_id)||null;
+        return {company:startup?startup.name:'',title:j.title,mode:j.location||j.mode||'Kolkata',
+          freshers:!!j.fresher,source:'Official career page',url:j.apply_url};
+      }).filter(j=>j.company);
+    }
+    markers.clear();
+    layer.clearLayers();
+    startups.forEach(s=>{
+      markers.set(s.name,L.marker([s.lat,s.lng],{icon:icon()}).bindPopup(
+        '<div class="popup"><h3>'+escapeHtml(s.name)+'</h3>'+
+        '<p>'+escapeHtml(s.sector)+' · '+escapeHtml(s.area)+'</p>'+
+        '<p>'+escapeHtml(s.desc)+'</p>'+
+        '<p>'+(s.verified?'<b>Directory verified</b>':'<b>Seed record</b>')+'</p>'+
+        (hasHiringJobs(s.name)?'<p><b>'+companyJobs(s.name).length+' live job'+(companyJobs(s.name).length>1?'s':'')+' found</b></p>':'')+
+        '<a href="'+s.url+'" target="_blank" rel="noopener noreferrer">Website →</a></div>'
+      ));
+    });
+    populateFilters();
+    render();
+    updateJobsPanel();
+    document.getElementById('dataStatus').textContent='live database · jobs checked automatically';
+  }catch(err){
+    console.warn('Backend unavailable; using local seed data.',err);
+  }
+}
+
+function updateJobsPanel(){
+  jobsPanel.innerHTML=
+    '<div class="jobs-head"><div><h2>Recently sourced openings</h2>'+
+    '<p>Official-source jobs are rechecked automatically. Stale records are retained for history.</p></div>'+
+    '<span>'+jobs.length+' live records</span></div>'+
+    '<div class="jobs-list">'+
+    jobs.map(j=>'<article class="job"><div><h3>'+escapeHtml(j.title)+'</h3><p>'+escapeHtml(j.company)+' · '+escapeHtml(j.mode)+'</p></div>'+
+    '<a href="'+j.url+'" target="_blank" rel="noopener noreferrer">Apply / source →</a></article>').join('')+
+    '</div>';
+  els.jobTotal.textContent=jobs.length;
+}
+
+loadBackendData();
