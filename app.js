@@ -45,8 +45,10 @@ let jobs = [
   {company:'Portcast',title:'Data Analyst',mode:'Greater Kolkata',freshers:false,source:'LinkedIn',url:'https://in.linkedin.com/jobs/startup-marketing-jobs-greater-kolkata-area'}
 ];
 
-const map = L.map('map',{zoomControl:false}).setView([22.5726,88.3639],11);
+const map = L.map('map',{zoomControl:false,scrollWheelZoom:true,doubleClickZoom:true,touchZoom:true,zoomAnimation:true,fadeAnimation:true,markerZoomAnimation:true,zoomSnap:.25,zoomDelta:.5,wheelDebounceTime:30,wheelPxPerZoomLevel:90}).setView([22.5726,88.3639],11);
 L.control.zoom({position:'bottomright'}).addTo(map);
+map.options.zoomAnimation=true;
+map.options.fadeAnimation=true;
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
 
 const layer = L.layerGroup().addTo(map);
