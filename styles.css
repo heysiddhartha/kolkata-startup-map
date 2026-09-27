@@ -23,3 +23,224 @@ html,body{margin:0;background:var(--bg);color:var(--text);min-height:100%}body{t
 .primary:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.18)}.primary:active{transform:translateY(0) scale(.99)}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Kolkata visual identity */
+:root{
+  --kol-yellow:#f4c542;
+  --kol-red:#c73b3b;
+  --kol-green:#238b62;
+  --kol-ink:#151515;
+  --tram-line:rgba(21,21,21,.10);
+}
+html[data-theme=dark]{
+  --kol-yellow:#ffd34d;
+  --kol-red:#e45a5a;
+  --kol-green:#56d99a;
+  --tram-line:rgba(255,255,255,.10);
+}
+.topbar{
+  border-bottom-color:color-mix(in srgb,var(--kol-yellow) 35%,var(--line));
+}
+.brand-copy b{
+  margin-left:5px;
+  font-family:"Noto Serif Bengali","Nirmala UI",serif;
+  font-size:10px;
+  color:var(--kol-red);
+  letter-spacing:0;
+}
+.brand-mark{
+  border-radius:4px 10px 4px 10px;
+  background:var(--kol-yellow);
+  color:#111;
+  box-shadow:3px 3px 0 var(--kol-red);
+}
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,transparent 0 49.5%,var(--tram-line) 49.5% 50%,transparent 50%),
+    linear-gradient(0deg,transparent 0 72%,var(--tram-line) 72% 72.5%,transparent 72.5%),
+    var(--bg);
+}
+.hero:after{
+  content:"";
+  position:absolute;
+  right:-70px;
+  bottom:-100px;
+  width:420px;
+  height:230px;
+  opacity:.7;
+  background:
+    linear-gradient(7deg,transparent 0 44%,var(--kol-yellow) 44% 46%,transparent 46%),
+    linear-gradient(-7deg,transparent 0 56%,var(--kol-red) 56% 58%,transparent 58%);
+  transform:rotate(-3deg);
+  pointer-events:none;
+}
+.hero-copy{position:relative;z-index:2}
+.city-signatures{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:17px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.city-signatures i{font-style:normal;color:var(--kol-red)}
+.hero-art{
+  position:absolute;
+  right:34px;
+  top:22px;
+  width:250px;
+  height:180px;
+  z-index:1;
+  pointer-events:none;
+  color:var(--text);
+}
+.hero-art span{
+  position:absolute;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.art-taxi{
+  width:90px;height:36px;right:105px;top:24px;
+  border:3px solid var(--kol-yellow);
+  border-radius:14px 18px 8px 8px;
+  box-shadow:0 7px 0 -3px var(--text);
+  font-size:9px;
+}
+.art-taxi:before,.art-taxi:after{
+  content:"";position:absolute;bottom:-10px;width:13px;height:13px;
+  border-radius:50%;background:var(--text);border:3px solid var(--bg);
+}
+.art-taxi:before{left:10px}.art-taxi:after{right:10px}
+.art-fish{
+  width:48px;height:28px;right:28px;top:73px;
+  border:3px solid var(--kol-red);border-radius:70% 30% 30% 70%;
+  font-size:18px;transform:rotate(-12deg);
+}
+.art-fish:after{content:"";position:absolute;left:-13px;border-width:8px 13px 8px 0;border-style:solid;border-color:transparent var(--kol-red) transparent transparent}
+.art-puja{
+  width:46px;height:46px;left:20px;top:94px;
+  border:3px solid var(--kol-red);border-radius:50%;
+  font-size:19px;color:var(--kol-red);
+  box-shadow:0 0 0 7px color-mix(in srgb,var(--kol-red) 10%,transparent);
+}
+.art-sweets{
+  width:35px;height:35px;left:90px;top:112px;
+  background:var(--kol-yellow);border-radius:50%;
+  border:3px solid var(--text);font-size:8px;
+}
+.art-tram{
+  right:76px;bottom:4px;
+  font-size:9px;padding:7px 10px;border-top:3px solid var(--kol-green);
+  border-bottom:3px solid var(--kol-green);
+}
+.toolbar{
+  border-top:3px solid var(--kol-yellow);
+}
+.map-note{
+  border-color:color-mix(in srgb,var(--kol-yellow) 50%,var(--line));
+}
+.map-note b{
+  margin-left:5px;
+  color:var(--kol-red);
+  font-family:"Noto Serif Bengali","Nirmala UI",serif;
+}
+.map-city-stamp{
+  position:absolute;
+  left:405px;
+  bottom:22px;
+  z-index:600;
+  color:var(--text);
+  opacity:.58;
+  font-family:"Noto Serif Bengali","Nirmala UI",serif;
+  font-size:25px;
+  font-weight:800;
+  line-height:.9;
+  transform:rotate(-3deg);
+  pointer-events:none;
+  text-shadow:0 2px 10px rgba(0,0,0,.12);
+}
+.map-city-stamp small{
+  display:block;
+  margin-top:7px;
+  font-family:inherit;
+  font-size:7px;
+  letter-spacing:.12em;
+  font-weight:800;
+}
+.marker{
+  background:var(--kol-yellow);
+  color:#111;
+  border-color:var(--surface);
+  box-shadow:0 2px 12px rgba(0,0,0,.25),0 0 0 2px color-mix(in srgb,var(--kol-yellow) 35%,transparent);
+}
+.marker:hover{
+  box-shadow:0 5px 18px rgba(0,0,0,.3),0 0 0 4px color-mix(in srgb,var(--kol-yellow) 30%,transparent);
+}
+.side-head{
+  border-top:2px solid var(--kol-red);
+}
+.card:hover{
+  box-shadow:inset 3px 0 0 var(--kol-yellow);
+}
+.card h3:before{
+  content:"";
+  display:inline-block;
+  width:5px;height:5px;
+  margin:0 7px 2px 0;
+  border-radius:50%;
+  background:var(--kol-red);
+}
+.tag{
+  border-radius:4px;
+}
+.hiring{
+  color:var(--kol-green);
+}
+.jobs-panel{
+  border-top:3px solid var(--kol-green);
+  background:
+    linear-gradient(90deg,transparent 0 15%,var(--tram-line) 15% 15.2%,transparent 15.2% 85%,var(--tram-line) 85% 85.2%,transparent 85.2%),
+    var(--surface);
+}
+.jobs-head h2:before{
+  content:"TRAM / ";
+  color:var(--kol-red);
+  font-size:9px;
+  letter-spacing:.12em;
+  vertical-align:middle;
+}
+.job:hover{
+  border-color:color-mix(in srgb,var(--kol-yellow) 55%,var(--line));
+}
+.news{
+  border-top:3px solid var(--kol-yellow);
+}
+.news-title{
+  color:var(--kol-red);
+}
+.primary{
+  background:var(--kol-yellow);
+  color:#111;
+}
+.primary:hover{
+  box-shadow:0 8px 22px color-mix(in srgb,var(--kol-yellow) 30%,transparent);
+}
+.modal-kicker{
+  color:var(--kol-red);
+}
+@media(max-width:800px){
+  .hero-art{opacity:.18;right:-30px;top:15px;transform:scale(.85)}
+  .city-signatures{max-width:90%}
+  .map-city-stamp{left:auto;right:18px;bottom:15px;font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-art,.hero:after{transition:none}
+}
