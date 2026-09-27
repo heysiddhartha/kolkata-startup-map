@@ -7,8 +7,18 @@ const bounds=[[22.43,88.20],[22.75,88.62]]
 const center=[22.5726,88.3639]
 
 const markerIcon=L.divIcon({className:'',html:'<div class="startup-marker">•</div>',iconSize:[28,28],iconAnchor:[14,14]})
-const taxiIcon=L.divIcon({className:'map-vehicle',html:'<div class="map-taxi">TAXI</div>',iconSize:[44,25],iconAnchor:[22,12]})
-const tramIcon=L.divIcon({className:'map-vehicle',html:'<div class="map-tram">TRAM</div>',iconSize:[72,30],iconAnchor:[36,15]})
+const taxiIcon=L.icon({
+  iconUrl:'https://w3.pngaura.com/assets/images/posts/transparent/66063842d192f_nazim121_taxi_cab_ride-hailing_driver_fare_transportation_on_is_05e753dd-f557-40a1-9aea-d24b77dcbd93_clipdrop-background-removal.png',
+  iconSize:[48,34],
+  iconAnchor:[24,17],
+  className:'map-vehicle-image map-taxi-image'
+})
+const tramIcon=L.icon({
+  iconUrl:'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTExL3Jhd3BpeGVsX29mZmljZV8zMV9waG90b19vZl9hX3RyYW1fc2lkZV92aWV3X2lzb2xhdGVkX3N1YmplY3RzX18wOTVhNzg1Ni05MjFkLTRiODctOWI2Zi1hYWIzYTQ0YTkwZjYucG5n.png',
+  iconSize:[68,42],
+  iconAnchor:[34,21],
+  className:'map-vehicle-image map-tram-image'
+})
 
 const routes=[
 {type:'taxi',duration:18000,route:[[22.5668,88.3512],[22.5625,88.3560],[22.5578,88.3625],[22.5525,88.3690],[22.5488,88.3755],[22.5452,88.3820]]},
