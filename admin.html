@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kolkata Startup Map — Admin</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<style>body{background:#f7f7f7}.admin{max-width:1100px;margin:0 auto;padding:28px}.admin-card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:18px;margin-bottom:14px}.admin-row{display:flex;justify-content:space-between;gap:16px;align-items:center}.admin h1{margin:0 0 6px}.admin small{color:#777}.login{max-width:420px;margin:12vh auto}.admin input{height:40px;border:1px solid #ddd;border-radius:8px;padding:0 10px;width:100%;margin:6px 0}.admin button{border:0;border-radius:8px;background:#111;color:#fff;padding:9px 14px;cursor:pointer}.admin button.secondary{background:#eee;color:#111}.submission{border-top:1px solid #eee;padding:15px 0}.actions{display:flex;gap:8px;flex-wrap:wrap}.pill{font-size:11px;background:#eee;border-radius:999px;padding:4px 7px}.error{color:#a11}.ok{color:#176b3a}</style></head>
+<body><main class="admin">
+<section id="login" class="admin-card login"><h1>Startup Map Admin</h1><p>Sign in with your Supabase admin account.</p>
+<input id="email" type="email" placeholder="Email"><input id="password" type="password" placeholder="Password"><button id="loginBtn">Sign in</button><p id="loginMsg"></p></section>
+<section id="dashboard" class="hidden"><div class="admin-card admin-row"><div><h1>Startup Map Admin</h1><small id="userEmail"></small></div><div class="actions"><button id="refresh">Refresh</button><button class="secondary" id="logout">Sign out</button></div></div>
+<div class="admin-card"><div class="admin-row"><div><strong>Pending submissions</strong><div><small>Approve verified entries or reject them.</small></div></div><span class="pill" id="count">0</span></div><div id="list"></div></div></section>
+</main>
+<script>
+const cfg=window.KSM_CONFIG||{};
+const sb=cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY?supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY):null;
+const $=id=>document.getElementById(id);
+function slug(s){return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)+'-'+Math.random().toString(36).slice(2,7)}
+async function boot(){if(!sb)return $('loginMsg').textContent='Backend is not configured.';const {data}=await sb.auth.getSession();if(data.session)showDashboard(data.session.user); }
+function showDashboard(user){$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');$('userEmail').textContent=user.email||'';load()}
+async function load(){
+ const {data,error}=await sb.from('submissions').select('*').eq('status','pending').order('created_at',{ascending:false});
+ if(error){$('list').innerHTML='<p class="error">'+error.message+'</p>';return}
+ $('count').textContent=data.length;
+ $('list').innerHTML=data.length?data.map(s=>'<div class="submission"><div class="admin-row"><div><strong>'+esc(s.startup_name)+'</strong><div><small>'+esc(s.website)+' · '+esc(s.sector||'')+' · '+esc(s.locality||'')+'</small></div></div><span class="pill">'+new Date(s.created_at).toLocaleDateString()+'</span></div><p>'+esc(s.description||'No description')+'</p><div class="actions"><button data-action="approve" data-id="'+s.id+'">Approve</button><button class="secondary" data-action="reject" data-id="'+s.id+'">Reject</button></div></div>').join(''):'<p>No pending submissions.</p>';
+}
+function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+async function act(id,action){
+ const {data:s,error}=await sb.from('submissions').select('*').eq('id',id).single();if(error)return alert(error.message);
+ if(action==='approve'){
+  const startup={name:s.startup_name,slug:slug(s.startup_name),website:s.website,founder:s.founder,public_email:s.email,sector:s.sector,area:s.locality||'Kolkata',description:s.description,linkedin_url:s.linkedin_url,careers_url:s.careers_url,lat:22.5726,lng:88.3639,location_confidence:'approximate',verified:false,status:'approved',source_url:s.website};
+  const ins=await sb.from('startups').insert(startup);if(ins.error)return alert(ins.error.message);
+ }
+ const up=await sb.from('submissions').update({status:action==='approve'?'approved':'rejected',reviewed_at:new Date().toISOString()}).eq('id',id);
+ if(up.error)alert(up.error.message);else load();
+}
+$('loginBtn').onclick=async()=>{const {data,error}=await sb.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error)$('loginMsg').textContent=error.message;else showDashboard(data.user)}
+$('logout').onclick=()=>sb.auth.signOut().then(()=>location.reload());$('refresh').onclick=load;
+$('list').onclick=e=>{const b=e.target.closest('button[data-action]');if(b)act(b.dataset.id,b.dataset.action)};boot();
+</script></body></html>
