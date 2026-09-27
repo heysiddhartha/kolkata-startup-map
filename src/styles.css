@@ -217,6 +217,13 @@
 /* Bengaluru-style latest news panel */
 .news-panel{position:absolute;right:14px;top:14px;width:330px;z-index:600;background:rgba(255,250,240,.97);border:1px solid #d8c8a9;border-radius:16px;overflow:hidden;box-shadow:0 16px 45px rgba(60,40,20,.16);backdrop-filter:blur(14px)}
 .news-head{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 14px 11px;border-bottom:1px solid #e5dac5}
+.trust-strip{display:grid;grid-template-columns:1.2fr 1.2fr 1.2fr auto;gap:1px;margin:14px 0 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--line)}
+.trust-strip>div,.trust-strip>a{padding:13px 15px;background:var(--surface);text-decoration:none;color:var(--text)}
+.trust-strip b{display:block;font-size:11px;letter-spacing:.02em}.trust-strip span{display:block;margin-top:4px;font-size:10px;line-height:1.45;color:var(--muted)}.trust-strip>a{display:flex;align-items:center;font-size:10px;font-weight:800;white-space:nowrap}.trust-strip>a:hover{background:var(--surface2)}
+.detail-freshness{font-size:11px!important;color:var(--muted)!important}
+.news-item p{margin:0 0 8px;font-size:9px;line-height:1.45;color:#806b50}
+@media(max-width:900px){.trust-strip{grid-template-columns:1fr 1fr}.trust-strip>a{grid-column:1/-1}.trust-strip>a{justify-content:center}}
+@media(max-width:560px){.trust-strip{grid-template-columns:1fr}}
 .news-head b{display:block;font-size:13px;color:#241b16}.news-head span{display:block;margin-top:3px;font-size:9px;color:#806b50}
 .news-head button{border:0;background:transparent;color:#9b8b75;font-size:18px;line-height:1;cursor:pointer}
 .news-item{display:block;padding:11px 13px;border-bottom:1px solid #e5dac5;color:#241b16;text-decoration:none}
