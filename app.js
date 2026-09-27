@@ -90,6 +90,90 @@ function syncMapTiles(){
 syncMapTiles();
 
 const layer = L.layerGroup().addTo(map);
+
+const vehicleLayer = L.layerGroup().addTo(map);
+
+const vehicleRoutes = [
+  {
+    type:'taxi',
+    route:[[22.5668,88.3512],[22.5625,88.3560],[22.5578,88.3625],[22.5525,88.3690],[22.5488,88.3755],[22.5452,88.3820]],
+    duration:18000,
+    delay:0
+  },
+  {
+    type:'taxi',
+    route:[[22.5752,88.3650],[22.5792,88.3728],[22.5825,88.3815],[22.5858,88.3915],[22.5890,88.4025],[22.5922,88.4140]],
+    duration:22000,
+    delay:6000
+  },
+  {
+    type:'taxi',
+    route:[[22.5560,88.3485],[22.5598,88.3420],[22.5640,88.3360],[22.5690,88.3310],[22.5740,88.3260]],
+    duration:20000,
+    delay:11000
+  },
+  {
+    type:'tram',
+    route:[[22.5697,88.3500],[22.5718,88.3550],[22.5744,88.3608],[22.5778,88.3665],[22.5810,88.3720],[22.5840,88.3780]],
+    duration:26000,
+    delay:3000
+  }
+];
+
+function vehicleIcon(type){
+  return L.divIcon({
+    className:'kolkata-vehicle-icon',
+    html:type==='tram'
+      ? '<div class="map-tram"><span>TRAM</span><i></i><b></b></div>'
+      : '<div class="map-taxi"><span>TAXI</span><i></i><b></b></div>',
+    iconSize:type==='tram'?[72,30]:[44,25],
+    iconAnchor:type==='tram'?[36,15]:[22,12]
+  });
+}
+function routePoint(route,t){
+  const pts=route.map(p=>L.latLng(p[0],p[1]));
+  let total=0;
+  const lengths=[];
+  for(let i=1;i<pts.length;i++){const d=pts[i-1].distanceTo(pts[i]);lengths.push(d);total+=d;}
+  let target=((t%1)+1)%1*total;
+  for(let i=0;i<lengths.length;i++){
+    if(target<=lengths[i]){
+      const ratio=target/lengths[i];
+      const a=pts[i],b=pts[i+1];
+      return {
+        lat:a.lat+(b.lat-a.lat)*ratio,
+        lng:a.lng+(b.lng-a.lng)*ratio,
+        bearing:Math.atan2(b.lng-a.lng,b.lat-a.lat)*180/Math.PI
+      };
+    }
+    target-=lengths[i];
+  }
+  return {lat:pts.at(-1).lat,lng:pts.at(-1).lng,bearing:0};
+}
+function animateVehicle(spec){
+  const marker=L.marker(spec.route[0],{
+    icon:vehicleIcon(spec.type),
+    interactive:false,
+    keyboard:false,
+    zIndexOffset:900
+  }).addTo(vehicleLayer);
+  const startTime=performance.now()+spec.delay;
+  function frame(now){
+    if(now<startTime){requestAnimationFrame(frame);return;}
+    const progress=((now-startTime)%spec.duration)/spec.duration;
+    const p=routePoint(spec.route,progress);
+    marker.setLatLng([p.lat,p.lng]);
+    const el=marker.getElement();
+    if(el){
+      const body=el.querySelector(spec.type==='tram'?'.map-tram':'.map-taxi');
+      if(body) body.style.transform='rotate('+Math.max(-12,Math.min(12,p.bearing-90))+'deg)';
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+vehicleRoutes.forEach(animateVehicle);
+
 const markers = new Map();
 const icon = () => L.divIcon({className:'',html:'<div class="marker" aria-hidden="true">•</div>',iconSize:[28,28],iconAnchor:[14,14]});
 const escapeHtml = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
