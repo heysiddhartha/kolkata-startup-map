@@ -138,3 +138,14 @@ for each row execute function public.set_updated_at();
 
 create trigger jobs_updated_at before update on public.jobs
 for each row execute function public.set_updated_at();
+
+
+grant select on public.startups to anon;
+grant select on public.jobs to anon;
+grant insert on public.submissions to anon;
+grant select, insert, update, delete on public.startups to authenticated;
+grant select, insert, update, delete on public.jobs to authenticated;
+grant select, insert, update, delete on public.submissions to authenticated;
+grant select on public.source_checks to authenticated;
+grant select on public.audit_log to authenticated;
+grant select on public.admin_users to authenticated;
