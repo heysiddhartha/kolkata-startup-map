@@ -15,7 +15,7 @@ SESSION.headers.update({"User-Agent": "KolkataStartupMap/1.0 (+public ecosystem 
 SOURCES = [
     ("eChai Kolkata Startup Grid", "https://echai.ventures/kolkata/grid", "echai.ventures"),
     ("StartupBlink Kolkata", "https://www.startupblink.com/top-startups/kolkata-in", "startupblink.com"),
-    ("Startup India", "https://www.startupindia.gov.in/content/sih/en/search.html?roles=Startup", "startupindia.gov.in"),
+    # Startup India is kept as a verification/reference source for now; its search UI is dynamic.
 ]
 EXCLUDED = {"events", "people", "startups", "vcs", "incubators", "coworking", "communities", "cafes", "login", "sign in", "home", "view full page", "website", "visit", "load more", "download csv file"}
 
@@ -34,9 +34,16 @@ def clean_name(value):
 def discover_echai(html, base):
     soup = BeautifulSoup(html, "html.parser")
     found = {}
-    for a in soup.find_all("a", href=True):
-        href = urljoin(base, a["href"])
-        name = clean_name(" ".join(a.stripped_strings))
+    heading = next((h for h in soup.find_all(["h2", "h3"]) if "Startups building in Kolkata" in " ".join(h.stripped_strings)), None)
+    if not heading:
+        return []
+    for node in heading.find_all_next():
+        if node is not heading and node.name in {"h2", "h3"} and "Who funds founders" in " ".join(node.stripped_strings):
+            break
+        if node.name != "a" or not node.get("href"):
+            continue
+        href = urljoin(base, node["href"])
+        name = clean_name(" ".join(node.stripped_strings))
         if not name or href.startswith("https://echai.ventures"):
             continue
         host = re.sub(r"^www\\.", "", href.split("/")[2].lower()) if href.startswith("http") else ""
@@ -104,10 +111,8 @@ def main():
             response = SESSION.get(url, timeout=30); response.raise_for_status()
             if source_host == "echai.ventures":
                 items = discover_echai(response.text, url)
-            elif source_host == "startupblink.com":
-                items = discover_startupblink(response.text, url)
             else:
-                items = discover_startup_india(response.text, url)
+                items = discover_startupblink(response.text, url)
             print(f"[{source_name}] discovered {len(items)} candidates")
             for item in items:
                 slug = slugify(item["name"])
