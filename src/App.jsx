@@ -60,12 +60,24 @@ function VehicleLayer(){
 function App(){
  const [theme,setTheme]=useState(localStorage.getItem('ksm-theme')||'light')
  const [view,setView]=useState('map'),[query,setQuery]=useState(''),[area,setArea]=useState(''),[sector,setSector]=useState(''),[stage,setStage]=useState(''),[hiring,setHiring]=useState(''),[selected,setSelected]=useState(null)
- const [showSubmit,setShowSubmit]=useState(false)
+ const [showSubmit,setShowSubmit]=useState(false),[submitState,setSubmitState]=useState('idle'),[jobMode,setJobMode]=useState(''),[jobType,setJobType]=useState('')
  useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem('ksm-theme',theme)},[theme])
  const sectors=[...new Set(startups.map(s=>s.sector))].sort(),areas=[...new Set(startups.map(s=>s.area))].sort(),stages=[...new Set(startups.map(s=>s.stage))].sort()
  const companyJobs=name=>jobs.filter(j=>j.company.toLowerCase()===name.toLowerCase())
  const filtered=useMemo(()=>startups.filter(s=>{const hay=(s.name+' '+s.sector+' '+s.area+' '+s.stage+' '+s.desc).toLowerCase();const js=companyJobs(s.name);return (!query||hay.includes(query.toLowerCase()))&&(!area||s.area===area)&&(!sector||s.sector===sector)&&(!stage||s.stage===stage)&&(!hiring||(hiring==='hiring'&&js.length)||(hiring==='freshers'&&js.some(j=>j.freshers)))}),[query,area,sector,stage,hiring])
- const clear=()=>{setQuery('');setArea('');setSector('');setStage('');setHiring('')}
+ const clear=()=>{setQuery('');setArea('');setSector('');setStage('');setHiring('');setJobMode('');setJobType('')}
+ const visibleJobs=useMemo(()=>jobs.filter(j=>(!jobMode||j.mode===jobMode)&&(!jobType||j.type===jobType)),[jobMode,jobType])
+ useEffect(()=>{const onKey=e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.querySelector('.search input')?.focus()}};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[])
+ const submitStartup=async e=>{
+   e.preventDefault();setSubmitState('sending')
+   const f=new FormData(e.currentTarget);const payload=Object.fromEntries(f.entries())
+   try{
+     const res=await fetch('https://rkzkpwaexadlwxqdfjlm.supabase.co/functions/v1/submit-startup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+     const data=await res.json()
+     if(!res.ok)throw new Error(data.error||'Could not submit')
+     setSubmitState('success');e.currentTarget.reset()
+   }catch(err){setSubmitState(err.message||'Could not submit')}
+ }
  return <div className="app">
   <header className="topbar"><div className="brand"><span className="brand-mark">K</span><div><b>Kolkata Startup Map</b></div></div><nav><button onClick={()=>setTheme(theme==='dark'?'light':'dark')}>{theme==='dark'?'☀':'◐'}</button><button onClick={()=>setShowSubmit(true)} className="add">Add startup <b>+</b></button><a href="#jobs">Jobs <strong>{jobs.length}</strong></a></nav></header>
   <main>
@@ -75,7 +87,7 @@ function App(){
    <section id="jobs" className="jobs"><div><h2>Hiring in the ecosystem</h2><p>Public-source job signals currently attached to the directory.</p></div><div className="job-list">{jobs.map(j=><a className="job" key={j.company+j.title} href={j.url} target="_blank" rel="noreferrer"><div><b>{j.title}</b><span>{j.company} · {j.mode}</span></div><em>{j.freshers?'Fresher':'Open'} →</em></a>)}</div></section>
   </main>
   {selected&&<div className="detail-backdrop" onClick={()=>setSelected(null)}><div className="detail" onClick={e=>e.stopPropagation()}><button onClick={()=>setSelected(null)}>×</button><div className="eyebrow">STARTUP PROFILE</div><h2>{selected.name}</h2><p>{selected.desc}</p><div className="detail-tags"><span>{selected.sector}</span><span>{selected.area}</span><span>{selected.stage}</span></div><a href={selected.url} target="_blank" rel="noreferrer" className="source">Open source / website →</a></div></div>}
-  {showSubmit&&<div className="detail-backdrop" onClick={()=>setShowSubmit(false)}><div className="detail" onClick={e=>e.stopPropagation()}><button onClick={()=>setShowSubmit(false)}>×</button><div className="eyebrow">ADD TO THE MAP</div><h2>What are you building?</h2><p>We'll connect this form to the Node/Supabase submission API after the migration is live.</p><button className="primary" onClick={()=>setShowSubmit(false)}>Got it</button></div></div>}
+  {showSubmit&&<div className="detail-backdrop" onClick={()=>setShowSubmit(false)}><div className="detail" onClick={e=>e.stopPropagation()}><button onClick={()=>setShowSubmit(false)}>×</button><div className="eyebrow">ADD TO THE MAP</div><h2>What are you building?</h2>{submitState==='success'?<><p className="submit-success">Submitted. We’ll review it before it appears on the map.</p><button className="primary" onClick={()=>{setSubmitState('idle');setShowSubmit(false)}}>Done</button></>:<form className="submit-form" onSubmit={submitStartup}><input name="startup_name" required placeholder="Startup name"/><input name="website" required type="url" placeholder="Website"/><div className="form-grid"><input name="founder" placeholder="Founder(s)"/><input name="email" type="email" placeholder="Contact email"/><input name="sector" placeholder="Sector"/><input name="locality" placeholder="Kolkata locality"/></div><input name="linkedin_url" type="url" placeholder="LinkedIn URL"/><input name="careers_url" type="url" placeholder="Careers URL"/><textarea name="description" rows="4" placeholder="What does the startup build?"></textarea>{submitState!=='idle'&&submitState!=='sending'&&<p className="submit-error">{submitState}</p>}<button className="primary" disabled={submitState==='sending'}>{submitState==='sending'?'Submitting…':'Submit startup'}</button></form>}</div></div>}
  </div>
 }
 export default App
