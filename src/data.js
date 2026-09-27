@@ -27,7 +27,7 @@ export const startups = [
   {name:'Scoopski',area:'South Kolkata',sector:'Foodtech',stage:'Early',lat:22.5155,lng:88.3620,verified:true,desc:'Artisanal ice-cream and dessert brand.',url:'https://echai.ventures/kolkata'},
   {name:'Xempla',area:'New Town',sector:'SaaS',stage:'Early',lat:22.5768,lng:88.4755,verified:false,desc:'Decision-support software for enterprise asset management.',url:'https://www.xempla.io/'},
   {name:'Wow! Momo',area:'Park Street',sector:'Foodtech',stage:'Growth',lat:22.5533,lng:88.3518,verified:false,desc:'Indian QSR and food brand.',url:'https://www.wowmomo.com/'},
-  {name:'Indus Net Technologies',area:'Sector V',sector:'Enterprise Tech',stage:'Established',lat:22.5740,lng:88.4337,verified:false,desc:'Digital transformation and technology services.',url:'https://www.indusnet.co.in/'}
+  {name:'Indus Net Technologies',area:'Sector V',sector:'Enterprise Tech',stage:'Established',lat:22.5740,lng:88.4337,verified:false,desc:'Digital transformation and technology services.',url:'https://www.indusnet.co.in/'},
 
   {name:'Goodricke',area:'Kolkata',sector:'Agritech',stage:'Established',lat:22.5726,lng:88.3639,verified:false,founder:'Camellia Plc group',desc:'Tea producer with Darjeeling, Dooars and Assam gardens and packaged retail.',url:'https://echai.ventures/kolkata/grid',source:'eChai Kolkata'},
   {name:'Sreeleathers',area:'Kolkata',sector:'Ecommerce',stage:'Growth',lat:22.5530,lng:88.3520,verified:false,desc:'Footwear and leather-goods retail brand with Kolkata roots.',url:'https://echai.ventures/kolkata/grid',source:'eChai Kolkata'},
