@@ -54,48 +54,175 @@ const markers = new Map();
 const icon = () => L.divIcon({className:'',html:'<div class="marker" aria-hidden="true">•</div>',iconSize:[28,28],iconAnchor:[14,14]});
 const escapeHtml = value => String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
-startups.forEach(s => {
-  markers.set(s.name,L.marker([s.lat,s.lng],{icon:icon()}).bindPopup(`<div class="popup"><h3>${escapeHtml(s.name)}</h3><p>${escapeHtml(s.sector)} · ${escapeHtml(s.area)}</p><p>${escapeHtml(s.desc)}</p><p>${s.verified ? '<b>Directory verified</b>' : '<b>Seed record</b>'}</p><a href="${s.url}" target="_blank" rel="noopener noreferrer">Source / website →</a></div>`));
-});
+const els={
+  search:document.getElementById('search'),
+  area:document.getElementById('area'),
+  sector:document.getElementById('sector'),
+  stage:document.getElementById('stage'),
+  hiring:document.getElementById('hiring'),
+  cards:document.getElementById('cards'),
+  grid:document.getElementById('grid'),
+  count:document.getElementById('resultCount'),
+  jobTotal:document.getElementById('jobTotal')
+};
 
-const els={search:document.getElementById('search'),area:document.getElementById('area'),sector:document.getElementById('sector'),stage:document.getElementById('stage'),hiring:document.getElementById('hiring'),cards:document.getElementById('cards'),grid:document.getElementById('grid'),count:document.getElementById('resultCount'),jobTotal:document.getElementById('jobTotal')};
+function companyJobs(name){
+  const needle=name.trim().toLowerCase();
+  return jobs.filter(j=>{
+    const company=j.company.trim().toLowerCase();
+    return company===needle || company.includes(needle) || needle.includes(company);
+  });
+}
+
+function hasHiringJobs(name){
+  return companyJobs(name).length>0;
+}
+
+function hasFresherJobs(name){
+  return companyJobs(name).some(j=>j.freshers===true);
+}
+
+function populateFilters(){
+  const unique = key => [...new Set(startups.map(s=>s[key]).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const fill = (select, values, label) => {
+    const current=select.value;
+    select.innerHTML='<option value="">'+label+'</option>'+values.map(v=>'<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>').join('');
+    if(values.includes(current)) select.value=current;
+  };
+  fill(els.area,unique('area'),'All areas');
+  fill(els.sector,unique('sector'),'All sectors');
+  fill(els.stage,unique('stage'),'All stages');
+}
+
+startups.forEach(s => {
+  markers.set(
+    s.name,
+    L.marker([s.lat,s.lng],{icon:icon()}).bindPopup(
+      '<div class="popup"><h3>'+escapeHtml(s.name)+'</h3>'+
+      '<p>'+escapeHtml(s.sector)+' · '+escapeHtml(s.area)+'</p>'+
+      '<p>'+escapeHtml(s.desc)+'</p>'+
+      '<p>'+(
+        s.verified ? '<b>Directory verified</b>' : '<b>Seed record</b>'
+      )+'</p>'+
+      (hasHiringJobs(s.name) ? '<p><b>'+companyJobs(s.name).length+' sourced job'+(companyJobs(s.name).length>1?'s':'')+' available</b></p>' : '')+
+      '<a href="'+s.url+'" target="_blank" rel="noopener noreferrer">Source / website →</a></div>'
+    )
+  );
+});
 
 function filtered(){
   const q=els.search.value.trim().toLowerCase();
+  const area=els.area.value;
+  const sector=els.sector.value;
+  const stage=els.stage.value;
+  const hiring=els.hiring.value;
+
   return startups.filter(s=>{
-    const hay=`${s.name} ${s.sector} ${s.area} ${s.desc}`.toLowerCase();
-    return (!q||hay.includes(q))&&(!els.area.value||s.area===els.area.value)&&(!els.sector.value||s.sector===els.sector.value)&&(!els.stage.value||s.stage===els.stage.value);
+    const hay=(s.name+' '+s.sector+' '+s.area+' '+s.stage+' '+s.desc).toLowerCase();
+    const matchesSearch=!q || hay.includes(q);
+    const matchesArea=!area || s.area===area;
+    const matchesSector=!sector || s.sector===sector;
+    const matchesStage=!stage || s.stage===stage;
+    const matchesHiring=!hiring ||
+      (hiring==='hiring' && hasHiringJobs(s.name)) ||
+      (hiring==='freshers' && hasFresherJobs(s.name));
+
+    return matchesSearch && matchesArea && matchesSector && matchesStage && matchesHiring;
   });
 }
-function companyJobs(name){return jobs.filter(j=>j.company.toLowerCase().includes(name.toLowerCase())||name.toLowerCase().includes(j.company.toLowerCase()));}
+
 function card(s){
   const matched=companyJobs(s.name);
-  return `<article class="card" data-name="${escapeHtml(s.name)}"><h3>${escapeHtml(s.name)}</h3><div class="meta">${escapeHtml(s.area)} · ${escapeHtml(s.sector)} · ${escapeHtml(s.stage)}</div><div class="tags"><span class="tag">${s.verified?'Directory verified':'Seed record'}</span>${matched.length?'<span class="tag hiring">'+matched.length+' sourced job'+(matched.length>1?'s':'')+'</span>':''}</div><div class="card-footer"><span>${escapeHtml(s.desc)}</span><a href="${s.url}" target="_blank" rel="noopener noreferrer">Visit →</a></div></article>`;
+  const fresher=matched.some(j=>j.freshers===true);
+  return '<article class="card" data-name="'+escapeHtml(s.name)+'">'+
+    '<h3>'+escapeHtml(s.name)+'</h3>'+
+    '<div class="meta">'+escapeHtml(s.area)+' · '+escapeHtml(s.sector)+' · '+escapeHtml(s.stage)+'</div>'+
+    '<div class="tags">'+
+      '<span class="tag">'+(s.verified?'Directory verified':'Seed record')+'</span>'+
+      (matched.length?'<span class="tag hiring">'+matched.length+' sourced job'+(matched.length>1?'s':'')+'</span>':'')+
+      (fresher?'<span class="tag hiring">Fresher friendly</span>':'')+
+    '</div>'+
+    '<div class="card-footer"><span>'+escapeHtml(s.desc)+'</span><a href="'+s.url+'" target="_blank" rel="noopener noreferrer">Visit →</a></div>'+
+  '</article>';
 }
-function attachCards(root){root.querySelectorAll('.card[data-name]').forEach(el=>el.addEventListener('click',e=>{if(e.target.closest('a'))return;const s=startups.find(x=>x.name===el.dataset.name);if(!s)return;map.setView([s.lat,s.lng],14);markers.get(s.name).openPopup();}))}
+
+function attachCards(root){
+  root.querySelectorAll('.card[data-name]').forEach(el=>{
+    el.addEventListener('click',e=>{
+      if(e.target.closest('a')) return;
+      const s=startups.find(x=>x.name===el.dataset.name);
+      if(!s) return;
+      document.getElementById('map').classList.remove('hidden');
+      document.querySelector('.side').classList.remove('hidden');
+      els.grid.classList.add('hidden');
+      document.getElementById('mapBtn').classList.add('active');
+      document.getElementById('gridBtn').classList.remove('active');
+      map.setView([s.lat,s.lng],14);
+      markers.get(s.name).openPopup();
+    });
+  });
+}
+
 function render(){
   const data=filtered();
   els.count.textContent=data.length;
-  els.cards.innerHTML=data.map(card).join('');
-  els.grid.innerHTML=data.map(card).join('');
-  layer.clearLayers();data.forEach(s=>markers.get(s.name).addTo(layer));
-  attachCards(els.cards);attachCards(els.grid);
+  els.cards.innerHTML=data.length ? data.map(card).join('') : '<div class="empty">No startups match these filters.</div>';
+  els.grid.innerHTML=data.length ? data.map(card).join('') : '<div class="empty">No startups match these filters.</div>';
+
+  layer.clearLayers();
+  data.forEach(s=>markers.get(s.name).addTo(layer));
+
+  attachCards(els.cards);
+  attachCards(els.grid);
 }
-[els.search,els.area,els.sector,els.stage].forEach(el=>el.addEventListener('input',render));
+
+populateFilters();
+[els.search,els.area,els.sector,els.stage,els.hiring].forEach(el=>{
+  el.addEventListener('input',render);
+  el.addEventListener('change',render);
+});
 render();
 
 const jobsPanel=document.createElement('section');
 jobsPanel.id='jobs';
 jobsPanel.className='jobs-panel';
-jobsPanel.innerHTML='<div class="jobs-head"><div><h2>Recently sourced openings</h2><p>Job records are linked to their public source and should be rechecked before applying.</p></div><span>'+jobs.length+' records</span></div><div class="jobs-list">'+jobs.map(j=>`<article class="job"><div><h3>${escapeHtml(j.title)}</h3><p>${escapeHtml(j.company)} · ${escapeHtml(j.mode)}</p></div><a href="${j.url}" target="_blank" rel="noopener noreferrer">View source →</a></article>`).join('')+'</div>';
+jobsPanel.innerHTML=
+  '<div class="jobs-head"><div><h2>Recently sourced openings</h2>'+
+  '<p>Job records are linked to their public source and should be rechecked before applying.</p></div>'+
+  '<span>'+jobs.length+' records</span></div>'+
+  '<div class="jobs-list">'+
+  jobs.map(j=>'<article class="job"><div><h3>'+escapeHtml(j.title)+'</h3><p>'+escapeHtml(j.company)+' · '+escapeHtml(j.mode)+'</p></div>'+
+  '<a href="'+j.url+'" target="_blank" rel="noopener noreferrer">View source →</a></article>').join('')+
+  '</div>';
 document.querySelector('main').appendChild(jobsPanel);
 els.jobTotal.textContent=jobs.length;
 
-document.getElementById('gridBtn').addEventListener('click',()=>{document.getElementById('map').classList.add('hidden');document.querySelector('.side').classList.add('hidden');els.grid.classList.remove('hidden');document.getElementById('gridBtn').classList.add('active');document.getElementById('mapBtn').classList.remove('active')});
-document.getElementById('mapBtn').addEventListener('click',()=>{document.getElementById('map').classList.remove('hidden');document.querySelector('.side').classList.remove('hidden');els.grid.classList.add('hidden');document.getElementById('mapBtn').classList.add('active');document.getElementById('gridBtn').classList.remove('active');setTimeout(()=>map.invalidateSize(),50)});
-document.getElementById('closeSide').addEventListener('click',()=>document.querySelector('.side').classList.toggle('hidden'));
+document.getElementById('gridBtn').addEventListener('click',()=>{
+  document.getElementById('map').classList.add('hidden');
+  document.querySelector('.side').classList.add('hidden');
+  els.grid.classList.remove('hidden');
+  document.getElementById('gridBtn').classList.add('active');
+  document.getElementById('mapBtn').classList.remove('active');
+});
+
+document.getElementById('mapBtn').addEventListener('click',()=>{
+  document.getElementById('map').classList.remove('hidden');
+  document.querySelector('.side').classList.remove('hidden');
+  els.grid.classList.add('hidden');
+  document.getElementById('mapBtn').classList.add('active');
+  document.getElementById('gridBtn').classList.remove('active');
+  setTimeout(()=>map.invalidateSize(),50);
+});
+
+document.getElementById('closeSide').addEventListener('click',()=>{
+  document.querySelector('.side').classList.toggle('hidden');
+});
 
 const modal=document.getElementById('modal');
 document.getElementById('submitBtn').addEventListener('click',()=>modal.classList.remove('hidden'));
 document.getElementById('modalClose').addEventListener('click',()=>modal.classList.add('hidden'));
-document.getElementById('submitForm').addEventListener('submit',e=>{e.preventDefault();e.currentTarget.classList.add('hidden');document.getElementById('thanks').classList.remove('hidden')});
+document.getElementById('submitForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  e.currentTarget.classList.add('hidden');
+  document.getElementById('thanks').classList.remove('hidden');
+});
