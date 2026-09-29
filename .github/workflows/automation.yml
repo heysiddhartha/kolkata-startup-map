@@ -1,5 +1,8 @@
 name: Kolkata Startup Map Automation
 on:
+  push:
+    paths:
+      - ".github/workflows/enrichment-now.trigger"
   workflow_dispatch:
   schedule:
     - cron: "23 3 * * *"
