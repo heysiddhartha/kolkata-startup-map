@@ -11,6 +11,13 @@ HEADERS={"apikey":SUPABASE_KEY,"Authorization":f"Bearer {SUPABASE_KEY}","Content
 session=requests.Session()
 session.headers.update({"User-Agent":"KolkataStartupMapBot/1.0 (public startup directory)"})
 
+JOB_BOARD_SOURCES = [
+    ("Cutshort Kolkata", "https://cutshort.io/jobs/startup-jobs-in-kolkata"),
+    ("Wellfound Kolkata", "https://wellfound.com/location/kolkata-wb"),
+    ("Indeed Kolkata startups", "https://in.indeed.com/q-startup-l-kolkata,-west-bengal-jobs.html"),
+    ("Glassdoor Kolkata startups", "https://www.glassdoor.co.in/Job/kolkata-startup-hiring-startup-jobs-SRCH_IL.0,7_IC2901633_KO8,30.htm"),
+]
+
 def api(path, method="GET", payload=None):
     r=session.request(method,SUPABASE_URL+"/rest/v1/"+path,headers=HEADERS,json=payload,timeout=25)
     r.raise_for_status()
@@ -42,6 +49,50 @@ def parse_jobs(soup, source):
             out.append({"title":title,"location":location,"mode":"Remote" if item.get("jobLocationType")=="TELECOMMUTE" else "On-site/Hybrid","employment_type":norm(item.get("employmentType")),"fresher":fresher(title,desc),"apply_url":url,"source_url":source,"external_id":external})
     return out
 
+def parse_board_jobs(soup, source, startups):
+    known = {re.sub(r"[^a-z0-9]+", "", s["name"].lower()): s for s in startups}
+    out = []
+    for node in soup.select('script[type="application/ld+json"]'):
+        try:
+            data = json.loads(node.string or node.get_text())
+        except Exception:
+            continue
+        items = data if isinstance(data, list) else data.get("@graph", [data]) if isinstance(data, dict) else []
+        if isinstance(items, dict):
+            items = [items]
+        for item in items:
+            if not isinstance(item, dict) or item.get("@type") not in ("JobPosting", ["JobPosting"]):
+                continue
+            title = norm(item.get("title"))
+            if not title:
+                continue
+            org = item.get("hiringOrganization") or {}
+            company = norm(org.get("name") if isinstance(org, dict) else "")
+            key = re.sub(r"[^a-z0-9]+", "", company.lower())
+            startup = known.get(key)
+            if not startup:
+                matches = [s for k, s in known.items() if key and (key in k or k in key) and len(key) > 4]
+                startup = matches[0] if matches else None
+            if not startup:
+                continue
+            url = item.get("url") or source
+            loc = item.get("jobLocation")
+            if isinstance(loc, list):
+                loc = loc[0] if loc else {}
+            address = (loc or {}).get("address", {}) if isinstance(loc, dict) else {}
+            location = norm(" ".join(str(address.get(k, "")) for k in ("addressLocality", "addressRegion", "addressCountry")))
+            desc = BeautifulSoup(str(item.get("description", "")), "html.parser").get_text(" ", strip=True)
+            ident = item.get("identifier", {})
+            external = (ident.get("value") if isinstance(ident, dict) else None) or url
+            out.append({
+                "startup_id": startup["id"], "title": title, "location": location,
+                "mode": "Remote" if item.get("jobLocationType") == "TELECOMMUTE" else "On-site/Hybrid",
+                "employment_type": norm(item.get("employmentType")),
+                "fresher": fresher(title, desc), "apply_url": url,
+                "source_url": source, "external_id": external
+            })
+    return out
+
 def discover(startup):
     if startup.get("careers_url"): return startup["careers_url"]
     website=startup.get("website")
@@ -58,6 +109,18 @@ def discover(startup):
 def main():
     startups=api("startups?select=id,name,website,careers_url&status=eq.approved")
     checked=0
+    board_added=0
+    for source_name, source_url in JOB_BOARD_SOURCES:
+        try:
+            r=session.get(source_url,timeout=25,allow_redirects=True)
+            if r.ok:
+                board_jobs=parse_board_jobs(BeautifulSoup(r.text,"html.parser"),r.url,startups)
+                for j in board_jobs:
+                    api("jobs?on_conflict=startup_id,external_id","POST",{**j,"last_seen_at":datetime.now(timezone.utc).isoformat(),"status":"live"})
+                    board_added+=1
+                print("[BOARD]",source_name,"jobs=",len(board_jobs))
+        except Exception as e:
+            print("[WARN] job board",source_name,e)
     for s in startups:
         started=datetime.now(timezone.utc)
         url=discover(s)
@@ -89,6 +152,6 @@ def main():
             stale_count+=1
         except Exception as e:
             print("[WARN] Could not mark job stale:",job.get("id"),e)
-    print("Checked",checked,"career pages; marked",stale_count,"stale jobs after 7 days unseen.")
+    print("Checked",checked,"career pages; added/updated",board_added,"board jobs; marked",stale_count,"stale jobs after 7 days unseen.")
 
 if __name__=="__main__": main()
