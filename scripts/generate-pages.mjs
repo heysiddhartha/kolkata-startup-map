@@ -22,6 +22,7 @@ const areaNames = [...new Set(cleanStartups.map(s => s.area))].sort()
 
 const nav = [
   ['Directory','/startups'],
+  ['Founders','/founders'],
   ['Jobs','/jobs'],
   ['Sectors','/sectors'],
   ['Locations','/locations'],
@@ -159,6 +160,45 @@ fs.writeFileSync(path.join(root,'startups','index.html'), pageHtml({
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startups & Companies',url:site+'/startups',description:'Kolkata startup and company directory',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},mainEntity:{'@type':'ItemList',numberOfItems:cleanStartups.length,itemListElement:cleanStartups.map((s,i)=>({'@type':'ListItem',position:i+1,name:s.name,url:site+'/startup/'+slug(s.name)}))}}
 }))
 
+const founderProfiles = {
+  'Sagar J Daryani': ['https://in.linkedin.com/in/sagar-j-daryani-950085b7','Co-founder & CEO of Wow! Momo, building a Kolkata-born food and consumer brand.'],
+  'Gaurav Jalan': ['https://in.linkedin.com/in/gauravjalan','Founder & CEO of mPokket, a Kolkata-based fintech platform.'],
+  'Sujay Santra': ['https://in.linkedin.com/in/sujay-santra-ikure','Founder & CEO of iKure, focused on technology-enabled primary healthcare.'],
+  'Ranodeep Saha': ['https://in.linkedin.com/in/ranodeep-saha-rareplanet','Co-founder of Rare Planet, building a retail and D2C business around Indian handicrafts.'],
+  'Vineet Patawari': ['https://in.linkedin.com/in/vineet-patawari','CEO and Co-Founder of StockEdge, focused on financial-market education and technology.'],
+  'Vivek Bajaj': ['https://in.linkedin.com/in/vbajaj','Entrepreneur behind Elearnmarkets and StockEdge, focused on financial education and market technology.'],
+  'Tinku Acharya': ['https://in.linkedin.com/in/tinkuacharya','Founder of Videonetics and a researcher, inventor and technologist working across AI and video intelligence.']
+}
+const founderMap = new Map()
+for (const s of cleanStartups) {
+  const names = String(s.founder || '').split(/\s*,\s*|\s+and\s+|\s*\+\s*co-?founders?/i).map(x=>x.replace(/\s*\([^)]*\)/g,'').trim()).filter(x=>x&&x.length>2&&!/^(unknown|co-founder|founder)$/i.test(x))
+  for (const name of names) {
+    const key=name.toLowerCase()
+    const p=founderMap.get(key)||{name,companies:[],sectors:[]}
+    if(!p.companies.some(x=>x.name===s.name))p.companies.push(s)
+    if(s.sector&&!p.sectors.includes(s.sector))p.sectors.push(s.sector)
+    founderMap.set(key,p)
+  }
+}
+const founderEntries=[...founderMap.values()].sort((a,b)=>a.name.localeCompare(b.name))
+const founderCards=founderEntries.map(f=>{
+  const profile=founderProfiles[f.name]
+  const linkedin=profile?.[0] || 'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(f.name)
+  const bio=profile?.[1] || f.name+' is listed as a founder in the Kolkata startup ecosystem. Profile enrichment is in progress.'
+  const companies=f.companies.map(x=>x.name).slice(0,2).join(' · ')
+  const image=profile?.[0] ? 'https://unavatar.io/'+encodeURIComponent(profile[0]) : 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
+  return '<article class="founder-static-card"><img src="'+image+'" alt="" loading="lazy"><div><small>'+esc(companies)+'</small><h2>'+esc(f.name)+'</h2><p>'+esc(bio)+'</p><div class="founder-static-tags">'+f.sectors.slice(0,3).map(x=>'<span>'+esc(x)+'</span>').join('')+'</div><a href="'+esc(linkedin)+'" rel="nofollow noopener">LinkedIn ↗</a></div></article>'
+}).join('')
+fs.mkdirSync(path.join(root,'founders'),{recursive:true})
+fs.writeFileSync(path.join(root,'founders','index.html'),pageHtml({
+  title:'Kolkata Startup Founders — Founders Directory',
+  description:'Meet founders building companies in Kolkata. Browse public founder profiles, companies, sectors and LinkedIn links.',
+  url:site+'/founders',eyebrow:'Kolkata founders',heading:'Meet the people building Kolkata',
+  stats:[{value:founderEntries.length,label:'founder profiles'},{value:new Set(founderEntries.flatMap(f=>f.companies.map(x=>x.name))).size,label:'companies represented'},{value:'Public source',label:'profile standard'}],
+  body:'<p class="seo-lead">A public-source founder directory connected to companies currently listed in the Kolkata Startup Map. Direct professional-profile links are included only where a profile has been verified; otherwise the page points to a LinkedIn people search.</p><div class="founder-static-grid">'+founderCards+'</div><p class="seo-freshness">Founder information can change. Check the linked professional profile and company source for current details.</p>',
+  schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Founders',url:site+'/founders',mainEntity:{'@type':'ItemList',numberOfItems:founderEntries.length,itemListElement:founderEntries.map((f,i)=>({'@type':'ListItem',position:i+1,name:f.name,url:site+'/founders/#'+slug(f.name)}))}}
+}))
+ 
 const jobLinks = jobs.map(j => '<li><a href="'+site+'/job/'+slug(j.company+'-'+j.title)+'"><b>'+esc(j.title)+'</b> at '+esc(j.company)+' · '+esc(j.mode)+(j.freshers?' · fresher-friendly':'')+'</a></li>').join('')
 fs.mkdirSync(path.join(root,'jobs'),{recursive:true})
 fs.writeFileSync(path.join(root,'jobs','index.html'), pageHtml({
