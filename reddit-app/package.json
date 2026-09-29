@@ -1,0 +1,22 @@
+{
+  "name": "kolkata-startup-map-reddit",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "devvit playtest",
+    "build": "vite build",
+    "deploy": "devvit upload",
+    "launch": "devvit publish"
+  },
+  "dependencies": {
+    "@devvit/web": "latest",
+    "hono": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest"
+  }
+}
