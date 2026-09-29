@@ -13,25 +13,25 @@ const iso = value => {
 }
 
 const urls = new Map([
-  ['/', iso(new Date()), 'daily'],
-  ['/startups', iso(new Date()), 'daily'],
-  ['/jobs', iso(new Date()), 'daily'],
-  ['/sectors', iso(new Date()), 'weekly'],
-  ['/locations', iso(new Date()), 'weekly'],
-  ['/news', iso(new Date()), 'daily']
+  ['/', [iso(new Date()), 'daily']],
+  ['/startups', [iso(new Date()), 'daily']],
+  ['/jobs', [iso(new Date()), 'daily']],
+  ['/sectors', [iso(new Date()), 'weekly']],
+  ['/locations', [iso(new Date()), 'weekly']],
+  ['/news', [iso(new Date()), 'daily']]
 ])
 
-for (const s of startups) urls.set('/startup/'+slug(s.name), iso(s.lastChecked || new Date()), 'weekly')
-for (const j of jobs) urls.set('/job/'+slug(j.company+'-'+j.title), iso(j.lastChecked || new Date()), 'daily')
-for (const n of news) if (n.slug) urls.set('/news/'+n.slug, iso(n.publishedAt || new Date()), 'daily')
+for (const s of startups) urls.set('/startup/'+slug(s.name), [iso(s.lastChecked || new Date()), 'weekly'])
+for (const j of jobs) urls.set('/job/'+slug(j.company+'-'+j.title), [iso(j.lastChecked || new Date()), 'daily'])
+for (const n of news) if (n.slug) urls.set('/news/'+n.slug, [iso(n.publishedAt || new Date()), 'daily'])
 
 const sectors = [...new Set(startups.map(s => s.sector).filter(Boolean))].sort()
-for (const sector of sectors) urls.set('/sector/'+slug(sector), iso(new Date()), 'weekly')
+for (const sector of sectors) urls.set('/sector/'+slug(sector), [iso(new Date()), 'weekly'])
 
 const areas = [...new Set(startups.map(s => s.area).filter(Boolean))].sort()
-for (const area of areas) urls.set('/location/'+slug(area), iso(new Date()), 'weekly')
+for (const area of areas) urls.set('/location/'+slug(area), [iso(new Date()), 'weekly'])
 
-const body = [...urls].map(([u,lastmod,freq]) =>
+const body = [...urls].map(([u,[lastmod,freq]]) =>
   '<url><loc>'+esc(base+u)+'</loc><lastmod>'+lastmod+'</lastmod><changefreq>'+freq+'</changefreq></url>'
 ).join('')
 
