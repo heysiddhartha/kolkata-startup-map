@@ -35,7 +35,7 @@ function pageHtml({title,description,url,eyebrow,heading,body,schema,stats=[],ro
   const content = '<div class="seo-page"><div class="seo-shell">'+
     '<header class="seo-header"><a class="seo-brand" href="'+site+'"><span>K</span><b>Kolkata Startup Map</b></a><nav aria-label="Directory">'+navHtml+'</nav></header>'+
     '<main><div class="seo-eyebrow">'+esc(eyebrow)+'</div><h1>'+esc(heading)+'</h1><div class="seo-rule"></div>'+statHtml+body+'</main>'+
-    '<footer><div><b>Kolkata Startup Map</b><span>A public-source directory of Kolkata's startup and company ecosystem.</span></div><div class="footer-links">'+navHtml+'</div><small>Built and maintained by Siddhartha Sarkar · Data is sourced from public information and should be checked at the original source.</small></footer>'+
+    '<footer><div><b>Kolkata Startup Map</b><span>A public-source directory of Kolkata startup and company ecosystem.</span></div><div class="footer-links">'+navHtml+'</div><small>Built and maintained by Siddhartha Sarkar · Data is sourced from public information and should be checked at the original source.</small></footer>'+
     '</div></div>'
   const meta =
     '<meta name="robots" content="'+robots+'"/>'+
