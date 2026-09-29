@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { startups, jobs } from '../src/data.js'
+import { loadDirectoryData } from './live-data.mjs'
+
+const { startups, jobs, live: liveData } = await loadDirectoryData()
 
 const root = path.resolve('dist')
 const site = 'https://heysiddhartha.github.io/kolkata-startup-map'
@@ -46,6 +48,24 @@ fs.writeFileSync(path.join(root,'jobs','index.html'), pageHtml({
   body:'<p>Browse the current seeded job listings and internships. Application links open the public source provided for each listing.</p><ul>'+jobLinks+'</ul><p>Listings are informational and should be checked at the application source for current availability.</p>',
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Jobs',url:site+'/jobs',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},mainEntity:{'@type':'ItemList',itemListElement:jobs.map((j,i)=>({'@type':'ListItem',position:i+1,name:j.title+' at '+j.company,url:site+'/job/'+slug(j.company+'-'+j.title)}))}}
 }))
+
+const sectors = [...new Set(startups.map(s => s.sector).filter(Boolean))].sort()
+const areas = [...new Set(startups.map(s => s.area).filter(Boolean))].sort()
+
+for (const area of areas) {
+  const matches = startups.filter(s => s.area === area)
+  const areaSlug = slug(area)
+  const url = site+'/location/'+areaSlug
+  const dir = path.join(root,'location',areaSlug)
+  fs.mkdirSync(dir,{recursive:true})
+  const links = matches.map(s => '<li><a href="'+site+'/startup/'+slug(s.name)+'">'+esc(s.name)+'</a> — '+esc(s.sector)+'</li>').join('')
+  const body = '<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="'+site+'/">Kolkata Startup Map</a> / <a href="'+site+'/startups">Directory</a> / '+esc(area)+'</nav>'+
+    '<p class="seo-lead">Startups and companies listed in '+esc(area)+', Kolkata, with public profiles, sectors and ecosystem information.</p>'+
+    '<div class="seo-callouts"><div><b>LOCALITY</b><span>'+esc(area)+'</span></div><div><b>LISTED</b><span>'+matches.length+' organisations currently listed</span></div><div><b>EXPLORE</b><span>Open individual profiles for available public details.</span></div></div>'+
+    '<ul class="seo-list">'+links+'</ul>'
+  const schema={'@context':'https://schema.org','@type':'CollectionPage',name:'Startups and Companies in '+area+', Kolkata',url,isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},mainEntity:{'@type':'ItemList',itemListElement:matches.map((s,i)=>({'@type':'ListItem',position:i+1,name:s.name,url:site+'/startup/'+slug(s.name)}))}}
+  fs.writeFileSync(path.join(dir,'index.html'), pageHtml({title:'Startups & Companies in '+area+', Kolkata — Kolkata Startup Map',description:'Explore startups and companies in '+area+', Kolkata, with public profiles and ecosystem information.',url,eyebrow:'Kolkata locality directory',heading:'Startups & Companies in '+area,body,schema}))
+}
 
 const sectors = [...new Set(startups.map(s => s.sector).filter(Boolean))].sort()
 for (const sector of sectors) {
