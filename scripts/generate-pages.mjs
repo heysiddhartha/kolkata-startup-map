@@ -26,6 +26,7 @@ const nav = [
   ['Sectors','/sectors'],
   ['Locations','/locations'],
   ['News','/news'],
+  ['Resources','/resources'],
   ['Methodology','/methodology']
 ]
 
