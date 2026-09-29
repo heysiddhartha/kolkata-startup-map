@@ -15,6 +15,7 @@ SESSION.headers.update({"User-Agent": "KolkataStartupMap/1.0 (+public ecosystem 
 SOURCES = [
     ("eChai Kolkata Startup Grid", "https://echai.ventures/kolkata/grid", "echai.ventures"),
     ("StartupBlink Kolkata", "https://www.startupblink.com/top-startups/kolkata-in", "startupblink.com"),
+    ("CompWorth Kolkata Startups", "https://compworth.com/top-100-startups-of-kolkata", "compworth.com"),
 ]
 EXCLUDED = {"events", "people", "startups", "vcs", "incubators", "coworking", "communities", "cafes", "login", "sign in", "home", "view full page", "website", "visit", "load more", "download csv file"}
 
@@ -68,6 +69,29 @@ def discover_startupblink(html, base):
     return list(found.values())
 
 
+def discover_compworth(html, base):
+    soup = BeautifulSoup(html, "html.parser")
+    found = {}
+    for row in soup.find_all("tr"):
+        cells = row.find_all(["td", "th"])
+        if len(cells) < 6:
+            continue
+        values = [" ".join(cell.stripped_strings) for cell in cells]
+        if values[0].lower() in {"ranking", "rank"} or values[1].lower() in {"company name", "company"}:
+            continue
+        name = clean_name(values[1] if len(values) > 1 else "")
+        if not name:
+            continue
+        website = ""
+        for a in row.find_all("a", href=True):
+            href = urljoin(base, a["href"])
+            if href.startswith("http") and "compworth.com" not in href:
+                website = href
+                break
+        found.setdefault(name.lower(), {"name": name, "website": website, "source_url": base})
+    return list(found.values())
+
+
 def existing_slugs():
     r = SESSION.get(f"{SUPABASE_URL}/rest/v1/startups", headers=HEADERS, params={"select": "slug", "limit": "5000"}, timeout=30)
     r.raise_for_status()
@@ -112,8 +136,12 @@ def main():
             response.raise_for_status()
             if source_host == "echai.ventures":
                 items = discover_echai(response.text, url)
-            else:
+            elif source_host == "startupblink.com":
                 items = discover_startupblink(response.text, url)
+            elif source_host == "compworth.com":
+                items = discover_compworth(response.text, url)
+            else:
+                items = []
             print(f"[{source_name}] discovered {len(items)} candidates")
             for item in items:
                 slug = slugify(item["name"])
