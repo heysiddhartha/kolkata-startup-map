@@ -15,6 +15,9 @@ SESSION.headers.update({"User-Agent": "KolkataStartupMap/1.0 (+public ecosystem 
 SOURCES = [
     ("StartupBlink Kolkata", "https://www.startupblink.com/top-startups/kolkata-in", "startupblink.com"),
     ("CompWorth Kolkata Startups", "https://compworth.com/top-100-startups-of-kolkata", "compworth.com"),
+    ("Seedtable Kolkata", "https://seedtable.com/companies/city/india/kolkata", "seedtable.com"),
+    ("Built In Kolkata", "https://builtinkolkata.in/", "builtinkolkata.in"),
+    ("Wellfound Kolkata", "https://wellfound.com/startups/location/kolkata-wb", "wellfound.com"),
 ]
 EXCLUDED = {"events", "people", "startups", "vcs", "incubators", "coworking", "communities", "cafes", "login", "sign in", "home", "view full page", "website", "visit", "load more", "download csv file"}
 
@@ -91,6 +94,27 @@ def discover_compworth(html, base):
     return list(found.values())
 
 
+
+
+def discover_generic_directory(html, base, source_host):
+    soup = BeautifulSoup(html, "html.parser")
+    found = {}
+    for a in soup.find_all("a", href=True):
+        href = urljoin(base, a["href"])
+        name = clean_name(" ".join(a.stripped_strings))
+        if not name:
+            continue
+        if source_host == "seedtable.com" and "/companies/" not in href:
+            continue
+        if source_host == "builtinkolkata.in" and not any(x in href for x in ("/company", "/companies")):
+            continue
+        if source_host == "wellfound.com" and "/company/" not in href:
+            continue
+        if href.startswith("http"):
+            found.setdefault(name.lower(), {"name": name, "website": "", "source_url": href})
+    return list(found.values())
+
+
 def existing_slugs():
     r = SESSION.get(f"{SUPABASE_URL}/rest/v1/startups", headers=HEADERS, params={"select": "slug", "limit": "5000"}, timeout=30)
     r.raise_for_status()
@@ -137,6 +161,8 @@ def main():
                 items = discover_startupblink(response.text, url)
             elif source_host == "compworth.com":
                 items = discover_compworth(response.text, url)
+            elif source_host in {"seedtable.com", "builtinkolkata.in", "wellfound.com"}:
+                items = discover_generic_directory(response.text, url, source_host)
             else:
                 items = []
             print(f"[{source_name}] discovered {len(items)} candidates")
