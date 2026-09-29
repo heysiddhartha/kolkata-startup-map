@@ -29,7 +29,8 @@ const urls = new Map([
   ['/jobs', [latestDate(jobs.map(j => j.lastSeenAt || j.datePosted)), 'daily']],
   ['/sectors', [latestDate(startups.map(s => s.lastChecked)), 'weekly']],
   ['/locations', [latestDate(startups.map(s => s.lastChecked)), 'weekly']],
-  ['/news', [latestDate(news.map(n => n.updatedAt || n.publishedAt)), 'daily']]
+  ['/news', [latestDate(news.map(n => n.updatedAt || n.publishedAt)), 'daily']],
+  ['/methodology', [siteLastmod, 'monthly']]
 ])
 
 for (const s of startups) urls.set('/startup/'+slug(s.name), [iso(s.lastChecked || new Date()), 'weekly'])
