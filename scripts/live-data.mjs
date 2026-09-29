@@ -13,14 +13,15 @@ async function fetchJson(path) {
 export async function loadDirectoryData() {
   if (!SUPABASE_KEY) {
     console.log('SUPABASE_SERVICE_ROLE_KEY not set; using seed SEO data.')
-    return { startups: seedStartups, jobs: seedJobs, news: [], live: false }
+    return { startups: seedStartups, jobs: seedJobs, news: [], resources: [], live: false }
   }
 
   try {
-    const [rows, jobRows, newsRows] = await Promise.all([
+    const [rows, jobRows, newsRows, resourceRows] = await Promise.all([
       fetchJson('startups?select=name,area,sector,stage,description,website,linkedin_url,founder,address,careers_url,last_checked_at,status,verified,logo_url,hiring_status,hiring_checked_at,location_confidence,location_type,verification_source_url,verification_checked_at&status=eq.approved&order=name'),
       fetchJson('jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,status,first_seen_at,last_seen_at,startups(name)&status=eq.live&order=created_at.desc'),
-      fetchJson('news_items?select=id,title,category,summary,source_name,source_url,published_at,verified,updated_at&status=eq.published&order=published_at.desc')
+      fetchJson('news_items?select=id,title,category,summary,source_name,source_url,published_at,verified,updated_at&status=eq.published&order=published_at.desc'),
+      fetchJson('ecosystem_resources?select=id,name,resource_type,category,description,url,source_name,location,verified,last_checked_at&status=eq.published&order=category,name')
     ])
 
     const startups = (rows || []).map(x => ({
@@ -58,6 +59,19 @@ export async function loadDirectoryData() {
       updatedAt: x.updated_at || ''
     }))
 
+    const resources = (resourceRows || []).map(x => ({
+      id: x.id,
+      name: x.name,
+      type: x.resource_type,
+      category: x.category,
+      description: x.description || '',
+      url: x.url,
+      sourceName: x.source_name,
+      location: x.location || 'Kolkata',
+      verified: !!x.verified,
+      lastCheckedAt: x.last_checked_at || ''
+    }))
+
     const jobs = (jobRows || []).map(x => ({
       company: x.startups?.name || 'Kolkata startup',
       title: x.title || 'Open role',
@@ -71,7 +85,7 @@ export async function loadDirectoryData() {
 
     if (!startups.length) throw new Error('Live startup dataset returned no approved rows')
     console.log('Loaded '+startups.length+' live startups, '+jobs.length+' live jobs and '+news.length+' news items for SEO generation.')
-    return { startups, jobs, news, live: true }
+    return { startups, jobs, news, resources, live: true }
   } catch (error) {
     console.warn('Live SEO data unavailable; using seed data:', error.message)
     return { startups: seedStartups, jobs: seedJobs, news: [], live: false }
