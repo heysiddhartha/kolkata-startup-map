@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { startups, jobs } from '../src/data.js'
+import { loadDirectoryData } from './live-data.mjs'
+
+const { startups, jobs } = await loadDirectoryData()
 
 const base = 'https://heysiddhartha.github.io/kolkata-startup-map'
 const slug = s => String(s).toLowerCase().trim().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
@@ -17,6 +19,8 @@ for (const sector of sectors) {
   const key = slug(sector)
   urls.set('/sector/'+key, ['weekly','0.8'])
 }
+const areas = [...new Set(startups.map(s => s.area).filter(Boolean))].sort()
+for (const area of areas) urls.set('/location/'+slug(area), ['weekly','0.8'])
 
 
 const body = [...urls].map(([u,m]) =>
