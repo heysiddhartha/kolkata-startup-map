@@ -6,6 +6,8 @@ const { startups, jobs, news = [] } = await loadDirectoryData()
 
 const base = 'https://heysiddhartha.github.io/kolkata-startup-map'
 const slug = s => String(s ?? '').toLowerCase().trim().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+const cleanArea = value => /area not specified/i.test(String(value||'')) ? 'Kolkata' : String(value||'Kolkata').trim() || 'Kolkata'
+const cleanSector = value => String(value||'Other').trim() || 'Other'
 const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 const iso = value => {
   const d = new Date(value)
@@ -25,10 +27,10 @@ for (const s of startups) urls.set('/startup/'+slug(s.name), [iso(s.lastChecked 
 for (const j of jobs) urls.set('/job/'+slug(j.company+'-'+j.title), [iso(j.lastChecked || new Date()), 'daily'])
 for (const n of news) if (n.slug) urls.set('/news/'+n.slug, [iso(n.publishedAt || new Date()), 'daily'])
 
-const sectors = [...new Set(startups.map(s => s.sector).filter(Boolean))].sort()
+const sectors = [...new Set(startups.map(s => cleanSector(s.sector)).filter(Boolean))].sort()
 for (const sector of sectors) urls.set('/sector/'+slug(sector), [iso(new Date()), 'weekly'])
 
-const areas = [...new Set(startups.map(s => s.area).filter(Boolean))].sort()
+const areas = [...new Set(startups.map(s => cleanArea(s.area)).filter(Boolean))].sort()
 for (const area of areas) urls.set('/location/'+slug(area), [iso(new Date()), 'weekly'])
 
 const body = [...urls].map(([u,[lastmod,freq]]) =>
