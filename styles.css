@@ -609,3 +609,11 @@ body{background:var(--bg)}
 @media(max-width:900px){.top-nav-link{display:none}.toolbar-context{order:-2}.grid-wrap{padding-inline:12px}.grid-wrap>.grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
 @media(max-width:650px){.topbar .brand small{display:none}.toolbar-context{width:100%;padding-bottom:2px}.grid-toolbar{align-items:flex-start;flex-direction:column}.grid-toolbar label{width:100%;justify-content:space-between}.grid-toolbar select{flex:1}.grid-wrap>.grid{grid-template-columns:1fr}}
 .grid-incomplete{display:inline-flex;margin-top:5px;margin-left:5px;padding:4px 7px;border-radius:999px;background:color-mix(in srgb,var(--accent-warm) 11%,transparent);color:var(--muted);font-size:8px;font-weight:800}
+/* Reference typography: typewriter-style serif monospace */
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+:root{--font-reference:'Courier Prime','Courier New',Courier,monospace}
+body,.app,.topbar,.toolbar,.hero,.grid-card,.jobs,.news-panel,.modal,.detail,.seo-page{font-family:var(--font-reference)!important}
+.topbar,.topbar *,.toolbar,.toolbar *{letter-spacing:.13em}
+.topbar b,.hero h1,.hero h2,.section-title,.grid-card h3,.jobs h2,.news-panel h2{font-weight:400}
+.grid-card h3,.jobs h2,.news-panel h2{letter-spacing:.045em}
+.topbar small,.eyebrow,.grid-toolbar,.grid-toolbar select,.grid-card small,.grid-card-links a,.grid-hiring,.grid-incomplete{letter-spacing:.08em}
