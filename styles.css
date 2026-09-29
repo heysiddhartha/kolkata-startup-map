@@ -621,3 +621,12 @@ body,.app,.topbar,.toolbar,.hero,.grid-card,.jobs,.news-panel,.modal,.detail,.se
 /* Reference palette only — layout/design remains unchanged */
 :root{--bg:#f5f0e7;--surface:#fbf8f1;--surface2:#e8dfcf;--text:#20201d;--muted:#6f6d64;--line:#d8d0c2;--accent:#d8ad35;--accent-warm:#d8ad35;--accent-red:#8b3b32;--accent-green:#385a49;--green:#385a49;--glass:rgba(251,248,241,.72);--glass-strong:rgba(251,248,241,.94);--glass-line:rgba(47,42,34,.16)}
 html[data-theme=dark]{--bg:#1d211e;--surface:#252a26;--surface2:#31362f;--text:#f3eee3;--muted:#aaa99e;--line:#464b44;--accent:#d8b348;--accent-warm:#d8b348;--accent-red:#c47769;--accent-green:#7fa995;--green:#7fa995;--glass:rgba(37,42,38,.72);--glass-strong:rgba(37,42,38,.94);--glass-line:rgba(243,238,227,.15)}
+
+/* Toolbar hierarchy: separate discovery from filtering */
+.toolbar{display:grid;grid-template-columns:auto auto minmax(280px,1fr) auto minmax(620px,auto);align-items:center;gap:10px 12px;padding:10px clamp(16px,5vw,76px);}
+.toolbar-filters{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:9px 0 1px;border-top:1px solid var(--line);}
+.toolbar-filters select{min-width:145px;height:38px;}
+.filter-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-right:6px;}
+@media(max-width:1300px){.toolbar{grid-template-columns:auto auto minmax(260px,1fr) auto}.toolbar-filters{grid-column:1/-1}.toolbar-filters select{flex:1;min-width:0}}
+@media(max-width:800px){.toolbar{display:flex;flex-wrap:wrap}.toolbar-context{order:0}.toolbar .search{order:1;width:100%;max-width:none}.toolbar .toggle{order:2}.toolbar .news-toggle{order:3}.toolbar-filters{order:4;width:100%;overflow-x:auto;padding-bottom:3px}.toolbar-filters select{flex:0 0 150px}}
+@media(max-width:650px){.toolbar-filters{gap:6px}.filter-label{display:none}.toolbar-filters select{flex-basis:140px}}
