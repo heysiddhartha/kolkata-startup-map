@@ -34,6 +34,15 @@ SOURCES = [
     ("YourStory", "https://yourstory.com/tag/kolkata", "Startup"),
     ("Entrackr", "https://entrackr.com/tag/kolkata/", "Funding"),
     ("BW Businessworld", "https://www.businessworld.in/topic/Startups", "Startup"),
+    ("Indian Express Kolkata", "https://indianexpress.com/section/cities/kolkata/", "Local"),
+    ("Indian Express Business", "https://indianexpress.com/section/business/", "Business"),
+    ("The Hindu Kolkata", "https://www.thehindu.com/news/cities/kolkata/", "Local"),
+    ("The Hindu Business", "https://www.thehindu.com/business/", "Business"),
+    ("Moneycontrol Startup", "https://www.moneycontrol.com/news/business/startup/", "Funding"),
+    ("ET Startup", "https://economictimes.indiatimes.com/tech/startups", "Funding"),
+    ("TechCircle", "https://www.techcircle.in/", "Startup"),
+    ("Inc42 Kolkata", "https://inc42.com/tag/kolkata/", "Startup"),
+    ("Headstart Kolkata", "https://www.meetup.com/headstart-kolkata/events/calendar/", "Event"),
 ]
 
 KOLKATA_TERMS = (
