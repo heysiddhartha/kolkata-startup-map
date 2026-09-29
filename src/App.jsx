@@ -51,24 +51,8 @@ function mapClusterIcon(count){
  return L.divIcon({className:'startup-cluster-wrap',html,iconSize:[size,size],iconAnchor:[size/2,size/2]})
 }
 function MapMarkers({items,markerPositions,onSelect,isOfficialUrl}){
- const map=useMap(),[zoom,setZoom]=useState(map.getZoom())
- useEffect(()=>{const onZoom=()=>setZoom(map.getZoom());map.on('zoomend',onZoom);return()=>map.off('zoomend',onZoom)},[map])
- const clusters=useMemo(()=>{
-  const mapped=items.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lng))
-  if(zoom>=15)return mapped.map(s=>({type:'company',s,position:markerPositions.get(s.name)||[s.lat,s.lng]}))
-  const step=zoom<=12?0.018:zoom<=13?0.009:0.0045
-  const groups=new Map()
-  mapped.forEach(s=>{const p=markerPositions.get(s.name)||[s.lat,s.lng];const key=Math.floor(p[0]/step)+':'+Math.floor(p[1]/step);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(s)})
-  return [...groups.values()].map(group=>{
-   if(group.length===1){const s=group[0];return {type:'company',s,position:markerPositions.get(s.name)||[s.lat,s.lng]}}
-   const lat=group.reduce((a,s)=>a+s.lat,0)/group.length,lng=group.reduce((a,s)=>a+s.lng,0)/group.length
-   return {type:'cluster',group,position:[lat,lng]}
-  })
- },[items,markerPositions,zoom])
- return <>{clusters.map(c=>c.type==='cluster'
-  ? <Marker key={'cluster-'+c.position.join('-')} position={c.position} icon={mapClusterIcon(c.group.length)} eventHandlers={{click:()=>map.setView(c.position,Math.min(map.getZoom()+2,18),{animate:true})}}><Popup><b>{c.group.length} companies in this area</b><br/><small>Zoom in to see individual companies.</small></Popup></Marker>
-  : <Marker key={c.s.name} position={c.position} icon={mapCompanyIcon(c.s)} eventHandlers={{click:()=>onSelect(c.s)}}><Popup><b>{c.s.name}</b><br/>{c.s.sector} · {c.s.area}<br/><span>{c.s.desc}</span><br/><small>{c.s.locationType==='headquarters'?'Kolkata HQ':c.s.locationType==='registered_office'?'Registered office':c.s.locationType==='kolkata_office'?'Kolkata office':'Kolkata connection'} · {c.s.locationConfidence==='approximate'?'Approximate map point':'Public-source location'}</small><br/>{isOfficialUrl(c.s.url)?<a href={c.s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>
- )}</>
+ const mapped=items.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lng))
+ return <>{mapped.map(s=><Marker key={s.name} position={markerPositions.get(s.name)||[s.lat,s.lng]} icon={mapCompanyIcon(s)} eventHandlers={{click:()=>onSelect(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/><small>{s.locationType==='headquarters'?'Kolkata HQ':s.locationType==='registered_office'?'Registered office':s.locationType==='kolkata_office'?'Kolkata office':'Kolkata connection'} · {s.locationConfidence==='approximate'?'Approximate map point':'Public-source location'}</small><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>)}</>
 }
 
 function App(){
