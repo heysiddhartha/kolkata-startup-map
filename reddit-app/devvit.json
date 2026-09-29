@@ -1,0 +1,15 @@
+{
+  "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
+  "name": "kolkata-startup-map",
+  "server": {
+    "entry": "dist/server/index.cjs"
+  },
+  "permissions": {
+    "reddit": {
+      "asUser": [
+        "SUBMIT_POST",
+        "SUBMIT_COMMENT"
+      ]
+    }
+  }
+}
