@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Refresh founder image URLs
+        run: node scripts/refresh-founder-images.mjs
+
       - name: Build React app
         env:
           VITE_CARTO_API_KEY: ${{ secrets.VITE_CARTO_API_KEY }}
