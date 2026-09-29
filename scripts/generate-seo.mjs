@@ -31,6 +31,7 @@ const urls = new Map([
   ['/locations', [latestDate(startups.map(s => s.lastChecked)), 'weekly']],
   ['/news', [latestDate(news.map(n => n.updatedAt || n.publishedAt)), 'daily']],
   ['/resources', [latestDate(resources.map(r => r.lastCheckedAt)), 'weekly']],
+  ['/ecosystem', [siteLastmod, 'weekly']],
   ['/methodology', [siteLastmod, 'monthly']]
 ])
 
