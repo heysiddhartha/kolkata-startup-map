@@ -652,7 +652,13 @@ html[data-theme=dark]{--bg:#1d211e;--surface:#252a26;--surface2:#31362f;--text:#
 html[data-theme=dark] .topbar nav,html[data-theme=dark] .seo-header nav{background:rgba(37,42,38,.58);box-shadow:0 8px 30px rgba(0,0,0,.18)}
 html[data-theme=dark] .topbar .top-nav-link:hover,html[data-theme=dark] .seo-header nav a:hover{background:rgba(255,255,255,.08)}
 
-/* UX polish: make active state and reset actions obvious */
+/* Toolbar cleanup */
+.toolbar{grid-template-columns:auto auto minmax(320px,520px) auto;justify-content:start}
+.toolbar-filters{gap:10px}
+.filter-label{margin-right:4px;font-weight:700}
+.active-filter-count{margin-right:2px}
+@media(max-width:1300px){.toolbar{grid-template-columns:auto auto minmax(260px,1fr) auto}}
+\n/* UX polish: make active state and reset actions obvious */
 .active-filter-count{font-size:8px;color:var(--accent-green);white-space:nowrap;padding:5px 7px;border:1px solid color-mix(in srgb,var(--accent-green) 28%,transparent);border-radius:999px;background:color-mix(in srgb,var(--accent-green) 7%,transparent)}
 .clear-filters{border:0;background:transparent;color:var(--accent-red);font:inherit;font-size:9px;letter-spacing:.08em;padding:7px 3px;cursor:pointer;white-space:nowrap;text-decoration:underline;text-underline-offset:3px}.clear-filters:hover{opacity:.75}
 .search{position:relative}.search input{padding-right:74px!important}.search-clear{position:absolute;right:43px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);font-size:17px;line-height:1;padding:2px;cursor:pointer}.search-clear:hover{color:var(--text)}
