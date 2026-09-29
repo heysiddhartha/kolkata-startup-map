@@ -22,7 +22,7 @@ const areaNames = [...new Set(cleanStartups.map(s => s.area))].sort()
 
 const nav = [
   ['Directory','/startups'],
-  ['Founders','/founders'],
+  ['Founders','/foundersandceos'],
   ['Jobs','/jobs'],
   ['Sectors','/sectors'],
   ['Locations','/locations'],
@@ -161,13 +161,15 @@ fs.writeFileSync(path.join(root,'startups','index.html'), pageHtml({
 }))
 
 const founderProfiles = {
-  'Sagar J Daryani': ['https://in.linkedin.com/in/sagar-j-daryani-950085b7','Co-founder & CEO of Wow! Momo, building a Kolkata-born food and consumer brand.','https://etimg.etb2bimg.com/authorthumb/479263700.cms?height=250&imgsize=26386&width=250'],
-  'Gaurav Jalan': ['https://in.linkedin.com/in/gauravjalan','Founder & CEO of mPokket, a Kolkata-based fintech platform.','https://cdn.mpokket.in/leadership_2_3d8f843f31.png'],
-  'Sujay Santra': ['https://in.linkedin.com/in/sujay-santra-ikure','Founder & CEO of iKure, focused on technology-enabled primary healthcare.','https://images.yourstory.com/cs/wordpress/2013/10/sujay_santra_20130831.jpg?auto=format&fm=png'],
-  'Ranodeep Saha': ['https://in.linkedin.com/in/ranodeep-saha-rareplanet','Co-founder of Rare Planet, building a retail and D2C business around Indian handicrafts.','https://alumni.makautwb.ac.in/assets/img/testimonials/RanodeepSaha.jpg'],
-  'Vineet Patawari': ['https://in.linkedin.com/in/vineet-patawari','CEO and Co-Founder of StockEdge, focused on financial-market education and technology.','https://d24uab5gycr2uz.cloudfront.net/uploads/white_theme/images/about_us/founder_img2.webp'],
-  'Vivek Bajaj': ['https://in.linkedin.com/in/vbajaj','Entrepreneur behind Elearnmarkets and StockEdge, focused on financial education and market technology.','https://d24uab5gycr2uz.cloudfront.net/uploads/white_theme/images/about_us/founder_img1.webp'],
-  'Tinku Acharya': ['https://in.linkedin.com/in/tinkuacharya','Founder of Videonetics and a researcher, inventor and technologist working across AI and video intelligence.','https://upload.wikimedia.org/wikipedia/commons/d/de/Tinku_Acharya_-_Kolkata_2015-03-27_4646.JPG']
+  'Anooshka Soham Bathwal': {linkedin:'https://in.linkedin.com/in/anooshkasohambathwal', company:'Dhanvesttor', role:'Founder & CEO', sector:'Fintech', bio:'Founder & CEO of Dhanvesttor, a Kolkata-based wealth-management firm focused on making women more confident in finance.', image:'https://dhanvesttor.com/wp-content/uploads/2025/02/Anooshka-Soham-Bathwal-CEO-Founder-of-Dhanvesttor.jpg'},
+  'Gaurav Jalan': {linkedin:'https://in.linkedin.com/in/gauravjalan', company:'mPokket', role:'Founder & CEO', sector:'Fintech', bio:'Founder & CEO of mPokket, a Kolkata-based fintech platform.', image:'https://cdn.mpokket.in/leadership_2_3d8f843f31.png'},
+  'Prabir Sarkar': {linkedin:'https://www.linkedin.com/search/results/people/?keywords=Prabir%20Sarkar%20DSMenu', company:'DSMenu', role:'Founder', sector:'SaaS & Software', bio:'Founder of DSMenu, a Kolkata-based digital-menu and signage SaaS platform.', image:'https://unavatar.io/https://www.linkedin.com/in/prabirsarkar/'},
+  'Ranodeep Saha': {linkedin:'https://in.linkedin.com/in/ranodeep-saha-rareplanet', company:'Rare Planet', role:'Co-founder', sector:'Consumer & D2C', bio:'Co-founder of Rare Planet, building a retail and D2C business around Indian handicrafts.', image:'https://alumni.makautwb.ac.in/assets/img/testimonials/RanodeepSaha.jpg'},
+  'Sagar J Daryani': {linkedin:'https://in.linkedin.com/in/sagar-j-daryani-950085b7', company:'Wow! Momo', role:'Co-founder & CEO', sector:'Food & Consumer', bio:'Co-founder & CEO of Wow! Momo, building a Kolkata-born food and consumer brand.', image:'https://etimg.etb2bimg.com/authorthumb/479263700.cms?height=250&imgsize=26386&width=250'},
+  'Sujay Santra': {linkedin:'https://in.linkedin.com/in/sujay-santra-ikure', company:'iKure', role:'Founder & CEO', sector:'Healthtech & Healthcare', bio:'Founder & CEO of iKure, focused on technology-enabled primary healthcare.', image:'https://images.yourstory.com/cs/wordpress/2013/10/sujay_santra_20130831.jpg?auto=format&fm=png'},
+  'Tinku Acharya': {linkedin:'https://in.linkedin.com/in/tinkuacharya', company:'Videonetics', role:'Founder & Chairman', sector:'AI & Deeptech', bio:'Founder of Videonetics and a technologist working across AI and video intelligence.', image:'https://upload.wikimedia.org/wikipedia/commons/d/de/Tinku_Acharya_-_Kolkata_2015-03-27_4646.JPG'},
+  'Vineet Patawari': {linkedin:'https://in.linkedin.com/in/vineet-patawari', company:'Elearnmarkets / StockEdge', role:'Co-founder', sector:'Fintech', bio:'Co-founder of Elearnmarkets and StockEdge, focused on financial-market education and technology.', image:'https://d24uab5gycr2uz.cloudfront.net/uploads/white_theme/images/about_us/founder_img2.webp'},
+  'Vivek Bajaj': {linkedin:'https://in.linkedin.com/in/vbajaj', company:'Elearnmarkets / StockEdge', role:'Founder', sector:'Fintech', bio:'Entrepreneur behind Elearnmarkets and StockEdge, focused on financial education and market technology.', image:'https://d24uab5gycr2uz.cloudfront.net/uploads/white_theme/images/about_us/founder_img1.webp'}
 }
 const founderMap = new Map()
 for (const s of cleanStartups) {
@@ -180,18 +182,26 @@ for (const s of cleanStartups) {
     founderMap.set(key,p)
   }
 }
+for (const [name,data] of Object.entries(founderProfiles)) {
+  const key=name.toLowerCase()
+  const p=founderMap.get(key)||{name,companies:[],sectors:[]}
+  if(data.company && !p.companies.some(x=>x.name===data.company))p.companies.push({name:data.company,sector:data.sector,stage:'Public founder profile'})
+  if(data.sector&&!p.sectors.includes(data.sector))p.sectors.push(data.sector)
+  founderMap.set(key,p)
+}
 const founderEntries=[...founderMap.values()].sort((a,b)=>a.name.localeCompare(b.name))
 const founderCards=founderEntries.map(f=>{
   const profile=founderProfiles[f.name]
-  const linkedin=profile?.[0] || 'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(f.name)
-  const bio=profile?.[1] || f.name+' is listed as a founder in the Kolkata startup ecosystem. Profile enrichment is in progress.'
+  const linkedin=profile?.linkedin || 'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(f.name)
+  const bio=profile?.bio || f.name+' is listed as a founder in the Kolkata startup ecosystem. Profile enrichment is in progress.'
   const companies=f.companies.map(x=>x.name).slice(0,2).join(' · ')
-  const image=profile?.[2] || 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
+  const image=profile?.image || 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
   const href=site+'/founders/'+slug(f.name)+'/'
   return '<a class="founder-static-card" href="'+href+'"><div class="founder-static-image"><img src="'+image+'" alt="" loading="lazy"><span class="founder-static-brand">KOLKATA<br>STARTUP<br>MAP</span><span class="founder-static-label">FOUNDERS & CEOs<br><b>TOP PROFILE</b></span><div class="founder-static-gradient"></div><div class="founder-static-caption"><small>'+esc(companies)+'</small><h2>'+esc(f.name)+'</h2><p>'+esc(bio)+'</p></div></div></a>'
 }).join('')
 fs.mkdirSync(path.join(root,'founders'),{recursive:true})
-fs.writeFileSync(path.join(root,'founders','index.html'),pageHtml({
+fs.mkdirSync(path.join(root,'foundersandceos'),{recursive:true})
+const foundersIndexHtml=pageHtml({
   title:'Kolkata Startup Founders — Founders & CEOs Directory',
   description:'Meet the founders and CEOs building companies connected to Kolkata. Browse public founder profiles, companies and professional links.',
   url:site+'/founders',eyebrow:'Kolkata founders & CEOs',heading:'Meet the people building Kolkata',
@@ -199,11 +209,13 @@ fs.writeFileSync(path.join(root,'founders','index.html'),pageHtml({
   body:'<style>.founder-static-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;margin:30px 0}.founder-static-card{display:block;text-decoration:none;color:#fff;background:#050505;min-height:420px;overflow:hidden}.founder-static-image{position:relative;height:420px;background:#111;overflow:hidden}.founder-static-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(100%);opacity:.9;transition:transform .4s ease}.founder-static-card:hover img{transform:scale(1.04)}.founder-static-gradient{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.16),rgba(0,0,0,.04) 40%,rgba(0,0,0,.9))}.founder-static-brand,.founder-static-label{position:absolute;z-index:2;top:17px;font-size:7px;line-height:1.15;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.founder-static-brand{left:17px;color:#ffd400}.founder-static-label{right:17px;color:#fff;text-align:right}.founder-static-label b{display:block;color:#ffd400;margin-top:4px}.founder-static-caption{position:absolute;z-index:2;left:17px;right:17px;bottom:18px}.founder-static-caption small{display:block;color:#ddd;font-size:7px;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.founder-static-caption h2{font-size:22px;line-height:1;margin:6px 0;color:#ffd400;text-transform:uppercase;letter-spacing:-.035em}.founder-static-caption p{font-size:9px;line-height:1.45;color:#ddd;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}@media(max-width:1050px){.founder-static-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:800px){.founder-static-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.founder-static-grid{grid-template-columns:1fr 1fr;gap:10px}.founder-static-image{height:300px}.founder-static-caption h2{font-size:15px}.founder-static-caption p{font-size:8px}}</style><p class="seo-lead">A public-source founder directory connected to companies currently listed in the Kolkata Startup Map. Click any founder to open a dedicated profile with their company, bio and public professional links.</p><div class="founder-static-grid">'+founderCards+'</div><p class="seo-freshness">Founder information can change. Check the linked professional profile and company source for current details.</p>',
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Founders',url:site+'/founders',mainEntity:{'@type':'ItemList',numberOfItems:founderEntries.length,itemListElement:founderEntries.map((f,i)=>({'@type':'ListItem',position:i+1,name:f.name,url:site+'/founders/'+slug(f.name)}))}}
 }))
+fs.writeFileSync(path.join(root,'founders','index.html'),foundersIndexHtml)
+fs.writeFileSync(path.join(root,'foundersandceos','index.html'),foundersIndexHtml.replaceAll(site+'/founders',site+'/foundersandceos'))
 for(const f of founderEntries){
   const profile=founderProfiles[f.name]
-  const linkedin=profile?.[0] || 'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(f.name)
-  const bio=profile?.[1] || f.name+' is listed as a founder in the Kolkata startup ecosystem. Profile enrichment is in progress.'
-  const image=profile?.[0] ? 'https://unavatar.io/'+encodeURIComponent(profile[0]) : 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
+  const linkedin=profile?.linkedin || 'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(f.name)
+  const bio=profile?.bio || f.name+' is listed as a founder in the Kolkata startup ecosystem. Profile enrichment is in progress.'
+  const image=profile?.linkedin ? 'https://unavatar.io/'+encodeURIComponent(profile.image) : 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
   const companyRows=f.companies.map(x=>'<div class="founder-company-row"><b>'+esc(x.name)+'</b><span>'+esc(x.sector||'Startup')+'</span></div>').join('')
   fs.mkdirSync(path.join(root,'founders',slug(f.name)),{recursive:true})
   fs.writeFileSync(path.join(root,'founders',slug(f.name),'index.html'),pageHtml({
