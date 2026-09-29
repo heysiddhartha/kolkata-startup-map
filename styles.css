@@ -617,3 +617,342 @@ body,.app,.topbar,.toolbar,.hero,.grid-card,.jobs,.news-panel,.modal,.detail,.se
 .topbar b,.hero h1,.hero h2,.section-title,.grid-card h3,.jobs h2,.news-panel h2{font-weight:400}
 .grid-card h3,.jobs h2,.news-panel h2{letter-spacing:.045em}
 .topbar small,.eyebrow,.grid-toolbar,.grid-toolbar select,.grid-card small,.grid-card-links a,.grid-hiring,.grid-incomplete{letter-spacing:.08em}
+
+/* L'espace-inspired editorial direction — adapted for Kolkata Startup Map */
+:root{
+  --bg:#f5f0e7;
+  --surface:#fbf8f1;
+  --surface2:#e8dfcf;
+  --text:#20201d;
+  --muted:#6f6d64;
+  --line:#d8d0c2;
+  --accent-warm:#d8ad35;
+  --accent-red:#8b3b32;
+  --accent-green:#385a49;
+  --glass:rgba(251,248,241,.72);
+  --glass-strong:rgba(251,248,241,.94);
+  --glass-line:rgba(47,42,34,.16);
+  --shadow:0 24px 70px rgba(54,43,28,.10);
+}
+html[data-theme=dark]{
+  --bg:#1d211e;
+  --surface:#252a26;
+  --surface2:#31362f;
+  --text:#f3eee3;
+  --muted:#aaa99e;
+  --line:#464b44;
+  --accent-warm:#d8b348;
+  --accent-red:#c47769;
+  --accent-green:#7fa995;
+  --glass:rgba(37,42,38,.72);
+  --glass-strong:rgba(37,42,38,.94);
+  --glass-line:rgba(243,238,227,.15);
+  --shadow:0 24px 70px rgba(0,0,0,.25);
+}
+
+/* Quiet, editorial navigation */
+.topbar{
+  height:82px;
+  padding:0 clamp(22px,5vw,76px);
+  background:rgba(251,248,241,.88);
+  border-bottom:1px solid var(--line);
+  box-shadow:none;
+}
+html[data-theme=dark] .topbar{background:rgba(37,42,38,.88)}
+.brand{font-weight:400;letter-spacing:.02em}
+.brand-mark{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--accent-warm);color:#27231b;
+  font-family:Georgia,serif;font-size:14px;
+}
+.brand-copy{gap:2px}
+.brand-copy small{font-weight:400;letter-spacing:.14em}
+.top-nav-link{font-weight:400;text-transform:lowercase;letter-spacing:.12em;font-size:11px}
+.top-actions{gap:22px}
+.top-actions .ghost{border:0;background:transparent;border-radius:0;padding:7px 0;font-weight:400;letter-spacing:.12em}
+.top-actions .ghost:hover{background:transparent;transform:none;color:var(--accent-red)}
+.jobs-link{letter-spacing:.12em}
+
+/* Spacious, magazine-like hero */
+.hero{
+  max-width:none;
+  min-height:590px;
+  padding:clamp(60px,8vw,120px) clamp(22px,8vw,120px) clamp(55px,7vw,100px);
+  background:var(--bg);
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero:before{
+  content:'';
+  position:absolute;
+  width:min(42vw,560px);height:min(42vw,560px);
+  right:7%;top:9%;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--accent-warm) 16%,transparent);
+  filter:blur(1px);
+}
+.hero-copy{position:relative;z-index:2;max-width:760px}
+.hero-kicker{
+  font-size:10px;letter-spacing:.22em;text-transform:lowercase;
+  color:var(--accent-red);font-weight:400;
+}
+.hero h1{
+  font-family:Georgia,'Times New Roman',serif!important;
+  font-size:clamp(58px,8vw,118px);
+  line-height:.86;
+  letter-spacing:-.065em;
+  font-weight:400;
+  max-width:850px;
+  margin:24px 0 28px;
+}
+.hero h1 em{color:var(--accent-green);font-style:italic}
+.hero p{
+  max-width:560px;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--muted);
+}
+.hero-actions{gap:24px;margin-top:28px}
+.hero-link{
+  color:var(--text);
+  text-decoration:none;
+  border-bottom:1px solid var(--text);
+  padding-bottom:5px;
+  font-size:10px;
+  letter-spacing:.13em;
+  text-transform:lowercase;
+}
+.hero-link:hover{color:var(--accent-red);border-color:var(--accent-red)}
+.hero-side{position:relative;z-index:2}
+.stats{
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  gap:0;
+}
+.stats>div{
+  border-left:1px solid var(--line)!important;
+  padding:8px 20px;
+  min-width:105px;
+}
+.stats strong{
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:400;
+  font-size:32px;
+}
+.stats span{letter-spacing:.16em;font-weight:400}
+
+/* Editorial controls instead of dashboard controls */
+.toolbar{
+  padding:14px clamp(16px,5vw,76px);
+  background:var(--surface);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  box-shadow:none;
+}
+.toolbar-context b{font-family:Georgia,serif;font-weight:400;font-size:18px}
+.search{
+  border:0!important;
+  border-bottom:1px solid var(--line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.search input{font-size:11px;letter-spacing:.06em}
+.toolbar select,.grid-toolbar select,.job-filters select{
+  border:0!important;
+  border-bottom:1px solid var(--line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  padding-left:2px;
+  letter-spacing:.1em;
+}
+
+/* Map: keep it clean and let the editorial panels float over it */
+.content{background:var(--bg)}
+.side,.news-panel{
+  border:1px solid var(--glass-line);
+  border-radius:0;
+  background:var(--glass);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(20px);
+}
+.side-head,.news-head{
+  border-bottom:1px solid var(--line);
+  padding:18px;
+  height:auto;
+}
+.side-head strong,.news-head b{font-family:Georgia,serif;font-size:20px;font-weight:400}
+.card{
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  padding:18px;
+  background:transparent;
+}
+.card:hover{
+  transform:none;
+  box-shadow:inset 3px 0 0 var(--accent-warm);
+  background:color-mix(in srgb,var(--accent-warm) 5%,transparent);
+}
+.card h3{font-family:Georgia,serif;font-weight:400;font-size:16px}
+.tag{border-radius:0;background:var(--surface2);font-weight:400;letter-spacing:.07em}
+.company-status{border-radius:0!important;font-weight:400}
+
+/* Directory: fewer boxes, more editorial rhythm */
+.grid-wrap{padding:clamp(35px,6vw,75px) clamp(18px,7vw,105px) 90px}
+.grid-toolbar{
+  max-width:1380px;
+  border:0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  background:transparent;
+  padding:14px 0;
+  backdrop-filter:none;
+}
+.grid-wrap>.grid{max-width:1380px;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+.grid-card{
+  min-height:285px;
+  padding:28px 26px;
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line);
+  border-radius:0;
+  background:transparent;
+  backdrop-filter:none;
+  box-shadow:none;
+}
+.grid-card:nth-child(3n){border-right:0}
+.grid-card:hover{
+  transform:none;
+  border-color:var(--line);
+  box-shadow:none;
+  background:color-mix(in srgb,var(--accent-warm) 6%,transparent);
+}
+.grid-card-top{align-items:flex-start}
+.grid-logo{
+  width:50px;height:50px;flex-basis:50px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--surface);
+}
+.grid-logo img{width:34px;height:34px;border-radius:50%}
+.grid-logo span{font-family:Georgia,serif;font-weight:400}
+.grid-card h3{
+  font-family:Georgia,'Times New Roman',serif!important;
+  font-size:21px;
+  line-height:1.05;
+  font-weight:400;
+  letter-spacing:-.025em;
+}
+.grid-card p{font-size:11px;line-height:1.75;min-height:74px}
+.grid-hiring,.grid-incomplete{
+  border-radius:0;
+  background:transparent;
+  border-left:2px solid var(--accent-green);
+  padding:3px 7px;
+  font-weight:400;
+}
+.grid-card-links{gap:16px}
+.grid-card-links a{
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  background:transparent;
+  padding:5px 0;
+  font-weight:400;
+}
+
+/* Long-form sections use large type and restrained borders */
+.jobs,.ecosystem{
+  padding:clamp(65px,9vw,120px) clamp(18px,7vw,105px);
+  background:var(--surface);
+  border-top:1px solid var(--line);
+}
+.jobs-head,.ecosystem-head{max-width:1380px;margin:0 auto 38px}
+.jobs-head h2,.ecosystem-head h2{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:clamp(38px,5vw,68px);
+  font-weight:400;
+  letter-spacing:-.055em;
+}
+.job-list{max-width:1380px;grid-template-columns:1fr 1fr;gap:0}
+.job{
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  background:transparent;
+  padding:22px 8px;
+}
+.job:hover{transform:none;background:color-mix(in srgb,var(--accent-warm) 5%,transparent);box-shadow:none}
+.job b{font-family:Georgia,serif;font-weight:400;font-size:16px}
+.ecosystem-grid{max-width:1380px;gap:0}
+.ecosystem-card{
+  border:0;
+  border-top:1px solid var(--line);
+  border-radius:0;
+  background:transparent;
+  padding:28px 22px 32px 0;
+  min-height:220px;
+  box-shadow:none;
+}
+.ecosystem-card:hover{transform:none;box-shadow:none;background:color-mix(in srgb,var(--accent-green) 5%,transparent)}
+
+/* Footer and modal */
+.site-footer{
+  padding:70px clamp(18px,7vw,105px);
+  background:var(--accent-green);
+  color:#f7f1e6;
+  border-top:0;
+}
+.site-footer span,.site-footer small,.site-footer a{color:#e3e0d5}
+.site-footer .creator-credit{border-color:rgba(255,255,255,.2)}
+.detail-backdrop{background:rgba(31,31,27,.62)}
+.detail{
+  border:0;
+  border-radius:0;
+  background:var(--surface);
+  box-shadow:0 30px 100px rgba(0,0,0,.25);
+}
+.detail h2{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:46px;
+  font-weight:400;
+}
+
+/* Small vertical editorial markers */
+.hero-note,.data-notice{
+  border-radius:0;
+  border-left:2px solid var(--accent-warm);
+  background:transparent;
+}
+
+/* Mobile */
+@media(max-width:900px){
+  .hero{min-height:520px}
+  .grid-wrap>.grid{grid-template-columns:1fr 1fr}
+  .grid-card:nth-child(3n){border-right:1px solid var(--line)}
+  .grid-card:nth-child(2n){border-right:0}
+}
+@media(max-width:650px){
+  .topbar{height:72px;padding:0 18px}
+  .top-actions{gap:14px}
+  .hero{padding:65px 22px 55px!important;min-height:540px}
+  .hero h1{font-size:58px!important}
+  .hero:before{width:300px;height:300px;right:-90px;top:20%}
+  .stats{width:100%}
+  .stats>div{padding:8px 13px;min-width:0}
+  .stats strong{font-size:24px}
+  .grid-wrap{padding:45px 18px 60px}
+  .grid-wrap>.grid{grid-template-columns:1fr}
+  .grid-card{border-right:0!important;min-height:240px;padding:24px 4px}
+  .jobs,.ecosystem{padding:60px 18px}
+  .job-list{grid-template-columns:1fr}
+  .site-footer{padding:55px 18px}
+}
+
+/* Remove the earlier typewriter override from the visual hierarchy */
+body,.app,.topbar,.toolbar,.hero,.grid-card,.jobs,.news-panel,.modal,.detail,.seo-page{
+  font-family:Inter,Helvetica Neue,Arial,sans-serif!important;
+}
