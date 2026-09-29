@@ -33,7 +33,10 @@ const urls = new Map([
   ['/methodology', [siteLastmod, 'monthly']]
 ])
 
-for (const s of startups) urls.set('/startup/'+slug(s.name), [iso(s.lastChecked || new Date()), 'weekly'])
+for (const s of startups) {
+  const thin = !s.desc || s.desc.trim().length < 40
+  if (!thin) urls.set('/startup/'+slug(s.name), [iso(s.lastChecked || new Date()), 'weekly'])
+}
 for (const j of jobs) urls.set('/job/'+slug(j.company+'-'+j.title), [iso(j.lastSeenAt || j.datePosted || new Date()), 'daily'])
 for (const n of news) if (n.slug) urls.set('/news/'+n.slug, [iso(n.updatedAt || n.publishedAt || new Date()), 'daily'])
 
