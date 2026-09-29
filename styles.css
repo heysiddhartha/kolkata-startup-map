@@ -715,20 +715,27 @@ html[data-theme=dark] .topbar .top-nav-link:hover,html[data-theme=dark] .seo-hea
 
 /* Leaflet company markers: neutralize legacy marker styles completely */
 .leaflet-marker-icon.company-map-icon-wrap,
-.company-map-icon-wrap{
+.leaflet-marker-icon.company-map-icon-wrap:hover,
+.leaflet-marker-icon.company-map-icon-wrap:focus,
+.company-map-icon-wrap,
+.company-map-icon-wrap:hover,
+.company-map-icon-wrap:focus{
   background:transparent!important;
   border:0!important;
   box-shadow:none!important;
   filter:none!important;
+  outline:none!important;
   border-radius:0!important;
-}
-.leaflet-marker-icon.company-map-icon-wrap:hover,
-.company-map-icon-wrap:hover{
-  box-shadow:none!important;
-  filter:none!important;
+  transform:none!important;
+  -webkit-tap-highlight-color:transparent!important;
 }
 .company-map-icon,
-.company-map-icon:hover{
+.company-map-icon:hover,
+.company-map-icon:focus{
+  background:transparent!important;
+  border:0!important;
   box-shadow:none!important;
   filter:none!important;
+  outline:none!important;
+  transform:none!important;
 }
