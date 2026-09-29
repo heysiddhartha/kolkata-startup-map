@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { loadDirectoryData } from './live-data.mjs'
 
-const { startups, jobs, news = [] } = await loadDirectoryData()
+const { startups, jobs, news = [], resources = [] } = await loadDirectoryData()
 
 const base = 'https://heysiddhartha.github.io/kolkata-startup-map'
 const slug = s => String(s ?? '').toLowerCase().trim().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
@@ -30,6 +30,7 @@ const urls = new Map([
   ['/sectors', [latestDate(startups.map(s => s.lastChecked)), 'weekly']],
   ['/locations', [latestDate(startups.map(s => s.lastChecked)), 'weekly']],
   ['/news', [latestDate(news.map(n => n.updatedAt || n.publishedAt)), 'daily']],
+  ['/resources', [latestDate(resources.map(r => r.lastCheckedAt)), 'weekly']],
   ['/methodology', [siteLastmod, 'monthly']]
 ])
 
