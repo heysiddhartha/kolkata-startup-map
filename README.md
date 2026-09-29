@@ -44,3 +44,34 @@ npm run build
 ```
 
 The scheduled GitHub Actions workflow refreshes public job signals and curated ecosystem news when the required Supabase secrets are configured.
+
+
+## Launch & growth kit
+
+**One-line pitch:**  
+Kolkata Startup Map is a living public directory of Kolkata startups, companies, jobs and ecosystem activity.
+
+**Short launch post:**  
+> Kolkata has a startup ecosystem. It just hasn't always been easy to find.  
+>   
+> I built **Kolkata Startup Map** to make the ecosystem searchable — companies, startups, hiring signals, jobs, funding, cohorts, events and ecosystem news in one place.  
+>   
+> Explore it: https://heysiddhartha.github.io/kolkata-startup-map/  
+>   
+> If your company is missing, add it directly from the map.
+
+**LinkedIn headline for the project:**  
+Kolkata Startup Map — discover the people, companies, jobs and opportunities building Kolkata.
+
+**Social bio:**  
+The living map of Kolkata's startup ecosystem. Startups • Companies • Jobs • Funding • Events • News.
+
+**Content loop:**  
+1. Publish a weekly “Kolkata Startup Radar” with new companies, funding, jobs and ecosystem events.
+2. Publish individual company spotlights that link back to the directory.
+3. Publish locality/sector maps such as “Startups in Salt Lake”, “Kolkata AI startups” and “Kolkata consumer brands”.
+4. Turn newly discovered jobs into short job-roundup posts.
+5. Ask founders to claim/add their listing and share it with their teams.
+6. Repackage the same research into LinkedIn, Instagram, X and relevant community posts rather than posting the same promotional link everywhere.
+
+**Important:** promotion should be useful first. Community posts should follow each community's rules, and company/job claims should link to their source.
