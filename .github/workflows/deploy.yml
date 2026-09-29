@@ -35,6 +35,8 @@ jobs:
       - name: Build React app
         env:
           VITE_CARTO_API_KEY: ${{ secrets.VITE_CARTO_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run build
 
       - name: Setup Pages
