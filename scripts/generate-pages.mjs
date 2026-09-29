@@ -161,13 +161,13 @@ fs.writeFileSync(path.join(root,'startups','index.html'), pageHtml({
 }))
 
 const founderProfiles = {
-  'Sagar J Daryani': ['https://in.linkedin.com/in/sagar-j-daryani-950085b7','Co-founder & CEO of Wow! Momo, building a Kolkata-born food and consumer brand.'],
-  'Gaurav Jalan': ['https://in.linkedin.com/in/gauravjalan','Founder & CEO of mPokket, a Kolkata-based fintech platform.'],
-  'Sujay Santra': ['https://in.linkedin.com/in/sujay-santra-ikure','Founder & CEO of iKure, focused on technology-enabled primary healthcare.'],
-  'Ranodeep Saha': ['https://in.linkedin.com/in/ranodeep-saha-rareplanet','Co-founder of Rare Planet, building a retail and D2C business around Indian handicrafts.'],
-  'Vineet Patawari': ['https://in.linkedin.com/in/vineet-patawari','CEO and Co-Founder of StockEdge, focused on financial-market education and technology.'],
-  'Vivek Bajaj': ['https://in.linkedin.com/in/vbajaj','Entrepreneur behind Elearnmarkets and StockEdge, focused on financial education and market technology.'],
-  'Tinku Acharya': ['https://in.linkedin.com/in/tinkuacharya','Founder of Videonetics and a researcher, inventor and technologist working across AI and video intelligence.']
+  'Sagar J Daryani': ['https://in.linkedin.com/in/sagar-j-daryani-950085b7','Co-founder & CEO of Wow! Momo, building a Kolkata-born food and consumer brand.','https://etimg.etb2bimg.com/authorthumb/479263700.cms?height=250&imgsize=26386&width=250'],
+  'Gaurav Jalan': ['https://in.linkedin.com/in/gauravjalan','Founder & CEO of mPokket, a Kolkata-based fintech platform.','https://cdn.mpokket.in/leadership_2_3d8f843f31.png'],
+  'Sujay Santra': ['https://in.linkedin.com/in/sujay-santra-ikure','Founder & CEO of iKure, focused on technology-enabled primary healthcare.','https://images.yourstory.com/cs/wordpress/2013/10/sujay_santra_20130831.jpg?auto=format&fm=png'],
+  'Ranodeep Saha': ['https://in.linkedin.com/in/ranodeep-saha-rareplanet','Co-founder of Rare Planet, building a retail and D2C business around Indian handicrafts.','https://alumni.makautwb.ac.in/assets/img/testimonials/RanodeepSaha.jpg'],
+  'Vineet Patawari': ['https://in.linkedin.com/in/vineet-patawari','CEO and Co-Founder of StockEdge, focused on financial-market education and technology.','https://d24uab5gycr2uz.cloudfront.net/uploads/white_theme/images/about_us/founder_img2.webp'],
+  'Vivek Bajaj': ['https://in.linkedin.com/in/vbajaj','Entrepreneur behind Elearnmarkets and StockEdge, focused on financial education and market technology.','https://d24uab5gycr2uz.cloudfront.net/uploads/white_theme/images/about_us/founder_img1.webp'],
+  'Tinku Acharya': ['https://in.linkedin.com/in/tinkuacharya','Founder of Videonetics and a researcher, inventor and technologist working across AI and video intelligence.','https://upload.wikimedia.org/wikipedia/commons/d/de/Tinku_Acharya_-_Kolkata_2015-03-27_4646.JPG']
 }
 const founderMap = new Map()
 for (const s of cleanStartups) {
@@ -186,7 +186,7 @@ const founderCards=founderEntries.map(f=>{
   const linkedin=profile?.[0] || 'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(f.name)
   const bio=profile?.[1] || f.name+' is listed as a founder in the Kolkata startup ecosystem. Profile enrichment is in progress.'
   const companies=f.companies.map(x=>x.name).slice(0,2).join(' · ')
-  const image=profile?.[0] ? 'https://unavatar.io/'+encodeURIComponent(profile[0]) : 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
+  const image=profile?.[2] || 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
   const href=site+'/founders/'+slug(f.name)+'/'
   return '<a class="founder-static-card" href="'+href+'"><div class="founder-static-image"><img src="'+image+'" alt="" loading="lazy"><span class="founder-static-brand">KOLKATA<br>STARTUP<br>MAP</span><span class="founder-static-label">FOUNDERS & CEOs<br><b>TOP PROFILE</b></span><div class="founder-static-gradient"></div><div class="founder-static-caption"><small>'+esc(companies)+'</small><h2>'+esc(f.name)+'</h2><p>'+esc(bio)+'</p></div></div></a>'
 }).join('')
