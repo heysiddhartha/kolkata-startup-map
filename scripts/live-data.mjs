@@ -18,9 +18,9 @@ export async function loadDirectoryData() {
 
   try {
     const [rows, jobRows, newsRows] = await Promise.all([
-      fetchJson('startups?select=name,area,sector,stage,description,website,linkedin_url,founder,address,careers_url,last_checked_at,status&status=eq.approved&order=name'),
-      fetchJson('jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,status,startups(name)&status=eq.live&order=created_at.desc'),
-      fetchJson('news_items?select=id,title,category,summary,source_name,source_url,published_at,verified&status=eq.published&order=published_at.desc')
+      fetchJson('startups?select=name,area,sector,stage,description,website,linkedin_url,founder,address,careers_url,last_checked_at,status,verified,logo_url,hiring_status,hiring_checked_at,location_confidence,location_type,verification_source_url,verification_checked_at&status=eq.approved&order=name'),
+      fetchJson('jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,status,first_seen_at,last_seen_at,startups(name)&status=eq.live&order=created_at.desc'),
+      fetchJson('news_items?select=id,title,category,summary,source_name,source_url,published_at,verified,updated_at&status=eq.published&order=published_at.desc')
     ])
 
     const startups = (rows || []).map(x => ({
@@ -34,6 +34,14 @@ export async function loadDirectoryData() {
       founder: x.founder || '',
       address: x.address || '',
       careers: x.careers_url || '',
+      verified: !!x.verified,
+      logo: x.logo_url || '',
+      hiringStatus: x.hiring_status || 'unknown',
+      hiringCheckedAt: x.hiring_checked_at || '',
+      locationConfidence: x.location_confidence || 'approximate',
+      locationType: x.location_type || 'headquarters',
+      verificationSourceUrl: x.verification_source_url || '',
+      verificationCheckedAt: x.verification_checked_at || '',
       lastChecked: x.last_checked_at || ''
     }))
 
@@ -46,7 +54,8 @@ export async function loadDirectoryData() {
       sourceName: x.source_name || 'Source',
       sourceUrl: x.source_url || '#',
       publishedAt: x.published_at || '',
-      verified: !!x.verified
+      verified: !!x.verified,
+      updatedAt: x.updated_at || ''
     }))
 
     const jobs = (jobRows || []).map(x => ({
@@ -55,7 +64,9 @@ export async function loadDirectoryData() {
       mode: x.mode || x.location || 'Kolkata',
       source: x.source_url || x.apply_url || '',
       freshers: !!x.fresher,
-      url: x.apply_url || x.source_url || '#'
+      url: x.apply_url || x.source_url || '#',
+      datePosted: x.first_seen_at || '',
+      lastSeenAt: x.last_seen_at || ''
     }))
 
     if (!startups.length) throw new Error('Live startup dataset returned no approved rows')
