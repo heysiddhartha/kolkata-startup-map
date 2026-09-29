@@ -216,7 +216,7 @@ const founderCards=founderEntries.map(f=>{
   const companies=f.companies.map(x=>x.name).slice(0,2).join(' · ')
   const image=profile?.image || 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
   const href=site+'/founders/'+slug(f.name)+'/'
-  return '<a class="founder-static-card" href="'+href+'"><div class="founder-static-image"><img src="'+image+'" alt="Portrait of '+esc(f.name)+'" loading="lazy" ><span class="founder-static-brand">KOLKATA<br>STARTUP<br>MAP</span><span class="founder-static-label">FOUNDERS & CEOs<br><b>TOP PROFILE</b></span><div class="founder-static-gradient"></div><div class="founder-static-caption"><small>'+esc(companies)+'</small><h2>'+esc(f.name)+'</h2><p>'+esc(bio)+'</p></div></div></a>'
+  return '<a class="founder-static-card" href="'+href+'"><div class="founder-static-image"><img src="'+image+'" alt="Portrait of '+esc(f.name)+'" loading="lazy" onerror="this.onerror=null;this.src=&#39;https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)+'&#39;"><span class="founder-static-brand">KOLKATA<br>STARTUP<br>MAP</span><span class="founder-static-label">FOUNDERS & CEOs<br><b>TOP PROFILE</b></span><div class="founder-static-gradient"></div><div class="founder-static-caption"><small>'+esc(companies)+'</small><h2>'+esc(f.name)+'</h2><p>'+esc(bio)+'</p></div></div></a>'
 }).join('')
 fs.mkdirSync(path.join(root,'founders'),{recursive:true})
 fs.mkdirSync(path.join(root,'foundersandceos'),{recursive:true})
