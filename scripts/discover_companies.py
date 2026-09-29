@@ -13,7 +13,6 @@ SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "KolkataStartupMap/1.0 (+public ecosystem directory)"})
 
 SOURCES = [
-    ("eChai Kolkata Startup Grid", "https://echai.ventures/kolkata/grid", "echai.ventures"),
     ("StartupBlink Kolkata", "https://www.startupblink.com/top-startups/kolkata-in", "startupblink.com"),
     ("CompWorth Kolkata Startups", "https://compworth.com/top-100-startups-of-kolkata", "compworth.com"),
 ]
@@ -134,9 +133,7 @@ def main():
         try:
             response = SESSION.get(url, timeout=30)
             response.raise_for_status()
-            if source_host == "echai.ventures":
-                items = discover_echai(response.text, url)
-            elif source_host == "startupblink.com":
+            if source_host == "startupblink.com":
                 items = discover_startupblink(response.text, url)
             elif source_host == "compworth.com":
                 items = discover_compworth(response.text, url)
