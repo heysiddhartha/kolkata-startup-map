@@ -210,12 +210,12 @@ const foundersIndexHtml=pageHtml({
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Founders',url:site+'/founders',mainEntity:{'@type':'ItemList',numberOfItems:founderEntries.length,itemListElement:founderEntries.map((f,i)=>({'@type':'ListItem',position:i+1,name:f.name,url:site+'/founders/'+slug(f.name)}))}}
 }))
 fs.writeFileSync(path.join(root,'founders','index.html'),foundersIndexHtml)
-fs.writeFileSync(path.join(root,'foundersandceos','index.html'),foundersIndexHtml.replaceAll(site+'/founders',site+'/foundersandceos'))
+fs.writeFileSync(path.join(root,'foundersandceos','index.html'),foundersIndexHtml)
 for(const f of founderEntries){
   const profile=founderProfiles[f.name]
   const linkedin=profile?.linkedin || 'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(f.name)
   const bio=profile?.bio || f.name+' is listed as a founder in the Kolkata startup ecosystem. Profile enrichment is in progress.'
-  const image=profile?.linkedin ? 'https://unavatar.io/'+encodeURIComponent(profile.image) : 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
+  const image=profile?.image || 'https://api.dicebear.com/9.x/initials/svg?seed='+encodeURIComponent(f.name)
   const companyRows=f.companies.map(x=>'<div class="founder-company-row"><b>'+esc(x.name)+'</b><span>'+esc(x.sector||'Startup')+'</span></div>').join('')
   fs.mkdirSync(path.join(root,'founders',slug(f.name)),{recursive:true})
   fs.writeFileSync(path.join(root,'founders',slug(f.name),'index.html'),pageHtml({
