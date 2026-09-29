@@ -9,6 +9,7 @@
     "launch": "devvit publish"
   },
   "dependencies": {
+    "@devvit/start": "latest",
     "@devvit/web": "latest",
     "hono": "latest",
     "react": "latest",
