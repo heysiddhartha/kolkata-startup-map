@@ -45,11 +45,6 @@ function mapCompanyIcon(s){
  const html='<span class="company-map-icon"><span class="company-map-fallback">'+initial+'</span>'+(logo?'<img src="'+logo+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+'</span>'
  return L.divIcon({className:'company-map-icon-wrap',html,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-20]})
 }
-function mapClusterIcon(count){
- const size=count>99?58:count>9?52:46
- const html='<span class="startup-cluster"><b>'+count+'</b><small>companies</small></span>'
- return L.divIcon({className:'startup-cluster-wrap',html,iconSize:[size,size],iconAnchor:[size/2,size/2]})
-}
 function MapMarkers({items,markerPositions,onSelect,isOfficialUrl}){
  const mapped=items.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lng))
  return <>{mapped.map(s=><Marker key={s.name} position={markerPositions.get(s.name)||[s.lat,s.lng]} icon={mapCompanyIcon(s)} eventHandlers={{click:()=>onSelect(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/><small>{s.locationType==='headquarters'?'Kolkata HQ':s.locationType==='registered_office'?'Registered office':s.locationType==='kolkata_office'?'Kolkata office':'Kolkata connection'} · {s.locationConfidence==='approximate'?'Approximate map point':'Public-source location'}</small><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>)}</>
