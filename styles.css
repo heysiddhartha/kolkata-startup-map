@@ -732,10 +732,44 @@ html[data-theme=dark] .topbar .top-nav-link:hover,html[data-theme=dark] .seo-hea
 .company-map-icon,
 .company-map-icon:hover,
 .company-map-icon:focus{
-  background:transparent!important;
-  border:0!important;
+  all:unset!important;
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+  width:38px!important;
+  height:38px!important;
+  overflow:hidden!important;
+  border-radius:12px!important;
+  background:var(--surface)!important;
+  box-sizing:border-box!important;
   box-shadow:none!important;
   filter:none!important;
   outline:none!important;
   transform:none!important;
+}
+.company-map-icon::before,
+.company-map-icon::after{content:none!important;display:none!important}
+.company-map-icon img{
+  position:absolute!important;
+  inset:5px!important;
+  width:28px!important;
+  height:28px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  filter:none!important;
+  transform:none!important;
+  object-fit:contain!important;
+}
+.company-map-fallback{
+  position:relative!important;
+  z-index:1!important;
+  margin:0!important;
+  padding:0!important;
+  color:#241b16!important;
+  font-size:11px!important;
+  font-weight:900!important;
 }
