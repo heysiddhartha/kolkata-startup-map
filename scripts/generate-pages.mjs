@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { loadDirectoryData } from './live-data.mjs'
 
-const { startups, jobs, live: liveData } = await loadDirectoryData()
+const { startups, jobs, news = [], live: liveData } = await loadDirectoryData()
 
 const root = path.resolve('dist')
 const site = 'https://heysiddhartha.github.io/kolkata-startup-map'
