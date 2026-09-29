@@ -108,7 +108,7 @@ function App(){
    const out=new Map()
    groups.forEach(group=>{
      if(group.length===1){out.set(group[0].name,[group[0].lat,group[0].lng]);return}
-     const radius=0.00055
+     const radius=0.00115
      group.forEach((s,i)=>{
        const angle=(Math.PI*2*i)/group.length
        out.set(s.name,[s.lat+Math.sin(angle)*radius,s.lng+Math.cos(angle)*radius])
