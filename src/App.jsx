@@ -33,6 +33,44 @@ const seedNewsItems=[
 
 function ThemeMap(){const map=useMap();useEffect(()=>{setTimeout(()=>map.invalidateSize(),50)},[]);return null}
 
+function mapLogoUrl(url, fallback=''){
+ try{
+  if(fallback)return fallback
+  const host=new URL(url).hostname.replace(/^www\\./,'')
+  return host?'https://www.google.com/s2/favicons?domain='+host+'&sz=128':''
+ }catch{return ''}
+}
+function mapCompanyIcon(s){
+ const logo=mapLogoUrl(s.url,s.logo), initial=(s.name||'K').trim().charAt(0).toUpperCase()
+ const html='<span class="company-map-icon"><span class="company-map-fallback">'+initial+'</span>'+(logo?'<img src="'+logo+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+'</span>'
+ return L.divIcon({className:'company-map-icon-wrap',html,iconSize:[38,38],iconAnchor:[19,19],popupAnchor:[0,-20]})
+}
+function mapClusterIcon(count){
+ const size=count>99?58:count>9?52:46
+ const html='<span class="startup-cluster"><b>'+count+'</b><small>companies</small></span>'
+ return L.divIcon({className:'startup-cluster-wrap',html,iconSize:[size,size],iconAnchor:[size/2,size/2]})
+}
+function MapMarkers({items,markerPositions,onSelect,isOfficialUrl}){
+ const map=useMap(),[zoom,setZoom]=useState(map.getZoom())
+ useEffect(()=>{const onZoom=()=>setZoom(map.getZoom());map.on('zoomend',onZoom);return()=>map.off('zoomend',onZoom)},[map])
+ const clusters=useMemo(()=>{
+  const mapped=items.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lng))
+  if(zoom>=15)return mapped.map(s=>({type:'company',s,position:markerPositions.get(s.name)||[s.lat,s.lng]}))
+  const step=zoom<=12?0.018:zoom<=13?0.009:0.0045
+  const groups=new Map()
+  mapped.forEach(s=>{const p=markerPositions.get(s.name)||[s.lat,s.lng];const key=Math.floor(p[0]/step)+':'+Math.floor(p[1]/step);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(s)})
+  return [...groups.values()].map(group=>{
+   if(group.length===1){const s=group[0];return {type:'company',s,position:markerPositions.get(s.name)||[s.lat,s.lng]}}
+   const lat=group.reduce((a,s)=>a+s.lat,0)/group.length,lng=group.reduce((a,s)=>a+s.lng,0)/group.length
+   return {type:'cluster',group,position:[lat,lng]}
+  })
+ },[items,markerPositions,zoom])
+ return <>{clusters.map(c=>c.type==='cluster'
+  ? <Marker key={'cluster-'+c.position.join('-')} position={c.position} icon={mapClusterIcon(c.group.length)} eventHandlers={{click:()=>map.setView(c.position,Math.min(map.getZoom()+2,18),{animate:true})}}><Popup><b>{c.group.length} companies in this area</b><br/><small>Zoom in to see individual companies.</small></Popup></Marker>
+  : <Marker key={c.s.name} position={c.position} icon={mapCompanyIcon(c.s)} eventHandlers={{click:()=>onSelect(c.s)}}><Popup><b>{c.s.name}</b><br/>{c.s.sector} · {c.s.area}<br/><span>{c.s.desc}</span><br/><small>{c.s.locationType==='headquarters'?'Kolkata HQ':c.s.locationType==='registered_office'?'Registered office':c.s.locationType==='kolkata_office'?'Kolkata office':'Kolkata connection'} · {c.s.locationConfidence==='approximate'?'Approximate map point':'Public-source location'}</small><br/>{isOfficialUrl(c.s.url)?<a href={c.s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>
+ )}</>
+}
+
 function App(){
  const [startups,setStartups]=useState(seedStartups),[jobs,setJobs]=useState(seedJobs),[dataSource,setDataSource]=useState('seed'),[dataLoading,setDataLoading]=useState(true),[dataError,setDataError]=useState(''),[newsError,setNewsError]=useState('')
  const [theme,setTheme]=useState(localStorage.getItem('ksm-theme')||'light')
@@ -142,7 +180,7 @@ function App(){
    <section className="hero"><div className="hero-orbit hero-orbit-one"></div><div className="hero-orbit hero-orbit-two"></div><div className="hero-copy"><div className="hero-kicker"><span className="kicker-dot"></span> KOLKATA’S STARTUP ECOSYSTEM</div><h1>Find what’s being built<br/><em>in Kolkata.</em></h1><p>Startups, companies, agencies, sectors and live hiring signals — in one map.</p><div className="hero-actions"><button onClick={()=>document.querySelector(".content")?.scrollIntoView({behavior:"smooth"})}>Explore the map <span>↓</span></button><button className="hero-link" onClick={()=>document.querySelector("#jobs")?.scrollIntoView({behavior:"smooth"})}>See who’s hiring →</button></div></div><div className="hero-side"><div className="stats"><div><b>{startups.length}</b><span>listings</span></div><div><b>{allMappedCount}</b><span>mapped</span></div><div><b>{verifiedCount}</b><span>verified</span></div><div><b>{jobs.length}</b><span>open roles</span></div></div><div className="hero-note"><span>●</span> Live public-source signals</div></div></section>
    {dataError&&<div className="data-notice" role="status"><b>Using cached directory data.</b> Live company/job updates are temporarily unavailable. <button onClick={()=>window.location.reload()}>Retry</button></div>}{newsError&&<div className="data-notice" role="status"><b>News feed temporarily unavailable.</b> Showing the last available news set.</div>}
    <section className="toolbar"><div className="toolbar-context"><b>{filtered.length}</b><span>of {startups.length} listings</span></div><button className="news-toggle" onClick={()=>setShowNews(v=>!v)}>{showNews?'Hide news':'Show news'}</button><div className="search"><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search companies, sectors, founders…" aria-label="Search companies, sectors and founders"/>{query&&<button type="button" className="search-clear" onClick={()=>setQuery('')} aria-label="Clear search">×</button>}<kbd>⌘ K</kbd></div><div className="toggle"><button className={view==='map'?'active':''} onClick={()=>setView('map')}>Map</button><button className={view==='grid'?'active':''} onClick={()=>setView('grid')}>Grid</button></div><div className="toolbar-filters">{[area,sector,stage,hiring,quality].filter(Boolean).length>0&&<span className="active-filter-count">{[area,sector,stage,hiring,quality].filter(Boolean).length}</span>}<select value={area} onChange={e=>setArea(e.target.value)}><option value="">All areas</option>{areas.map(x=><option key={x}>{x}</option>)}</select><select value={sector} onChange={e=>setSector(e.target.value)}><option value="">All sectors</option>{sectors.map(x=><option key={x}>{x}</option>)}</select><select value={stage} onChange={e=>setStage(e.target.value)}><option value="">All stages</option>{stages.map(x=><option key={x}>{x}</option>)}</select><select value={hiring} onChange={e=>setHiring(e.target.value)}><option value="">Hiring status</option><option value="hiring">Hiring now</option><option value="freshers">Fresher friendly</option></select><select value={quality} onChange={e=>setQuality(e.target.value)}><option value="">Data quality</option><option value="verified">Verified only</option><option value="mapped">Mapped only</option><option value="website">Has official website</option></select>{[area,sector,stage,hiring,quality].some(Boolean)&&<button className="clear-filters" onClick={clear}>Clear all</button>}</div></section>
-   <section className={"content "+(view==='grid'?'content-grid':'content-map')}>{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url={mapTileUrl} attribution={mapAttribution} maxZoom={20} subdomains="abcd"/>{filtered.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lng)).map(s=><Marker key={s.name} position={markerPositions.get(s.name)||[s.lat,s.lng]} icon={companyIcon(s)} eventHandlers={{click:()=>setSelected(s)}}><Popup><b>{s.name}</b><br/>{s.sector} · {s.area}<br/><span>{s.desc}</span><br/><small>{s.locationType==='headquarters'?'Kolkata HQ':s.locationType==='registered_office'?'Registered office':s.locationType==='kolkata_office'?'Kolkata office':'Kolkata connection'} · {s.locationConfidence==='approximate'?'Approximate map point':'Public-source location'}</small><br/>{isOfficialUrl(s.url)?<a href={s.url} target="_blank" rel="noreferrer">Open official website →</a>:<span>No verified website link</span>}</Popup></Marker>)}<ThemeMap/></MapContainer>
+   <section className={"content "+(view==='grid'?'content-grid':'content-map')}>{view==='map'?<><MapContainer center={center} zoom={12} minZoom={11} maxZoom={18} maxBounds={bounds} maxBoundsViscosity={1} scrollWheelZoom zoomControl={false} className="map"><TileLayer url={mapTileUrl} attribution={mapAttribution} maxZoom={20} subdomains="abcd"/><MapMarkers items={filtered} markerPositions={markerPositions} onSelect={setSelected} isOfficialUrl={isOfficialUrl}/></MapContainer>
 {showNews&&<aside className="news-panel">
  <div className="news-head"><div><b>Latest news</b><span>Kolkata startup ecosystem</span></div><button onClick={()=>setShowNews(false)} aria-label="Close news">×</button></div>
  <div className="news-list">{news.slice(newsPage*5,newsPage*5+5).map(item=><a className="news-item" key={item.title} href={item.url} target="_blank" rel="noreferrer"><h4>{item.title}</h4>{item.summary&&<p>{item.summary}</p>}<div><span className="news-source">{item.source}</span><span>{item.date}</span><span className="news-cat">{item.cat}</span></div></a>)}</div>
