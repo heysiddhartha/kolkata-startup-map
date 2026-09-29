@@ -42,13 +42,13 @@ function pageHtml({title,description,url,eyebrow,heading,body,schema,stats=[]}) 
     '<meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="'+esc(title)+'"/><meta name="twitter:description" content="'+esc(description)+'"/><meta name="twitter:image" content="'+site+'/og-card.svg"/><meta name="twitter:image:alt" content="'+esc(title)+'"/>'+
     '<meta name="author" content="Siddhartha Sarkar"/><meta name="theme-color" content="#10131a"/>';
   let html = template
-    .replace(/<title>[^<]*<\\/title>/, '<title>'+esc(title)+'</title>')
+    .replace(/<title>[^<]*<\/title>/, '<title>'+esc(title)+'</title>')
     .replace(/<meta name="description" content="[^"]*"\\/>/, '<meta name="description" content="'+esc(description)+'"/>')
     .replace(/<link rel="canonical" href="[^"]*"\\/>/, '<link rel="canonical" href="'+url+'"/>')
     .replace(/<meta name="robots" content="[^"]*"\\/>/g, '')
     .replace(/<meta property="og:[^"]*"[^>]*>/g, '')
     .replace(/<meta name="twitter:[^"]*"[^>]*>/g, '')
-    .replace(/<body>[\\s\\S]*?<\\/body>/, '<body>'+content+'</body>')
+    .replace(/<body>[\\s\\S]*?<\/body>/, '<body>'+content+'</body>')
     .replace('</head>', meta+'</head>')
   const injectedStyle = `<style>
 :root{--bg:#090b10;--panel:rgba(20,24,33,.72);--panel2:rgba(255,255,255,.055);--text:#f6f7fb;--muted:#a6adbb;--line:rgba(255,255,255,.11);--accent:#ffb454;--accent2:#ff6b57}
