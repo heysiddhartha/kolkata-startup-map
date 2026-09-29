@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { loadDirectoryData } from './live-data.mjs'
 
-const { startups, jobs, news = [], live: liveData } = await loadDirectoryData()
+const { startups, jobs, news = [], resources = [], live: liveData } = await loadDirectoryData()
 
 const root = path.resolve('dist')
 const site = 'https://heysiddhartha.github.io/kolkata-startup-map'
@@ -120,6 +120,16 @@ fs.writeFileSync(path.join(root,'news','index.html'), pageHtml({
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup News',url:site+'/news',mainEntity:{'@type':'ItemList',itemListElement:news.map((n,i)=>({'@type':'ListItem',position:i+1,name:n.title,url:site+'/news/'+n.slug}))}}
 }))
 
+fs.mkdirSync(path.join(root,'resources'),{recursive:true})
+fs.writeFileSync(path.join(root,'resources','index.html'), pageHtml({
+  title:'Kolkata Startup Resources — Communities, Incubators, Jobs & Events',
+  description:'Useful Kolkata startup ecosystem resources: founder communities, Reddit, incubators, accelerators, funding programmes, jobs, data and events.',
+  url:site+'/resources',eyebrow:'Kolkata ecosystem resources',heading:'Where to find the ecosystem',
+  stats:[{value:resources.length,label:'resources'},{value:new Set(resources.map(r=>r.category)).size,label:'categories'},{value:new Set(resources.map(r=>r.sourceName)).size,label:'sources'}],
+  body:'<p class="seo-lead">A public-source directory of communities, incubators, accelerators, funding programmes, job boards, data sources, events and local ecosystem media. Community discussions are discovery sources and are not treated as verified news.</p><ul class="seo-list">'+resources.map(r=>'<li><a href="'+esc(r.url)+'" rel="nofollow noopener"><b>'+esc(r.name)+'</b></a> · '+esc(r.category)+' · '+esc(r.location||'Kolkata')+'<br/><span>'+esc(r.description||'')+'</span></li>').join('')+'</ul>',
+  schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Resources',url:site+'/resources',mainEntity:{'@type':'ItemList',numberOfItems:resources.length,itemListElement:resources.map((r,i)=>({'@type':'ListItem',position:i+1,name:r.name,url:r.url}))}}
+}))
+
 for (const area of areaNames) {
   const matches=cleanStartups.filter(s=>s.area===area)
   const url=site+'/location/'+slug(area)
@@ -181,4 +191,4 @@ for (const n of news) {
   fs.writeFileSync(path.join(root,'news',n.slug,'index.html'),pageHtml({title:n.title+' — Kolkata Startup Map',description:n.summary||'Kolkata startup ecosystem news and update.',url,eyebrow:'Kolkata ecosystem news',heading:n.title,stats:[{value:n.category,label:'category'},{value:n.sourceName,label:'source'},{value:date||'Public source',label:'published'}],body,schema}))
 }
 
-console.log('Generated '+(cleanStartups.length+jobs.length+news.length+sectorNames.length+areaNames.length+5)+' crawlable SEO pages; live data: '+liveData)
+console.log('Generated '+(cleanStartups.length+jobs.length+news.length+resources.length+sectorNames.length+areaNames.length+6)+' crawlable SEO pages; live data: '+liveData)
