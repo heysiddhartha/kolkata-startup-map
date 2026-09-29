@@ -22,9 +22,7 @@ SOURCES = [
     ("IIM Calcutta Innovation Park", "https://iimcip.org/announce/", "Programme"),
     ("IIM Calcutta Innovation Park", "https://iimcip.org/news-event/events/?y=2022", "Event"),
     ("Startup Bengal", "https://startupbengal.in/", "Policy"),
-    ("eChai Kolkata", "https://echai.ventures/kolkata", "Community"),
-    ("eChai Kolkata Startup Grid", "https://echai.ventures/kolkata/grid", "Startup"),
-    ("Kolkata Calling", "https://www.kolkatacalling.com/news/startups-entrepreneurship", "Local"),
+        ("Kolkata Calling", "https://www.kolkatacalling.com/news/startups-entrepreneurship", "Local"),
     # Business / startup media
     ("Economic Times", "https://economictimes.indiatimes.com/topic/kolkata-startups/news", "Funding"),
     ("Telegraph India", "https://www.telegraphindia.com/topic/startups", "Local"),
@@ -43,6 +41,10 @@ SOURCES = [
     ("TechCircle", "https://www.techcircle.in/", "Startup"),
     ("Inc42 Kolkata", "https://inc42.com/tag/kolkata/", "Startup"),
     ("Headstart Kolkata", "https://www.meetup.com/headstart-kolkata/events/calendar/", "Event"),
+    ("Built In Kolkata", "https://builtinkolkata.in/articles", "Tech"),
+    ("PIB Kolkata", "https://www.pib.gov.in/PressReleasePage.aspx?reg=3&lang=2", "Government"),
+    ("Startup India", "https://www.startupindia.gov.in/content/sih/en/search.html?query=Kolkata", "Government"),
+    ("RISE Conclave", "https://riseconclave.immt.res.in/", "Event"),
 ]
 
 KOLKATA_TERMS = (
