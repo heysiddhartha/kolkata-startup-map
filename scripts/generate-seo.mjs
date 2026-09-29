@@ -34,7 +34,7 @@ const urls = new Map([
 ])
 
 for (const s of startups) {
-  const thin = !s.desc || s.desc.trim().length < 40
+  const thin = !s.desc || s.desc.trim().length < 40 || (/profile verification pending/i.test(s.desc) && !s.url && !s.founder && !s.linkedin)
   if (!thin) urls.set('/startup/'+slug(s.name), [iso(s.lastChecked || new Date()), 'weekly'])
 }
 for (const j of jobs) urls.set('/job/'+slug(j.company+'-'+j.title), [iso(j.lastSeenAt || j.datePosted || new Date()), 'daily'])
