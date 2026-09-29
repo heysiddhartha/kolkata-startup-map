@@ -78,7 +78,17 @@ def main():
             api("source_checks","POST",{"startup_id":s["id"],"source_url":url,"source_type":"careers","checked_at":datetime.now(timezone.utc).isoformat(),"jobs_found":0,"success":False,"error":str(e)[:500]})
             print("[WARN]",s["name"],e)
     cutoff=(datetime.now(timezone.utc)-timedelta(days=7)).isoformat()
-    api(f"jobs?last_seen_at=lt.{cutoff}&status=eq.live","PATCH",{"status":"stale"})
-    print("Checked",checked,"career pages; stale jobs marked after 7 days unseen.")
+    # Mark stale listings individually. This is more reliable than a bulk PATCH
+    # with a timestamp filter through PostgREST and lets one bad record fail
+    # without aborting the whole twice-daily refresh.
+    stale_jobs=api("jobs?select=id,last_seen_at&status=eq.live&last_seen_at=lt."+cutoff)
+    stale_count=0
+    for job in stale_jobs or []:
+        try:
+            api("jobs?id=eq."+job["id"],"PATCH",{"status":"stale"})
+            stale_count+=1
+        except Exception as e:
+            print("[WARN] Could not mark job stale:",job.get("id"),e)
+    print("Checked",checked,"career pages; marked",stale_count,"stale jobs after 7 days unseen.")
 
 if __name__=="__main__": main()
