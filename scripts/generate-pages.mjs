@@ -17,11 +17,26 @@ function pageHtml({title,description,url,eyebrow,heading,body,schema}) {
     '<h1 style="font-size:clamp(32px,6vw,58px);line-height:1.05;margin:8px 0 18px">'+esc(heading)+'</h1>'+
     body+
     '<p style="margin-top:36px"><a href="'+site+'/">← Explore the Kolkata Startup Map</a></p></main>'
+  const meta = '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"/>'+
+    '<meta property="og:type" content="website"/><meta property="og:title" content="'+esc(title)+'"/><meta property="og:description" content="'+esc(description)+'"/><meta property="og:url" content="'+url+'"/><meta property="og:site_name" content="Kolkata Startup Map"/><meta property="og:locale" content="en_IN"/><meta property="og:image" content="'+site+'/og-card.svg"/><meta property="og:image:alt" content="'+esc(title)+'"/>'+
+    '<meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="'+esc(title)+'"/><meta name="twitter:description" content="'+esc(description)+'"/><meta name="twitter:image" content="'+site+'/og-card.svg"/><meta name="twitter:image:alt" content="'+esc(title)+'"/>'+
+    '<meta name="author" content="Siddhartha Sarkar"/><meta name="theme-color" content="#f3ead7"/>';
   let html = template
     .replace(/<title>[^<]*<\/title>/, '<title>'+esc(title)+'</title>')
     .replace(/<meta name="description" content="[^"]*"\/>/, '<meta name="description" content="'+esc(description)+'"/>')
     .replace(/<link rel="canonical" href="[^"]*"\/>/, '<link rel="canonical" href="'+url+'"/>')
+    .replace(/<meta name="robots" content="[^"]*"\/>/, '')
+    .replace(/<meta property="og:type"[^>]*>/g, '')
+    .replace(/<meta property="og:title"[^>]*>/g, '')
+    .replace(/<meta property="og:description"[^>]*>/g, '')
+    .replace(/<meta property="og:url"[^>]*>/g, '')
+    .replace(/<meta property="og:site_name"[^>]*>/g, '')
+    .replace(/<meta property="og:locale"[^>]*>/g, '')
+    .replace(/<meta property="og:image"[^>]*>/g, '')
+    .replace(/<meta property="og:image:alt"[^>]*>/g, '')
+    .replace(/<meta name="twitter:[^"]*"[^>]*>/g, '')
     .replace(/<body>[\s\S]*?<\/body>/, '<body>'+content+'</body>')
+    .replace('</head>', meta+'</head>')
   const injectedStyle = `<style>
 :root{--bg:#f6efe3;--surface:#fffdf8;--text:#201a17;--muted:#756b62;--line:#ded2c0;--red:#b33a32;--saffron:#e5a51c}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif}.seo-page{min-height:100vh;padding:26px 18px 70px;background:radial-gradient(circle at 90% 10%,rgba(229,165,28,.12),transparent 280px)}.seo-shell{max-width:980px;margin:auto}.seo-brand{display:flex;align-items:center;gap:9px;padding:5px 0 46px}.seo-brand span{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:var(--text);color:var(--bg);font-weight:800}.seo-brand a{font-weight:800;text-decoration:none}.seo-brand small{margin-left:5px;color:var(--muted);font-size:8px;letter-spacing:.12em}.seo-eyebrow{color:var(--red);font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.seo-page h1{font:700 clamp(38px,6vw,66px)/.95 "Space Grotesk",system-ui;margin:12px 0 18px;letter-spacing:-.055em}.seo-rule{height:1px;background:var(--line);margin-bottom:25px}.seo-page p{font-size:13px;line-height:1.7;color:var(--muted)}.seo-lead{max-width:760px;font-size:15px!important}.seo-callouts,.seo-facts{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);margin:22px 0}.seo-callouts>div,.seo-facts>div{padding:15px;border-left:1px solid var(--line)}.seo-callouts>div:first-child,.seo-facts>div:first-child{border-left:0}.seo-callouts b,.seo-facts small{display:block;color:var(--red);font-size:8px;letter-spacing:.1em}.seo-callouts span{display:block;margin-top:7px;color:var(--muted);font-size:10px;line-height:1.5}.seo-list{columns:2;column-gap:30px;padding-left:20px}.seo-list li{break-inside:avoid;margin:0 0 9px;font-size:11px}.seo-list a{color:var(--text);font-weight:650}.seo-list a:hover{color:var(--red)}.breadcrumbs{font-size:10px!important;color:var(--muted)}.breadcrumbs a{color:var(--red)}.seo-facts{grid-template-columns:repeat(4,1fr)}.seo-facts b{display:block;margin-top:6px;font-size:11px}.seo-actions{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.seo-actions a{display:inline-block;padding:10px 13px;border:1px solid var(--line);border-radius:9px;text-decoration:none;color:var(--text);font-size:10px;font-weight:750;background:var(--surface)}.seo-actions .seo-primary{background:var(--text);color:var(--bg);border-color:var(--text)}.seo-back{margin-top:45px!important}.seo-back a{color:var(--red);font-weight:750}@media(max-width:650px){.seo-callouts,.seo-facts{grid-template-columns:1fr}.seo-callouts>div,.seo-facts>div{border-left:0;border-top:1px solid var(--line)}.seo-callouts>div:first-child,.seo-facts>div:first-child{border-top:0}.seo-list{columns:1}.seo-brand small{display:none}}
@@ -48,6 +63,48 @@ fs.writeFileSync(path.join(root,'jobs','index.html'), pageHtml({
   body:'<p>Browse the current seeded job listings and internships. Application links open the public source provided for each listing.</p><ul>'+jobLinks+'</ul><p>Listings are informational and should be checked at the application source for current availability.</p>',
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Jobs',url:site+'/jobs',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},mainEntity:{'@type':'ItemList',itemListElement:jobs.map((j,i)=>({'@type':'ListItem',position:i+1,name:j.title+' at '+j.company,url:site+'/job/'+slug(j.company+'-'+j.title)}))}}
 }))
+
+const sectorHubLinks = [...new Set(startups.map(s => s.sector).filter(Boolean))].sort().map(x => '<li><a href="'+site+'/sector/'+slug(x)+'">'+esc(x)+'</a> — '+startups.filter(s=>s.sector===x).length+' listed</li>').join('')
+fs.mkdirSync(path.join(root,'sectors'),{recursive:true})
+fs.writeFileSync(path.join(root,'sectors','index.html'), pageHtml({
+  title:'Kolkata Startup Sectors — Companies by Industry',
+  description:'Explore Kolkata startups and companies by sector, including technology, fintech, AI, D2C, creative, marketing and other industries.',
+  url:site+'/sectors',eyebrow:'Kolkata ecosystem',heading:'Kolkata Startup Sectors',
+  body:'<p class="seo-lead">Explore the Kolkata company directory by industry and discover organisations grouped by sector.</p><ul class="seo-list">'+sectorHubLinks+'</ul>',
+  schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Sectors',url:site+'/sectors',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},mainEntity:{'@type':'ItemList',itemListElement:[...new Set(startups.map(s=>s.sector).filter(Boolean))].sort().map((x,i)=>({'@type':'ListItem',position:i+1,name:x,url:site+'/sector/'+slug(x)}))}}
+}))
+
+const areaHubLinks = [...new Set(startups.map(s => s.area).filter(Boolean))].sort().map(x => '<li><a href="'+site+'/location/'+slug(x)+'">'+esc(x)+'</a> — '+startups.filter(s=>s.area===x).length+' listed</li>').join('')
+fs.mkdirSync(path.join(root,'locations'),{recursive:true})
+fs.writeFileSync(path.join(root,'locations','index.html'), pageHtml({
+  title:'Kolkata Startup Locations — Companies by Locality',
+  description:'Explore Kolkata startups and companies by locality, including Salt Lake, New Town, Park Street and other business areas.',
+  url:site+'/locations',eyebrow:'Kolkata ecosystem',heading:'Kolkata Startup Locations',
+  body:'<p class="seo-lead">Explore the ecosystem by locality and find companies listed across Kolkata neighbourhoods and business districts.</p><ul class="seo-list">'+areaHubLinks+'</ul>',
+  schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Locations',url:site+'/locations',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},mainEntity:{'@type':'ItemList',itemListElement:[...new Set(startups.map(s=>s.area).filter(Boolean))].sort().map((x,i)=>({'@type':'ListItem',position:i+1,name:x,url:site+'/location/'+slug(x)}))}}
+}))
+
+const newsHubLinks = news.map(n => '<li><a href="'+site+'/news/'+n.slug+'">'+esc(n.title)+'</a> — '+esc(n.sourceName)+'</li>').join('')
+fs.mkdirSync(path.join(root,'news'),{recursive:true})
+fs.writeFileSync(path.join(root,'news','index.html'), pageHtml({
+  title:'Kolkata Startup News & Ecosystem Updates',
+  description:'Follow Kolkata startup news, funding, hiring, events and ecosystem updates with source links and published dates.',
+  url:site+'/news',eyebrow:'Kolkata ecosystem news',heading:'Kolkata Startup News',
+  body:'<p class="seo-lead">A public feed of startup and ecosystem updates with source links. Information is provided for discovery and should be checked at the original source.</p><ul class="seo-list">'+newsHubLinks+'</ul>',
+  schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup News',url:site+'/news',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},mainEntity:{'@type':'ItemList',itemListElement:news.map((n,i)=>({'@type':'ListItem',position:i+1,name:n.title,url:site+'/news/'+n.slug}))}}
+}))
+
+for (const n of news) {
+  const url = site+'/news/'+n.slug
+  const dir = path.join(root,'news',n.slug)
+  fs.mkdirSync(dir,{recursive:true})
+  const date = n.publishedAt ? new Date(n.publishedAt).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : ''
+  const body = '<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="'+site+'/">Kolkata Startup Map</a> / <a href="'+site+'/news">News</a> / '+esc(n.title)+'</nav>'+
+    '<p class="seo-lead">'+esc(n.summary)+'</p><div class="seo-facts"><div><small>CATEGORY</small><b>'+esc(n.category)+'</b></div><div><small>SOURCE</small><b>'+esc(n.sourceName)+'</b></div><div><small>PUBLISHED</small><b>'+esc(date)+'</b></div><div><small>STATUS</small><b>'+(n.verified?'Verified':'Source linked')+'</b></div></div>'+
+    '<div class="seo-actions"><a class="seo-primary" href="'+esc(n.sourceUrl)+'" rel="nofollow noopener">Read original source →</a></div>'
+  const schema={'@context':'https://schema.org','@graph':[{'@type':'NewsArticle',headline:n.title,description:n.summary,datePublished:n.publishedAt || undefined,mainEntityOfPage:{'@type':'WebPage', '@id':url},url,publisher:{'@type':'Organization',name:'Kolkata Startup Map'}},{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Kolkata Startup Map',item:site+'/'},{'@type':'ListItem',position:2,name:'News',item:site+'/news'},{'@type':'ListItem',position:3,name:n.title,item:url}]}]}
+  fs.writeFileSync(path.join(dir,'index.html'), pageHtml({title:n.title+' — Kolkata Startup Map',description:n.summary || 'Kolkata startup ecosystem news and update.',url,eyebrow:'Kolkata ecosystem news',heading:n.title,body,schema}))
+}
 
 const sectors = [...new Set(startups.map(s => s.sector).filter(Boolean))].sort()
 const areas = [...new Set(startups.map(s => s.area).filter(Boolean))].sort()
