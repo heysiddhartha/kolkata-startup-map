@@ -13,13 +13,14 @@ async function fetchJson(path) {
 export async function loadDirectoryData() {
   if (!SUPABASE_KEY) {
     console.log('SUPABASE_SERVICE_ROLE_KEY not set; using seed SEO data.')
-    return { startups: seedStartups, jobs: seedJobs, live: false }
+    return { startups: seedStartups, jobs: seedJobs, news: [], live: false }
   }
 
   try {
-    const [rows, jobRows] = await Promise.all([
+    const [rows, jobRows, newsRows] = await Promise.all([
       fetchJson('startups?select=name,area,sector,stage,description,website,linkedin_url,founder,address,careers_url,last_checked_at,status&status=eq.approved&order=name'),
-      fetchJson('jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,status,startups(name)&status=eq.live&order=created_at.desc')
+      fetchJson('jobs?select=title,location,mode,employment_type,fresher,apply_url,source_url,status,startups(name)&status=eq.live&order=created_at.desc'),
+      fetchJson('news_items?select=id,title,category,summary,source_name,source_url,published_at,verified&status=eq.published&order=published_at.desc')
     ])
 
     const startups = (rows || []).map(x => ({
@@ -36,6 +37,18 @@ export async function loadDirectoryData() {
       lastChecked: x.last_checked_at || ''
     }))
 
+    const news = (newsRows || []).map(x => ({
+      id: x.id,
+      slug: String(x.title || x.id).toLowerCase().trim().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),
+      title: x.title || 'Kolkata startup ecosystem news',
+      category: x.category || 'Ecosystem',
+      summary: x.summary || '',
+      sourceName: x.source_name || 'Source',
+      sourceUrl: x.source_url || '#',
+      publishedAt: x.published_at || '',
+      verified: !!x.verified
+    }))
+
     const jobs = (jobRows || []).map(x => ({
       company: x.startups?.name || 'Kolkata startup',
       title: x.title || 'Open role',
@@ -46,10 +59,10 @@ export async function loadDirectoryData() {
     }))
 
     if (!startups.length) throw new Error('Live startup dataset returned no approved rows')
-    console.log('Loaded '+startups.length+' live startups and '+jobs.length+' live jobs for SEO generation.')
-    return { startups, jobs, live: true }
+    console.log('Loaded '+startups.length+' live startups, '+jobs.length+' live jobs and '+news.length+' news items for SEO generation.')
+    return { startups, jobs, news, live: true }
   } catch (error) {
     console.warn('Live SEO data unavailable; using seed data:', error.message)
-    return { startups: seedStartups, jobs: seedJobs, live: false }
+    return { startups: seedStartups, jobs: seedJobs, news: [], live: false }
   }
 }
