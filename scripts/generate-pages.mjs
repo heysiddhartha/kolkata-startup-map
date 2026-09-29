@@ -59,6 +59,84 @@ function pageHtml({title,description,url,eyebrow,heading,body,schema,stats=[],ro
   return html.replace('</head>', injectedStyle+'<script type="application/ld+json">'+json(schema)+'</script></head>')
 }
 
+
+/* Ecosystem intelligence page: combines our directory with clearly attributed external context. */
+fs.mkdirSync(path.join(root,'ecosystem'),{recursive:true})
+const ecosystemWebsiteCount=cleanStartups.filter(s=>s.url).length
+const ecosystemLinkedInCount=cleanStartups.filter(s=>s.linkedin).length
+const ecosystemHiringCount=cleanStartups.filter(s=>String(s.hiring||'').toLowerCase()==='hiring').length
+const ecosystemMappedCount=cleanStartups.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lng)).length
+const ecosystemSectorCounts=[...new Map(cleanStartups.map(s=>[cleanSector(s.sector),cleanStartups.filter(x=>cleanSector(x.sector)===cleanSector(s.sector)).length])).entries()].sort((a,b)=>b[1]-a[1])
+const ecosystemAreaCounts=[...new Map(cleanStartups.map(s=>[cleanArea(s.area),cleanStartups.filter(x=>cleanArea(x.area)===cleanArea(s.area)).length])).entries()].sort((a,b)=>b[1]-a[1])
+const sectorContext=ecosystemSectorCounts.slice(0,10).map(([name,count])=>'<li><a href="'+site+'/sector/'+slug(name)+'"><b>'+esc(name)+'</b> · '+count+' in our directory</a></li>').join('')
+const areaContext=ecosystemAreaCounts.slice(0,12).map(([name,count])=>'<li><a href="'+site+'/location/'+slug(name)+'"><b>'+esc(name)+'</b> · '+count+' in our directory</a></li>').join('')
+fs.writeFileSync(path.join(root,'ecosystem','index.html'), pageHtml({
+  title:'Kolkata Startup Ecosystem — Founders, Funding, Jobs, Incubators & Events',
+  description:'Kolkata startup ecosystem guide covering startups, founders, sectors, funding, investors, incubators, accelerators, jobs, events, universities and ecosystem resources.',
+  url:site+'/ecosystem',eyebrow:'Kolkata startup ecosystem intelligence',heading:'Everything around what Kolkata is building',
+  stats:[
+    {value:cleanStartups.length,label:'directory listings'},
+    {value:ecosystemMappedCount,label:'mapped in our directory'},
+    {value:ecosystemWebsiteCount,label:'with website'},
+    {value:jobs.length,label:'live public jobs'}
+  ],
+  body:
+    '<p class="seo-lead">The map is only one layer. This page connects the companies we track with the wider ecosystem around them: founders, sectors, capital, incubators, accelerators, jobs, universities, events, government programmes and public research sources.</p>'+
+    '<div class="seo-actions"><a class="seo-primary" href="'+site+'/startups">Browse the directory →</a><a href="'+site+'/jobs">See startup jobs →</a><a href="'+site+'/resources">Open ecosystem resources →</a></div>'+
+    '<div class="seo-callouts">'+
+      '<div><b>OUR DIRECTORY</b><span>'+cleanStartups.length+' approved public-source listings, with '+ecosystemWebsiteCount+' websites and '+ecosystemLinkedInCount+' LinkedIn profiles currently attached. Missing fields are enriched progressively rather than invented.</span></div>'+
+      '<div><b>LOCATION LAYER</b><span>'+ecosystemMappedCount+' of our current listings have map coordinates. Location confidence is kept separate from company verification so an approximate point is not presented as an exact office.</span></div>'+
+      '<div><b>HIRING LAYER</b><span>'+jobs.length+' live public job records are currently connected to the directory. Hiring is treated as a time-sensitive signal and the original application source remains authoritative.</span></div>'+
+    '</div>'+
+    '<h2>The size of Kolkata depends on what you count</h2>'+
+    '<p>Different ecosystem databases measure different populations. An August 2026 Indian Startup Map snapshot counts <b>11,455 companies on the Startup India register</b> for Kolkata, including 5,414 DPIIT-recognised companies, 1,330 with a funding signal and 3,804 placed to a street. StartupBlink currently shows a much smaller technology/startup universe, while Seedtable tracks 138 Kolkata companies. These numbers should not be added together: they use different inclusion rules and purposes.</p>'+
+    '<div class="seo-facts">'+
+      '<div><small>STARTUP INDIA REGISTER SNAPSHOT</small><b>11,455</b><span>Kolkata registrations in Indian Startup Map\'s Aug 2026 snapshot.</span></div>'+
+      '<div><small>DPIIT RECOGNISED</small><b>5,414</b><span>Within that same external register snapshot.</span></div>'+
+      '<div><small>FUNDING SIGNAL</small><b>1,330</b><span>Any funding signal in that external snapshot; not equivalent to verified funding.</span></div>'+
+      '<div><small>STREET-LEVEL</small><b>3,804</b><span>External records placed to a street; the rest are less precise.</span></div>'+
+    '</div>'+
+    '<p class="seo-freshness">External context source: Indian Startup Map, August 2026 snapshot. Its authors explicitly note that registration is not an operating signal. <a href="https://indianstartupmap.com/cities/kolkata">Inspect the underlying Kolkata dataset →</a></p>'+
+    '<h2>What is being built</h2>'+
+    '<p>Our own directory currently spans multiple parts of the economy rather than treating “startup” as synonymous with software. The live taxonomy includes technology and SaaS, AI and deeptech, fintech, consumer and D2C, healthcare, manufacturing, mobility, food, travel, education, media, marketing, professional services, real estate, agritech and climate/sustainability.</p>'+
+    '<ul class="seo-list">'+sectorContext+'</ul>'+
+    '<h2>Where the ecosystem is concentrated</h2>'+
+    '<p>The locality layer is deliberately separate from the citywide count. The same company can have a registered office, operating office or other Kolkata connection, and those are not interchangeable. Use locality pages to explore the organisations currently mapped to each area.</p>'+
+    '<ul class="seo-list">'+areaContext+'</ul>'+
+    '<h2>Capital, incubation & acceleration</h2>'+
+    '<div class="seo-callouts">'+
+      '<div><b>IIM CALCUTTA INNOVATION PARK</b><span>IIMCIP describes its work across pre-incubation, incubation and acceleration. It reports supporting more than 2,000 startups, seed-funding 152 ventures and building programmes with government, academia, investors and corporates. <a href="https://iimcip.org/">IIMCIP →</a></span></div>'+
+      '<div><b>BENGAL BUSINESS ACCELERATOR</b><span>The Government of West Bengal programme implemented with IIMCIP provides business-model support, fundraising guidance, mentoring and investor pitch opportunities. <a href="https://iimcip.com/msmebengal/">Programme →</a></span></div>'+
+      '<div><b>CAPITAL NETWORK</b><span>RPSG Capital Ventures is an early-stage consumer VC with a Kolkata connection, while Navam Capital is a Kolkata-based early-stage investor focused on frontier technology and science-driven innovation. <a href="https://rpsgcapital.vc/">RPSG →</a> <a href="https://www.navamcapital.com/">Navam →</a></span></div>'+
+    '</div>'+
+    '<h2>Universities & the innovation pipeline</h2>'+
+    '<p>Startup activity is also connected to academic and research infrastructure. Jadavpur University’s Innovation & Startup initiative describes incubation, seed-grant support, hackathons, startup registration guidance and industry-academia links. IIM Calcutta’s entrepreneurship ecosystem includes the Centre for Entrepreneurship and Innovation and IIMCIP.</p>'+
+    '<div class="seo-actions"><a href="https://juinnovationstartup.jdvu.ac.in/">Jadavpur University Innovation & Startup →</a><a href="https://www.iim.ac.in/faculty/centers-of-excellence/CEI">IIM Calcutta CEI →</a><a href="https://www.iim.ac.in/faculty/centers-of-excellence/centre-for-entrepreneurship-innovation/iim-calcutta-innovation-park">IIMCIP at IIM Calcutta →</a></div>'+
+    '<h2>What is happening right now</h2>'+
+    '<p>Recent public signals include IIMCIP’s September 2026 partnership with Army Institute of Management Kolkata to develop incubation and entrepreneurship infrastructure, its August 2026 ₹2 crore national incubation programme with IDFC FIRST Bank for sustainable and circular-economy startups, and the third Bengal Business Accelerator cohort’s July 2026 Demo Day with 22 startups.</p>'+
+    '<ul class="seo-list">'+
+      '<li><a href="https://iimcip.org/topic/iim-calcutta-innovation-park-partners-with-army-institute-of-management-kolkata-to-build-next-generation-startup-ecosystem-in-west-bengal/"><b>Academia + incubation</b> · IIMCIP × Army Institute of Management Kolkata</a></li>'+
+      '<li><a href="https://iimcip.org/news-event/news/"><b>₹2 crore incubation programme</b> · IIMCIP × IDFC FIRST Bank</a></li>'+
+      '<li><a href="https://iimcip.org/news-event/events/?y=2022"><b>BBAP Cohort 3</b> · 22 startups at the July 2026 Demo Day</a></li>'+
+    '</ul>'+
+    '<h2>Jobs are another map of the ecosystem</h2>'+
+    '<p>External job platforms expose a different view of Kolkata. Wellfound currently reports 93 tech/startup job results for Kolkata, while CutShort lists 715+ startup jobs for Kolkata. These platform counts are not a census and may include remote or multi-city roles, but they show why a startup map should connect companies to live hiring signals rather than stop at company names.</p>'+
+    '<div class="seo-actions"><a href="https://wellfound.com/location/kolkata-wb">Wellfound Kolkata jobs →</a><a href="https://cutshort.io/jobs/startup-jobs-in-kolkata">CutShort Kolkata startup jobs →</a><a href="'+site+'/jobs">Our public job feed →</a></div>'+
+    '<h2>What this map adds</h2>'+
+    '<div class="seo-callouts">'+
+      '<div><b>ONE SEARCH LAYER</b><span>Company, founder, sector, locality, stage and hiring signals can be discovered together.</span></div>'+
+      '<div><b>EVIDENCE, NOT DECORATION</b><span>Official websites, LinkedIn, careers links, verification and location confidence are separate fields.</span></div>'+
+      '<div><b>ECOSYSTEM, NOT JUST STARTUPS</b><span>Resources extend to jobs, incubators, accelerators, funding programmes, communities, events and data sources.</span></div>'+
+      '<div><b>FRESHNESS</b><span>Automated checks and source timestamps are used for time-sensitive fields such as jobs and ecosystem resources.</span></div>'+
+      '<div><b>CORRECTIONS</b><span>Founders and teams can submit missing companies or corrections; public verification is performed separately.</span></div>'+
+      '<div><b>LOCAL CONTEXT</b><span>Sector and locality pages create indexable paths around the questions people actually search for.</span></div>'+
+    '</div>'+
+    '<h2>Important distinction</h2>'+
+    '<p>There is no single authoritative “number of Kolkata startups”. Government registration, venture databases, job platforms and community maps answer different questions. Kolkata Startup Map therefore avoids merging external counts into one headline and instead keeps each source, definition and freshness visible.</p>'+
+    '<div class="seo-actions"><a class="seo-primary" href="'+site+'/methodology">Read our methodology →</a><a href="'+site+'/news">Follow the ecosystem news →</a><a href="'+site+'/resources">Find resources →</a></div>',
+  schema:{'@context':'https://schema.org','@type':'AboutPage',name:'Kolkata Startup Ecosystem',url:site+'/ecosystem',description:'Kolkata startup ecosystem guide covering companies, founders, sectors, funding, incubators, accelerators, jobs, universities and events',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'},about:{'@type':'City',name:'Kolkata'}}
+}))
+
 fs.mkdirSync(path.join(root,'methodology'),{recursive:true})
 fs.writeFileSync(path.join(root,'methodology','index.html'), pageHtml({
   title:'Kolkata Startup Map Methodology — Data, Verification & Hiring Signals',
