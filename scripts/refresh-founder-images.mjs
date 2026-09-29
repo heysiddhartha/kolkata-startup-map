@@ -26,7 +26,7 @@ for (const file of ['src/FoundersPage.jsx', 'scripts/generate-pages.mjs']) {
   let source = fs.readFileSync(file, 'utf8')
   for (const [name, url] of Object.entries(replacements)) {
     const escapedName = name.replace(/[.*+?^|[\\]\\\\]/g, '\\\\$&')
-    const re = new RegExp("('" + escapedName + "':\\{[^}]*?photo:')([^']*)(')", 'g')
+    const re = new RegExp("('" + escapedName + "':\\s*\\{[^}]*?(?:photo|image):')([^']*)(')", 'g')
     source = source.replace(re, '$1' + url + '$3')
   }
   fs.writeFileSync(file, source)
