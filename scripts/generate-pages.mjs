@@ -25,7 +25,8 @@ const nav = [
   ['Jobs','/jobs'],
   ['Sectors','/sectors'],
   ['Locations','/locations'],
-  ['News','/news']
+  ['News','/news'],
+  ['Methodology','/methodology']
 ]
 
 function pageHtml({title,description,url,eyebrow,heading,body,schema,stats=[],robots='index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',type='website'}) {
@@ -56,6 +57,16 @@ function pageHtml({title,description,url,eyebrow,heading,body,schema,stats=[],ro
 </style>`;
   return html.replace('</head>', injectedStyle+'<script type="application/ld+json">'+json(schema)+'</script></head>')
 }
+
+fs.mkdirSync(path.join(root,'methodology'),{recursive:true})
+fs.writeFileSync(path.join(root,'methodology','index.html'), pageHtml({
+  title:'Kolkata Startup Map Methodology — Data, Verification & Hiring Signals',
+  description:'How Kolkata Startup Map collects, verifies and updates company, location, hiring and ecosystem information.',
+  url:site+'/methodology',eyebrow:'How the map works',heading:'Data, verification & methodology',
+  stats:[{value:cleanStartups.length,label:'approved listings'},{value:cleanStartups.filter(s=>s.verified).length,label:'independently verified'},{value:jobs.length,label:'live public jobs'}],
+  body:'<p class="seo-lead">Kolkata Startup Map is a public-source directory, not an official government register. We separate discovery, verification, location confidence and hiring status so a listing is not presented as more certain than its evidence.</p><div class="seo-callouts"><div><b>COMPANY DATA</b><span>Listings can come from public company information, reliable ecosystem sources and direct submissions. The original company source remains the reference point.</span></div><div><b>LOCATION</b><span>Exact coordinates are only presented as exact when the evidence supports them. Approximate points are labelled separately.</span></div><div><b>HIRING</b><span>Hiring is a time-sensitive signal. Unknown means we do not have a reliable current signal; a public application source is the final authority.</span></div><div><b>NEWS</b><span>Ecosystem updates are curated from public sources with source names, dates and links so readers can inspect the original item.</span></div><div><b>UPDATES</b><span>Automated checks refresh public hiring and ecosystem signals. Company information is enriched progressively rather than inventing missing facts.</span></div><div><b>CORRECTIONS</b><span>Founders and teams can submit missing companies or corrections from the map. Public verification and map placement remain separate.</span></div></div><h2>What the labels mean</h2><ul class="seo-list"><li><a href="${site}/startups"><b>Verified</b> — independently checked from a public source.</a></li><li><a href="${site}/startups"><b>Hiring now</b> — a current public hiring signal was found.</a></li><li><a href="${site}/startups"><b>Unknown hiring</b> — no reliable current signal was found.</a></li><li><a href="${site}/locations"><b>Approximate location</b> — the point is not presented as an exact office.</a></li></ul><p>Registration in a startup database does not necessarily mean a company is currently operating. The directory therefore avoids describing the map as an exhaustive census and keeps evidence and freshness visible.</p>',
+  schema:{'@context':'https://schema.org','@type':'AboutPage',name:'Kolkata Startup Map Methodology',url:site+'/methodology',description:'Data and verification methodology for Kolkata Startup Map',isPartOf:{'@type':'WebSite',name:'Kolkata Startup Map',url:site+'/'}}
+}))
 
 const directoryLinks = cleanStartups.map(s => '<li><a href="'+site+'/startup/'+slug(s.name)+'"><b>'+esc(s.name)+'</b> · '+esc(s.sector)+' · '+esc(s.area)+'</a></li>').join('')
 fs.mkdirSync(path.join(root,'startups'),{recursive:true})
