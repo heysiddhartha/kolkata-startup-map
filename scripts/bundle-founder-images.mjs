@@ -101,7 +101,7 @@ for(const [url,rawHtmlValue] of urls){
     const fallbackFile = crypto.createHash('sha1').update('fallback:'+url).digest('hex').slice(0,16)+'.svg'
     const fallbackPath = path.join(outDir,fallbackFile)
     const safe = initials.replace(/[^A-Z0-9]/g,'')
-    const svg = \`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161616"/><stop offset="1" stop-color="#4a4a4a"/></linearGradient></defs><rect width="800" height="800" fill="url(#g)"/><circle cx="400" cy="300" r="135" fill="#d8d8d8"/><path d="M170 760c18-170 115-250 230-250s212 80 230 250" fill="#d8d8d8"/><text x="400" y="680" text-anchor="middle" font-family="Arial,sans-serif" font-size="92" font-weight="700" fill="#222">\${safe}</text></svg>\`
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161616"/><stop offset="1" stop-color="#4a4a4a"/></linearGradient></defs><rect width="800" height="800" fill="url(#g)"/><circle cx="400" cy="300" r="135" fill="#d8d8d8"/><path d="M170 760c18-170 115-250 230-250s212 80 230 250" fill="#d8d8d8"/><text x="400" y="680" text-anchor="middle" font-family="Arial,sans-serif" font-size="92" font-weight="700" fill="#222">' + safe + '</text></svg>'
     fs.writeFileSync(fallbackPath,svg)
     const publicUrl='/kolkata-startup-map/founder-images/'+fallbackFile
 
