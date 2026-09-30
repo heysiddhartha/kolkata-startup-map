@@ -42,7 +42,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run build
 
-      - name: Setup Pages
+      - name: Bundle founder images\n        run: node scripts/bundle-founder-images.mjs\n\n      - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload React build
