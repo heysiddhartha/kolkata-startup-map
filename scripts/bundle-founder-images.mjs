@@ -89,7 +89,33 @@ for(const [url,rawHtmlValue] of urls){
     count++
   }catch(err){
     failed++
-    console.warn('Founder image download failed:',url,err.message)
+
+    // Never leave a founder card without a visual. Some third-party portrait
+    // URLs can reject automated downloads, so create a deterministic local
+    // portrait SVG for those cases.
+    const fallbackName = decodeURIComponent(new URL(url).pathname.split('/').pop() || 'Founder')
+      .replace(/\\.[a-z0-9]+$/i,'')
+      .replace(/[-_]+/g,' ')
+      .trim() || 'Founder'
+    const initials = fallbackName.split(/\\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('') || 'F'
+    const fallbackFile = crypto.createHash('sha1').update('fallback:'+url).digest('hex').slice(0,16)+'.svg'
+    const fallbackPath = path.join(outDir,fallbackFile)
+    const safe = initials.replace(/[^A-Z0-9]/g,'')
+    const svg = \`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#161616"/><stop offset="1" stop-color="#4a4a4a"/></linearGradient></defs><rect width="800" height="800" fill="url(#g)"/><circle cx="400" cy="300" r="135" fill="#d8d8d8"/><path d="M170 760c18-170 115-250 230-250s212 80 230 250" fill="#d8d8d8"/><text x="400" y="680" text-anchor="middle" font-family="Arial,sans-serif" font-size="92" font-weight="700" fill="#222">\${safe}</text></svg>\`
+    fs.writeFileSync(fallbackPath,svg)
+    const publicUrl='/kolkata-startup-map/founder-images/'+fallbackFile
+
+    for(const file of htmlFiles){
+      let html=fs.readFileSync(file,'utf8')
+      const escaped=htmlEscape(url)
+      if(html.includes(escaped)){
+        html=html.split(escaped).join(publicUrl)
+        fs.writeFileSync(file,html)
+      }else if(html.includes(rawHtmlValue)){
+        html=html.split(rawHtmlValue).join(publicUrl)
+        fs.writeFileSync(file,html)
+      }
+    }
   }
 }
 
