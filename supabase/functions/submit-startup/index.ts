@@ -112,8 +112,8 @@ Deno.serve(async req => {
     await supabase.from("audit_log").insert({
       actor_id: null,
       action: "submit_startup_for_review",
-      entity_type: "startup",
-      entity_id: insertedStartup.id,
+      entity_type: "submission",
+      entity_id: inserted.id,
       metadata: { submission_id: inserted.id, source: "public_submission", verified: false }
     });
 
