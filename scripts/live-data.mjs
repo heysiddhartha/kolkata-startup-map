@@ -1,7 +1,7 @@
 import { startups as seedStartups, jobs as seedJobs } from '../src/data.js'
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://rkzkpwaexadlwxqdfjlm.supabase.co'
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_V7WzcNGV2x4J1OlDrepTnw_1sMgFz43'
 
 async function fetchJson(path) {
   const headers = { apikey: SUPABASE_KEY, Authorization: 'Bearer '+SUPABASE_KEY }
@@ -11,11 +11,6 @@ async function fetchJson(path) {
 }
 
 export async function loadDirectoryData() {
-  if (!SUPABASE_KEY) {
-    console.log('SUPABASE_SERVICE_ROLE_KEY not set; using seed SEO data.')
-    return { startups: seedStartups, jobs: seedJobs, news: [], resources: [], live: false }
-  }
-
   try {
     const [rows, jobRows, newsRows, resourceRows] = await Promise.all([
       fetchJson('startups?select=name,area,sector,stage,description,website,linkedin_url,founder,address,careers_url,last_checked_at,status,verified,logo_url,hiring_status,hiring_checked_at,location_confidence,location_type,verification_source_url,verification_checked_at&status=eq.approved&order=name'),
