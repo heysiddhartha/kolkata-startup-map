@@ -1,11 +1,9 @@
-import { startups as seedStartups, jobs as seedJobs } from '../src/data.js'
-
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://rkzkpwaexadlwxqdfjlm.supabase.co'
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_V7WzcNGV2x4J1OlDrepTnw_1sMgFz43'
 
 async function fetchJson(path) {
   const headers = { apikey: SUPABASE_KEY, Authorization: 'Bearer '+SUPABASE_KEY }
-  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, { headers })
+  const res = await fetch(SUPABASE_URL+'/rest/v1/'+path, { headers, signal: AbortSignal.timeout(15000) })
   if (!res.ok) throw new Error('Supabase request failed: '+res.status)
   return res.json()
 }
@@ -79,10 +77,9 @@ export async function loadDirectoryData() {
     }))
 
     if (!startups.length) throw new Error('Live startup dataset returned no approved rows')
-    console.log('Loaded '+startups.length+' live startups, '+jobs.length+' live jobs and '+news.length+' news items for SEO generation.')
+    console.log('Loaded '+startups.length+' live startups, '+jobs.length+' live jobs, '+news.length+' news items and '+resources.length+' resources for SEO generation.')
     return { startups, jobs, news, resources, live: true }
   } catch (error) {
-    console.warn('Live SEO data unavailable; using seed data:', error.message)
-    return { startups: seedStartups, jobs: seedJobs, news: [], live: false }
+    throw new Error('Live Supabase data is required for a production build: '+error.message)
   }
 }
