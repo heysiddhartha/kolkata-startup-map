@@ -9,6 +9,12 @@ on:
     - cron: "23 15 * * *"
 permissions:
   contents: read
+
+# Data refresh and Pages deployment must never push concurrently.
+concurrency:
+  group: kolkata-startup-map-publish
+  cancel-in-progress: false
+
 jobs:
   check-jobs:
     timeout-minutes: 12
