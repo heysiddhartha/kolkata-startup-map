@@ -33,6 +33,10 @@ body{background:#f6efe3}.admin{max-width:1180px;margin:0 auto;padding:28px}
     <div><h1>Kolkata Startup Map</h1><small id="userEmail"></small></div>
     <div class="actions"><button id="refresh">Refresh</button><button class="secondary" id="logout">Sign out</button></div>
   </div>
+  <div class="admin-card">
+    <div class="admin-row section-head"><div><h2>Automation health</h2><small id="automationUpdated">Checking latest pipeline…</small></div><span class="pill" id="automationOverall">CHECKING</span></div>
+    <div id="automationHealth" class="muted">Loading automation status…</div>
+  </div>
 
   <section class="admin-card">
     <div class="admin-row section-head">
@@ -116,15 +120,21 @@ async function act(id,action){
   const {data:s,error}=await sb.from('submissions').select('*').eq('id',id).single();
   if(error)return alert(error.message);
   if(action==='approve-submission'){
-    const startup={
-      name:s.startup_name,slug:slug(s.startup_name)+'-'+Math.random().toString(36).slice(2,7),
-      website:s.website,founder:s.founder,public_email:s.email,sector:s.sector,area:s.locality||'Kolkata',
-      description:s.description,linkedin_url:s.linkedin_url,careers_url:s.careers_url,
-      lat:null,lng:null,location_confidence:'unknown',verified:false,status:'approved',
-      source_url:s.website,location_type:'kolkata_roots'
-    };
-    const ins=await sb.from('startups').insert(startup);
-    if(ins.error)return alert(ins.error.message);
+    const normalizedWebsite=String(s.website||'').replace(/\/$/,'').toLowerCase();
+    const existing=await sb.from('startups').select('id,status').or('name.ilike.'+encodeURIComponent(s.startup_name)+',website.ilike.'+encodeURIComponent(normalizedWebsite)).limit(5);
+    if(existing.error)return alert(existing.error.message);
+    const alreadyApproved=(existing.data||[]).find(x=>x.status==='approved');
+    if(!alreadyApproved){
+      const startup={
+        name:s.startup_name,slug:slug(s.startup_name)+'-'+Math.random().toString(36).slice(2,7),
+        website:normalizedWebsite,founder:s.founder,public_email:s.email,sector:s.sector,area:s.locality||'Kolkata',
+        description:s.description,linkedin_url:s.linkedin_url,careers_url:s.careers_url,
+        lat:null,lng:null,location_confidence:'unknown',verified:false,status:'approved',
+        source_url:normalizedWebsite,location_type:'kolkata_roots'
+      };
+      const ins=await sb.from('startups').insert(startup);
+      if(ins.error)return alert(ins.error.message);
+    }
   }
   const next=action==='approve-submission'?'approved':'rejected';
   const up=await sb.from('submissions').update({status:next,reviewed_at:new Date().toISOString()}).eq('id',id);
