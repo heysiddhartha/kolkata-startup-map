@@ -32,14 +32,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Validate generated site
-        run: |
-          test -f dist/sitemap.xml
-          test -f dist/robots.txt
-          test -f dist/index.html
-          grep -q '<h1' dist/index.html
-          grep -q 'Kolkata Startup Map' dist/index.html
-
       - name: Refresh founder image URLs
         run: node scripts/refresh-founder-images.mjs
 
@@ -49,6 +41,14 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: npm run build
+
+      - name: Validate generated site
+        run: |
+          test -f dist/sitemap.xml
+          test -f dist/robots.txt
+          test -f dist/index.html
+          grep -q '<h1' dist/index.html
+          grep -q 'Kolkata Startup Map' dist/index.html
 
       - name: Bundle founder images
         run: node scripts/bundle-founder-images.mjs
