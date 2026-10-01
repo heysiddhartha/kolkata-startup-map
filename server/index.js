@@ -4,8 +4,8 @@ import cors from 'cors'
 import { createClient } from '@supabase/supabase-js'
 
 const app=express()
-app.use(cors())
-app.use(express.json({limit:'1mb'}))
+app.use(cors({origin:process.env.ALLOWED_ORIGIN||false}))
+app.use(express.json({limit:'64kb'}))
 
 const supabase=process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
   ? createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY)
