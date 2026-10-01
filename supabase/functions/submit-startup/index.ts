@@ -124,7 +124,7 @@ Deno.serve(async req => {
       linkedin_url: clean(body?.linkedin_url, 500) || null,
       careers_url: clean(body?.careers_url, 500) || null,
       status: "needs_review",
-      reviewed_at: null, new Date().toISOString()
+      reviewed_at: null
     }).select("id").single();
 
     if (error) {
