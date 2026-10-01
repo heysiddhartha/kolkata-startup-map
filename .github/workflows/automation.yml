@@ -8,7 +8,7 @@ on:
     - cron: "23 3 * * *"
     - cron: "23 15 * * *"
 permissions:
-  contents: read
+  contents: write
 
 # Data refresh and Pages deployment must never push concurrently.
 concurrency:
