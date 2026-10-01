@@ -15,7 +15,7 @@ BLOCKED={"linkedin.com","facebook.com","instagram.com","x.com","twitter.com","yo
 "glassdoor.co.in","glassdoor.com","naukri.com","zaubacorp.com","tofler.in","thecompanycheck.com","tracxn.com"}
 
 def get(path,params):
-    r=S.get(f"{SUPABASE_URL}/rest/v1/{path}",headers=HEADERS,params=params,timeout=30); r.raise_for_status(); return r.json()
+    r=S.get(f"{SUPABASE_URL}/rest/v1/{path}",headers=HEADERS,params=params,timeout=12); r.raise_for_status(); return r.json()
 def patch(path,params,payload):
     r=S.patch(f"{SUPABASE_URL}/rest/v1/{path}",headers={**HEADERS,"Prefer":"return=minimal"},params=params,json=payload,timeout=30); r.raise_for_status()
 def post(path,payload):
@@ -95,13 +95,9 @@ def inspect(u):
     except Exception:return {}
 
 def main():
-    rows=[]; off=0
-    while True:
-        b=get("startups",{"select":"id,name,website,logo_url,linkedin_url,careers_url,description,source_url","status":"eq.approved","order":"name.asc","offset":off,"limit":100})
-        rows+=b
-        if len(b)<100:break
-        off+=100
-    print("PROFILES",len(rows))
+    b=get("startups",{"select":"id,name,website,logo_url,linkedin_url,careers_url,description,source_url,last_checked_at","status":"eq.approved","order":"last_checked_at.asc.nullsfirst,name.asc","limit":50})
+    rows=b
+    print("PROFILE_BATCH",len(rows))
     done=updated=0
     for row in rows:
         now=datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -134,7 +130,7 @@ def main():
         except Exception as e:print("LOG_ERROR",name,e)
         done+=1
         if done%10==0:print(f"PROGRESS {done}/{len(rows)} updated={updated}")
-        time.sleep(.2)
+        time.sleep(.1)
     print(f"COMPLETE checked={done} updated={updated}")
 
 if __name__=="__main__":main()
