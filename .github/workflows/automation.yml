@@ -108,11 +108,37 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Record data refresh
+      - name: Record automation health
+        env:
+          JOBS_RESULT: \${{ needs.check-jobs.result }}
+          NEWS_RESULT: \${{ needs.check-ecosystem-news.result }}
+          DISCOVERY_RESULT: \${{ needs.discover-company-candidates.result }}
+          RESOURCES_RESULT: \${{ needs.check-ecosystem-resources.result }}
+          ENRICH_RESULT: \${{ needs.enrich-company-profiles.result }}
         run: |
-          printf 'Last automated data refresh: %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" > public/data-refresh.txt
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          results = {
+            "check-jobs": os.environ["JOBS_RESULT"],
+            "check-ecosystem-news": os.environ["NEWS_RESULT"],
+            "discover-company-candidates": os.environ["DISCOVERY_RESULT"],
+            "check-ecosystem-resources": os.environ["RESOURCES_RESULT"],
+            "enrich-company-profiles": os.environ["ENRICH_RESULT"]
+          }
+          overall = "healthy" if all(v == "success" for v in results.values()) else "degraded"
+          payload = {
+            "updatedAt": datetime.now(timezone.utc).isoformat(),
+            "overall": overall,
+            "jobs": results
+          }
+          with open("public/automation-health.json", "w") as f:
+            json.dump(payload, f, indent=2)
+          with open("public/data-refresh.txt", "w") as f:
+            f.write("Last automated data refresh: " + payload["updatedAt"] + "\\n")
+          PY
           git config user.name "Kolkata Startup Map Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data-refresh.txt
-          git diff --cached --quiet || git commit -m "Refresh published directory build"
+          git add public/data-refresh.txt public/automation-health.json
+          git diff --cached --quiet || git commit -m "Record automation health"
           git push
