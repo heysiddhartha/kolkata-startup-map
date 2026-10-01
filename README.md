@@ -41,6 +41,7 @@ If the project is useful, support is available through the UPI option on the sit
 npm install
 npm run dev
 npm run build
+# For reproducible CI, commit package-lock.json and use npm ci in automation.
 ```
 
 The scheduled GitHub Actions workflow refreshes public job signals and curated ecosystem news when the required Supabase secrets are configured.
@@ -75,3 +76,25 @@ The living map of Kolkata's startup ecosystem. Startups • Companies • Jobs �
 6. Repackage the same research into LinkedIn, Instagram, X and relevant community posts rather than posting the same promotional link everywhere.
 
 **Important:** promotion should be useful first. Community posts should follow each community's rules, and company/job claims should link to their source.
+
+
+## System architecture
+
+The public site is a React application backed by Supabase. Static crawlable pages are generated during the production build from live approved directory data. GitHub Actions refresh public hiring, ecosystem news, discovery candidates, resources and incremental company enrichment.
+
+### Data flow
+
+1. Public sources and company submissions create candidates.
+2. Candidates remain private until review.
+3. Approved records are enriched progressively.
+4. Hiring and ecosystem checks write freshness/source information to Supabase.
+5. Production builds consume live approved data and generate crawlable pages.
+6. Build smoke checks run before GitHub Pages deployment.
+
+### Quality principles
+
+- Never invent missing company, founder, hiring or location facts.
+- Keep discovery separate from verification.
+- Keep hiring signals separate from company existence.
+- Preserve source URLs and freshness wherever possible.
+- Prefer an explicit unknown state over an unsupported negative claim.
