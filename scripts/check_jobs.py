@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json, os, re, time
 from datetime import datetime, timezone, timedelta
-from urllib.parse import urljoin
+from urllib.parse import urljoin, quote
 import requests
 from bs4 import BeautifulSoup
 
@@ -144,7 +144,7 @@ def main():
     # Mark stale listings individually. This is more reliable than a bulk PATCH
     # with a timestamp filter through PostgREST and lets one bad record fail
     # without aborting the whole twice-daily refresh.
-    stale_jobs=api("jobs?select=id,last_seen_at&status=eq.live&last_seen_at=lt."+cutoff)
+    stale_jobs=api("jobs?select=id,last_seen_at&status=eq.live&last_seen_at=lt."+quote(cutoff, safe=""))
     stale_count=0
     for job in stale_jobs or []:
         try:
