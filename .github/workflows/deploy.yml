@@ -47,8 +47,10 @@ jobs:
           test -f dist/sitemap.xml
           test -f dist/robots.txt
           test -f dist/index.html
-          grep -q '<h1' dist/index.html
+          grep -q '<div id="root"></div>' dist/index.html
           grep -q 'Kolkata Startup Map' dist/index.html
+          ! grep -q 'Kolkata Startup Map — common questions' dist/index.html
+          ! grep -q 'seo-home-intro' dist/index.html
 
       - name: Bundle founder images
         run: node scripts/bundle-founder-images.mjs
