@@ -107,7 +107,8 @@ def discover(startup):
     return None
 
 def main():
-    startups=api("startups?select=id,name,website,careers_url&status=eq.approved")
+    startups=api("startups?select=id,name,website,careers_url,hiring_checked_at&status=eq.approved")
+    careers_batch=api("startups?select=id,name,website,careers_url,hiring_checked_at&status=eq.approved&order=hiring_checked_at.asc.nullsfirst,name.asc&limit=75")
     checked=0
     board_added=0
     for source_name, source_url in JOB_BOARD_SOURCES:
@@ -115,13 +116,23 @@ def main():
             r=session.get(source_url,timeout=25,allow_redirects=True)
             if r.ok:
                 board_jobs=parse_board_jobs(BeautifulSoup(r.text,"html.parser"),r.url,startups)
+                affected={}
                 for j in board_jobs:
-                    api("jobs?on_conflict=startup_id,external_id","POST",{**j,"last_seen_at":datetime.now(timezone.utc).isoformat(),"status":"live"})
+                    now=datetime.now(timezone.utc).isoformat()
+                    api("jobs?on_conflict=startup_id,external_id","POST",{**j,"last_seen_at":now,"status":"live"})
+                    affected[j["startup_id"]]=now
                     board_added+=1
+                for startup_id, checked_at in affected.items():
+                    api(f"startups?id=eq.{startup_id}","PATCH",{
+                        "hiring_status":"hiring",
+                        "hiring_source_url":source_url,
+                        "hiring_checked_at":checked_at,
+                        "updated_at":checked_at
+                    })
                 print("[BOARD]",source_name,"jobs=",len(board_jobs))
         except Exception as e:
             print("[WARN] job board",source_name,e)
-    for s in startups:
+    for s in careers_batch or []:
         started=datetime.now(timezone.utc)
         url=discover(s)
         if not url:
@@ -152,6 +163,6 @@ def main():
             stale_count+=1
         except Exception as e:
             print("[WARN] Could not mark job stale:",job.get("id"),e)
-    print("Checked",checked,"career pages; added/updated",board_added,"board jobs; marked",stale_count,"stale jobs after 7 days unseen.")
+    print("Checked",checked,"career pages this batch (75 max); added/updated",board_added,"board jobs; marked",stale_count,"stale jobs after 7 days unseen.")
 
 if __name__=="__main__": main()
