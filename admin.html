@@ -121,9 +121,11 @@ async function act(id,action){
   if(error)return alert(error.message);
   if(action==='approve-submission'){
     const normalizedWebsite=String(s.website||'').replace(/\/$/,'').toLowerCase();
-    const existing=await sb.from('startups').select('id,status').or('name.ilike.'+encodeURIComponent(s.startup_name)+',website.ilike.'+encodeURIComponent(normalizedWebsite)).limit(5);
-    if(existing.error)return alert(existing.error.message);
-    const alreadyApproved=(existing.data||[]).find(x=>x.status==='approved');
+    const byName=await sb.from('startups').select('id,status').ilike('name',s.startup_name).limit(5);
+    const byWebsite=await sb.from('startups').select('id,status').ilike('website',normalizedWebsite).limit(5);
+    if(byName.error)return alert(byName.error.message);
+    if(byWebsite.error)return alert(byWebsite.error.message);
+    const alreadyApproved=[...(byName.data||[]),...(byWebsite.data||[])].find(x=>x.status==='approved');
     if(!alreadyApproved){
       const startup={
         name:s.startup_name,slug:slug(s.startup_name)+'-'+Math.random().toString(36).slice(2,7),
