@@ -57,7 +57,8 @@ function App(){
  const [view,setView]=useState('map'),[query,setQuery]=useState(''),[area,setArea]=useState(''),[sector,setSector]=useState(''),[stage,setStage]=useState(''),[hiring,setHiring]=useState(''),[quality,setQuality]=useState(''),[selected,setSelected]=useState(null)
  const [showSubmit,setShowSubmit]=useState(false),[showNews,setShowNews]=useState(true),[showMobileNav,setShowMobileNav]=useState(false),[submitState,setSubmitState]=useState('idle'),[submitRef,setSubmitRef]=useState(''),[jobMode,setJobMode]=useState(''),[jobType,setJobType]=useState(''),[sortBy,setSortBy]=useState('name'),[news,setNews]=useState(seedNewsItems),[newsPage,setNewsPage]=useState(0),[copiedUpi,setCopiedUpi]=useState(false),[newsLoading,setNewsLoading]=useState(false),[resources,setResources]=useState([])
  useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem('ksm-theme',theme)},[theme])
- useEffect(()=>{const params=new URLSearchParams(window.location.search);const q=params.get('q');if(q)setQuery(q)},[])
+ useEffect(()=>{const params=new URLSearchParams(window.location.search);setQuery(params.get('q')||'');setArea(params.get('area')||'');setSector(params.get('sector')||'');setStage(params.get('stage')||'');setHiring(params.get('hiring')||'');setQuality(params.get('quality')||'')},[])
+ useEffect(()=>{const p=new URLSearchParams();if(query)p.set('q',query);if(area)p.set('area',area);if(sector)p.set('sector',sector);if(stage)p.set('stage',stage);if(hiring)p.set('hiring',hiring);if(quality)p.set('quality',quality);const next=p.toString()?window.location.pathname+'?'+p.toString():window.location.pathname;window.history.replaceState(null,'',next)},[query,area,sector,stage,hiring,quality])
  const refreshData=async()=>{
    const SUPABASE_URL='https://rkzkpwaexadlwxqdfjlm.supabase.co'
    const SUPABASE_KEY='sb_publishable_V7WzcNGV2x4J1OlDrepTnw_1sMgFz43'
@@ -113,6 +114,7 @@ function App(){
  const companyJobs=name=>jobs.filter(j=>j.company.toLowerCase()===name.toLowerCase())
  const filtered=useMemo(()=>startups.filter(s=>{const hay=(s.name+' '+s.sector+' '+s.area+' '+s.stage+' '+s.desc+' '+s.founder).toLowerCase();const js=companyJobs(s.name);return (!query||hay.includes(query.toLowerCase()))&&(!area||s.area===area)&&(!sector||s.sector===sector)&&(!stage||s.stage===stage)&&(!hiring||(hiring==='hiring'&&((s.hiring||'unknown')==='hiring'))||(hiring==='freshers'&&js.some(j=>j.freshers)))&&(!quality||(quality==='verified'&&s.verified)||(quality==='mapped'&&Number.isFinite(s.lat)&&Number.isFinite(s.lng))||(quality==='website'&&isOfficialUrl(s.url)))}),[query,area,sector,stage,hiring,quality,jobs])
  const clear=()=>{setQuery('');setArea('');setSector('');setStage('');setHiring('');setQuality('');setJobMode('');setJobType('')}
+ const activeFilterCount=[area,sector,stage,hiring,quality].filter(Boolean).length
  const sortedFiltered=useMemo(()=>[...filtered].sort((a,b)=>sortBy==='hiring'?Number(b.hiring==='hiring')-Number(a.hiring==='hiring')||a.name.localeCompare(b.name):sortBy==='recent'?String(b.lastChecked||'').localeCompare(String(a.lastChecked||''))||a.name.localeCompare(b.name):a.name.localeCompare(b.name)),[filtered,sortBy])
  const mappedCount=useMemo(()=>filtered.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lng)).length,[filtered])
  const markerPositions=useMemo(()=>{
