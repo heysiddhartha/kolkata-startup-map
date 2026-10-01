@@ -53,6 +53,7 @@ body{background:#f6efe3}.admin{max-width:1180px;margin:0 auto;padding:28px}
     </div>
     <div id="submissions"></div>
   </section>
+  <section class="admin-card"><div class="admin-row section-head"><div><h2>Data quality</h2><small>Live completeness signals for approved listings.</small></div></div><div id="qualityGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px"></div></section>
 </section>
 </main>
 
@@ -69,7 +70,13 @@ async function boot(){
   if(data.session)showDashboard(data.session.user);
 }
 function showDashboard(user){$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');$('userEmail').textContent=user.email||'';load();}
-async function load(){await Promise.all([loadCandidates(),loadSubmissions(),loadAutomationHealth()]);}
+async function load(){await Promise.all([loadCandidates(),loadSubmissions(),loadAutomationHealth(),loadQuality()]);}
+async function loadQuality(){
+ const {data,error}=await sb.from('startups').select('website,founder,address,linkedin_url,careers_url,lat,lng,verified,hiring_checked_at,last_checked_at').eq('status','approved').limit(1000);
+ if(error){$('qualityGrid').innerHTML='<span class="error">'+esc(error.message)+'</span>';return}
+ const total=data.length||1, metrics=[['Website',data.filter(x=>x.website).length],['Founder',data.filter(x=>x.founder).length],['Address',data.filter(x=>x.address).length],['LinkedIn',data.filter(x=>x.linkedin_url).length],['Careers',data.filter(x=>x.careers_url).length],['Mapped',data.filter(x=>x.lat!=null&&x.lng!=null).length],['Verified',data.filter(x=>x.verified).length],['Hiring checked',data.filter(x=>x.hiring_checked_at).length],['Recently checked',data.filter(x=>x.last_checked_at&&Date.now()-new Date(x.last_checked_at).getTime()<30*864e5).length]];
+ $('qualityGrid').innerHTML=metrics.map(([label,n])=>'<div style="border:1px solid #ded2c0;border-radius:12px;padding:12px"><strong style="font-size:22px">'+n+'</strong><div>'+esc(label)+'</div><small>'+Math.round(n/total*100)+'% of approved</small></div>').join('');
+}
 async function loadAutomationHealth(){
   try{
     const res=await fetch('/kolkata-startup-map/automation-health.json?ts='+Date.now(),{cache:'no-store'});
