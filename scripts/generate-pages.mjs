@@ -22,7 +22,7 @@ const areaNames = [...new Set(cleanStartups.map(s => s.area))].sort()
 
 const nav = [
   ['Directory','/startups'],
-  ['Founders','/foundersandceos'],
+  ['Founders','/founders'],
   ['Jobs','/jobs'],
   ['Sectors','/sectors'],
   ['Locations','/locations'],
