@@ -73,7 +73,7 @@ const ecosystemAreaCounts=[...new Map(cleanStartups.map(s=>[cleanArea(s.area),cl
 const sectorContext=ecosystemSectorCounts.slice(0,10).map(([name,count])=>'<li><a href="'+site+'/sector/'+slug(name)+'"><b>'+esc(name)+'</b> · '+count+' in our directory</a></li>').join('')
 const areaContext=ecosystemAreaCounts.slice(0,12).map(([name,count])=>'<li><a href="'+site+'/location/'+slug(name)+'"><b>'+esc(name)+'</b> · '+count+' in our directory</a></li>').join('')
 fs.writeFileSync(path.join(root,'ecosystem','index.html'), pageHtml({
-  title:'Kolkata Startup Ecosystem — Founders, Funding, Jobs, Incubators & Events',
+  title:'Kolkata Startup Ecosystem — Funding, Jobs & Founders',
   description:'Kolkata startup ecosystem guide covering startups, founders, sectors, funding, investors, incubators, accelerators, jobs, events, universities and ecosystem resources.',
   url:site+'/ecosystem',eyebrow:'Kolkata startup ecosystem intelligence',heading:'Everything around what Kolkata is building',
   stats:[
@@ -141,7 +141,7 @@ fs.writeFileSync(path.join(root,'ecosystem','index.html'), pageHtml({
 
 fs.mkdirSync(path.join(root,'methodology'),{recursive:true})
 fs.writeFileSync(path.join(root,'methodology','index.html'), pageHtml({
-  title:'Kolkata Startup Map Methodology — Data, Verification & Hiring Signals',
+  title:'Kolkata Startup Map Methodology — Data & Verification',
   description:'How Kolkata Startup Map collects, verifies and updates company, location, hiring and ecosystem information.',
   url:site+'/methodology',eyebrow:'How the map works',heading:'Data, verification & methodology',
   stats:[{value:cleanStartups.length,label:'approved listings'},{value:cleanStartups.filter(s=>s.verified).length,label:'independently verified'},{value:jobs.length,label:'live public jobs'}],
@@ -292,7 +292,7 @@ fs.writeFileSync(path.join(root,'news','index.html'), pageHtml({
 
 fs.mkdirSync(path.join(root,'resources'),{recursive:true})
 fs.writeFileSync(path.join(root,'resources','index.html'), pageHtml({
-  title:'Kolkata Startup Resources — Communities, Incubators, Jobs & Events',
+  title:'Kolkata Startup Resources — Incubators, Jobs & Events',
   description:'Useful Kolkata startup ecosystem resources: founder communities, Reddit, incubators, accelerators, funding programmes, jobs, data and events.',
   url:site+'/resources',eyebrow:'Kolkata ecosystem resources',heading:'Where to find the ecosystem',
   stats:[{value:resources.length,label:'resources'},{value:new Set(resources.map(r=>r.category)).size,label:'categories'},{value:new Set(resources.map(r=>r.sourceName)).size,label:'sources'}],
