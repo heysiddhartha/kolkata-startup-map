@@ -19,6 +19,8 @@ const cleanSector = value => String(value || 'Other').trim() || 'Other'
 const cleanStartups = startups.map(s => ({...s, area:cleanArea(s.area), sector:cleanSector(s.sector)}))
 const sectorNames = [...new Set(cleanStartups.map(s => s.sector))].sort()
 const areaNames = [...new Set(cleanStartups.map(s => s.area))].sort()
+const jobByCompany = new Map()
+for (const j of jobs) { if (!jobByCompany.has(j.company)) jobByCompany.set(j.company,0); jobByCompany.set(j.company,jobByCompany.get(j.company)+1) }
 
 const nav = [
   ['Directory','/startups'],
@@ -276,7 +278,7 @@ fs.writeFileSync(path.join(root,'locations','index.html'), pageHtml({
   description:'Explore Kolkata startups and companies by locality, including Salt Lake, New Town, Sector V and other business areas.',
   url:site+'/locations',eyebrow:'Kolkata locality directory',heading:'Where Kolkata is building',
   stats:[{value:areaNames.length,label:'localities represented'},{value:cleanStartups.length,label:'listed organisations'},{value:'Kolkata',label:'city focus'}],
-  body:'<p class="seo-lead">Explore the ecosystem by locality and business district. Open a locality to see the organisations currently listed there.</p><ul class="seo-list">'+areaNames.map(x=>'<li><a href="'+site+'/location/'+slug(x)+'"><b>'+esc(x)+'</b> · '+cleanStartups.filter(s=>s.area===x).length+' listed</a></li>').join('')+'</ul>',
+  body:'<p class="seo-lead">Explore the ecosystem by locality and business district. Open a locality to see the organisations, public jobs and local signals currently listed there.</p><ul class="seo-list">'+areaNames.map(x=>'<li><a href="'+site+'/location/'+slug(x)+'"><b>'+esc(x)+'</b> · '+cleanStartups.filter(s=>s.area===x).length+' listed</a></li>').join('')+'</ul>',
   schema:{'@context':'https://schema.org','@type':'CollectionPage',name:'Kolkata Startup Locations',url:site+'/locations',mainEntity:{'@type':'ItemList',itemListElement:areaNames.map((x,i)=>({'@type':'ListItem',position:i+1,name:x,url:site+'/location/'+slug(x)}))}}
 }))
 
