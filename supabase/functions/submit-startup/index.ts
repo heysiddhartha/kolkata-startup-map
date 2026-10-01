@@ -88,31 +88,9 @@ Deno.serve(async req => {
       slug = `${slugBase}-${crypto.randomUUID().slice(0, 6)}`;
     }
 
-    const { data: insertedStartup, error: startupError } = await supabase.from("startups").insert({
-      name: startup_name,
-      slug,
-      website: normalizedWebsite,
-      founder: clean(body?.founder, 200) || null,
-      public_email: clean(body?.email, 254) || null,
-      sector: clean(body?.sector, 120) || null,
-      area: clean(body?.locality, 120) || "Kolkata",
-      description: clean(body?.description, 1200) || null,
-      linkedin_url: clean(body?.linkedin_url, 500) || null,
-      careers_url: clean(body?.careers_url, 500) || null,
-      lat: null,
-      lng: null,
-      location_confidence: "unknown",
-      location_type: "kolkata_roots",
-      verified: false,
-      status: "needs_review",
-      source_url: normalizedWebsite,
-      verification_source_url: normalizedWebsite,
-      verification_checked_at: new Date().toISOString(),
-      last_checked_at: new Date().toISOString()
-    }).select("id").single();
-
-    if (startupError) return json({ error: "Could not publish the startup listing" }, 500, origin);
-
+    // Keep public submissions in the moderation queue only. The startup record is
+    // created by the authenticated admin approval flow so one submission cannot
+    // accidentally become two directory records.
     const { data: inserted, error } = await supabase.from("submissions").insert({
       startup_name,
       website: normalizedWebsite,
@@ -128,7 +106,6 @@ Deno.serve(async req => {
     }).select("id").single();
 
     if (error) {
-      await supabase.from("startups").delete().eq("id", insertedStartup.id);
       return json({ error: "Could not complete the submission" }, 500, origin);
     }
 
