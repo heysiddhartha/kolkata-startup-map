@@ -44,7 +44,7 @@ body{background:#f6efe3}.admin{max-width:1180px;margin:0 auto;padding:28px}
 
   <section class="admin-card">
     <div class="admin-row section-head">
-      <div><h2>Founder submissions</h2><small>Public submissions are auto-approved after validation and duplicate checks. This panel shows recent submissions.</small></div>
+      <div><h2>Founder submissions</h2><small>Public submissions are held for review after validation and duplicate checks.</small></div>
       <span class="pill" id="submissionCount">0</span>
     </div>
     <div id="submissions"></div>
@@ -75,10 +75,10 @@ async function loadCandidates(){
 }
 
 async function loadSubmissions(){
-  const {data,error}=await sb.from('submissions').select('*').eq('status','approved').order('created_at',{ascending:false}).limit(50);
+  const {data,error}=await sb.from('submissions').select('*').in('status',['pending','needs_review']).order('created_at',{ascending:false}).limit(50);
   if(error){$('submissions').innerHTML='<p class="error">'+esc(error.message)+'</p>';return}
   $('submissionCount').textContent=data.length;
-  $('submissions').innerHTML=data.length?data.map(s=>'<div class="submission"><div class="admin-row"><div><strong>'+esc(s.startup_name)+'</strong><div><small>'+esc(s.website)+' · '+esc(s.sector||'')+' · '+esc(s.locality||'')+'</small></div></div><span class="pill">Auto-approved · '+new Date(s.created_at).toLocaleDateString('en-IN')+'</span></div><p>'+esc(s.description||'No description')+'</p><div class="muted">Published automatically. Verification can be handled separately if needed.</div></div>').join(''):'<p class="muted">No founder submissions yet.</p>';
+  $('submissions').innerHTML=data.length?data.map(s=>'<div class="submission"><div class="admin-row"><div><strong>'+esc(s.startup_name)+'</strong><div><small>'+esc(s.website)+' · '+esc(s.sector||'')+' · '+esc(s.locality||'')+'</small></div></div><span class="pill">Needs review · '+new Date(s.created_at).toLocaleDateString('en-IN')+'</span></div><p>'+esc(s.description||'No description')+'</p><div class="muted">Held private until an admin approves the listing.</div><div class="actions" style="margin-top:10px"><button data-action="approve-submission" data-id="'+s.id+'">Approve listing</button><button class="danger" data-action="reject-submission" data-id="'+s.id+'">Reject</button></div></div>').join(''):'<p class="muted">No founder submissions yet.</p>';
 }
 
 async function audit(action,type,id,metadata={}){
