@@ -104,7 +104,7 @@ Deno.serve(async req => {
       location_confidence: "unknown",
       location_type: "kolkata_roots",
       verified: false,
-      status: "approved",
+      status: "needs_review",
       source_url: normalizedWebsite,
       verification_source_url: normalizedWebsite,
       verification_checked_at: new Date().toISOString(),
@@ -123,8 +123,8 @@ Deno.serve(async req => {
       description: clean(body?.description, 1200) || null,
       linkedin_url: clean(body?.linkedin_url, 500) || null,
       careers_url: clean(body?.careers_url, 500) || null,
-      status: "approved",
-      reviewed_at: new Date().toISOString()
+      status: "needs_review",
+      reviewed_at: null, new Date().toISOString()
     }).select("id").single();
 
     if (error) {
@@ -134,7 +134,7 @@ Deno.serve(async req => {
 
     await supabase.from("audit_log").insert({
       actor_id: null,
-      action: "auto_approve_submission",
+      action: "submit_startup_for_review",
       entity_type: "startup",
       entity_id: insertedStartup.id,
       metadata: { submission_id: inserted.id, source: "public_submission", verified: false }
@@ -143,7 +143,7 @@ Deno.serve(async req => {
     const reference = inserted?.id ? String(inserted.id).slice(0, 8).toUpperCase() : "KSM-" + crypto.randomUUID().slice(0, 8).toUpperCase();
     return json({
       ok: true,
-      message: "Your startup is now live in the directory. Verification and map location may be completed separately.",
+      message: "Your startup has been submitted for review. It will appear in the directory after verification.",
       reference
     }, 201, origin);
   } catch {
