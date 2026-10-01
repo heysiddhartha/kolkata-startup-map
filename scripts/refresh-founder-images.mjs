@@ -1,4 +1,7 @@
 import fs from 'node:fs'
+import path from 'node:path'
+import crypto from 'node:crypto'
+import https from 'node:https'
 
 const replacements = {
   "Soumita Basu": "https://echai.ventures/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsiZGF0YSI6MjAwNjcsInB1ciI6ImJsb2JfaWQifX0%3D--05a2c79b38dd496c4003e9ef6c8a2d4c27ba4225/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJ3ZWJwIiwiY3JvcCI6WzAsMCw1NjAsNTYwXSwicmVzaXplX3RvX2xpbWl0IjpbNjQwLDY0MF19LCJwdXIiOiJ2YXJpYXRpb24ifX0%3D--dad9048d8c1f89e7406bae38b3b6a433a4d08475/Soumita.jpeg",
@@ -32,3 +35,38 @@ for (const file of ['src/FoundersPage.jsx', 'scripts/generate-pages.mjs']) {
   fs.writeFileSync(file, source)
 }
 console.log('Founder image URLs refreshed for ' + Object.keys(replacements).length + ' profiles.')
+
+
+const outDir = path.join('public','founder-images')
+fs.mkdirSync(outDir,{recursive:true})
+
+function download(url,dest){
+  return new Promise((resolve,reject)=>{
+    const req=https.get(url,{headers:{'User-Agent':'Kolkata-Startup-Map/1.0','Accept':'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'}},res=>{
+      if(res.statusCode>=300&&res.statusCode<400&&res.headers.location){res.resume();return download(new URL(res.headers.location,url).href,dest).then(resolve,reject)}
+      if(res.statusCode!==200){res.resume();return reject(new Error('HTTP '+res.statusCode))}
+      const f=fs.createWriteStream(dest);res.pipe(f);f.on('finish',()=>f.close(resolve));f.on('error',reject)
+    })
+    req.on('error',reject);req.setTimeout(20000,()=>req.destroy(new Error('timeout')))
+  })
+}
+
+function fallbackSvg(name){
+  const initials=name.split(/\\s+/).filter(Boolean).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'F'
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#171717"/><stop offset="1" stop-color="#b58a2a"/></linearGradient></defs><rect width="800" height="1000" fill="url(#g)"/><circle cx="400" cy="350" r="145" fill="#f0eadc"/><path d="M145 920c20-220 125-330 255-330s235 110 255 330" fill="#f0eadc"/><text x="400" y="820" text-anchor="middle" font-family="Arial,sans-serif" font-size="100" font-weight="700" fill="#171717">'+initials+'</text></svg>'
+}
+
+const manifest={}
+for(const [name,url] of Object.entries(replacements)){
+  const hash=crypto.createHash('sha1').update(url).digest('hex').slice(0,16)
+  const ext=(new URL(url).pathname.match(/\\.(jpe?g|png|webp|gif|avif|svg)$/i)?.[1]||'jpg').toLowerCase().replace('jpeg','jpg')
+  const filename=hash+'.'+ext
+  const dest=path.join(outDir,filename)
+  try{if(!fs.existsSync(dest)) await download(url,dest);manifest[name]='/kolkata-startup-map/founder-images/'+filename}
+  catch(err){
+    const fallback=hash+'.svg';fs.writeFileSync(path.join(outDir,fallback),fallbackSvg(name));manifest[name]='/kolkata-startup-map/founder-images/'+fallback
+    console.log('Founder image fallback for '+name+': '+err.message)
+  }
+}
+fs.writeFileSync(path.join(outDir,'manifest.json'),JSON.stringify(manifest,null,2))
+console.log('Prepared '+Object.keys(manifest).length+' local founder portraits.')
