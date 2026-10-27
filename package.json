@@ -10,7 +10,7 @@
     "server": "node server/index.js",
     "seo": "node scripts/generate-seo.mjs",
     "prebuild": "npm run seo",
-    "postbuild": "node scripts/generate-pages.mjs"
+    "postbuild": "node scripts/generate-pages.mjs && node scripts/generate-ai-data.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
