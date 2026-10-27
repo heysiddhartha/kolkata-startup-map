@@ -58,6 +58,6 @@ fs.writeFileSync(path.resolve('public/sitemap.xml'),
   '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+body+'</urlset>'
 )
 fs.writeFileSync(path.resolve('public/robots.txt'),
-  'User-agent: *\nAllow: /\n\nSitemap: '+base+'/sitemap.xml\n'
+  'User-agent: *\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nSitemap: '+base+'/sitemap.xml\n'
 )
 console.log('Generated sitemap with '+urls.size+' indexable URLs')
