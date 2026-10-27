@@ -47,6 +47,12 @@ jobs:
           test -f dist/sitemap.xml
           test -f dist/robots.txt
           test -f dist/index.html
+          test -f dist/data/companies.json
+          test -f dist/data/jobs.json
+          test -f dist/llms.txt
+          test -f dist/ai-data.html
+          grep -q 'OAI-SearchBot' dist/robots.txt
+          node -e "JSON.parse(require('fs').readFileSync('dist/data/companies.json', 'utf8')); JSON.parse(require('fs').readFileSync('dist/data/jobs.json', 'utf8'))"
           grep -q '<div id="root"></div>' dist/index.html
           grep -q 'Kolkata Startup Map' dist/index.html
           ! grep -q 'Kolkata Startup Map — common questions' dist/index.html
