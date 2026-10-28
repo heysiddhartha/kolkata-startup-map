@@ -5,8 +5,18 @@ Kolkata Startup Map is an interactive directory of startups, companies, location
 ## Main resource
 - https://heysiddhartha.github.io/kolkata-startup-map/
 
+## Public data and discovery
+- Public data guide: https://heysiddhartha.github.io/kolkata-startup-map/ai-data.html
+- Companies dataset (JSON): https://heysiddhartha.github.io/kolkata-startup-map/data/companies.json
+- Jobs dataset (JSON): https://heysiddhartha.github.io/kolkata-startup-map/data/jobs.json
+- XML sitemap: https://heysiddhartha.github.io/kolkata-startup-map/sitemap.xml
+- Robots policy: https://heysiddhartha.github.io/kolkata-startup-map/robots.txt
+
 ## What the site contains
 - Kolkata startup profiles
 - Startup locations and sectors
 - Hiring and job signals
 - Startup discovery and ecosystem filters
+
+## Data quality
+The datasets are static snapshots generated during deployment. Verify company details and hiring status against linked original sources before acting on them. A missing job listing does not prove that a company is not hiring.

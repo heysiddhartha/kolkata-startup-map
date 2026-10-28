@@ -1,0 +1,54 @@
+name: Validate AI data feeds
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/generate-ai-data.mjs'
+      - 'scripts/generate-seo.mjs'
+      - 'scripts/live-data.mjs'
+      - 'public/llms.txt'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/validate-ai-data.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build site
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VITE_CARTO_API_KEY: ${{ secrets.VITE_CARTO_API_KEY }}
+        run: npm run build
+
+      - name: Validate generated public feeds
+        run: |
+          test -f dist/data/companies.json
+          test -f dist/data/jobs.json
+          test -f dist/ai-data.html
+          test -f dist/llms.txt
+          test -f dist/sitemap.xml
+          test -f dist/robots.txt
+          grep -q 'OAI-SearchBot' dist/robots.txt
+          grep -q '/ai-data.html' dist/sitemap.xml
+          grep -q '/data/companies.json' dist/sitemap.xml
+          grep -q '/data/jobs.json' dist/sitemap.xml
+          grep -q '/ai-data.html' dist/llms.txt
+          node -e "JSON.parse(require('fs').readFileSync('dist/data/companies.json', 'utf8')); JSON.parse(require('fs').readFileSync('dist/data/jobs.json', 'utf8'))"

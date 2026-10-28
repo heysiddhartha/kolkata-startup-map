@@ -98,3 +98,15 @@ The public site is a React application backed by Supabase. Static crawlable page
 - Keep hiring signals separate from company existence.
 - Preserve source URLs and freshness wherever possible.
 - Prefer an explicit unknown state over an unsupported negative claim.
+
+## AI and developer data access
+
+The build publishes static, public JSON feeds from approved Supabase records:
+
+- `/data/companies.json` — approved company records, source URLs, profile URLs and dated hiring signals.
+- `/data/jobs.json` — live job records with employer/application source links.
+- `/ai-data.html` — human-readable guide to the public feeds and source policy.
+- `/llms.txt` — short index of useful public resources for compatible AI tools.
+- `/sitemap.xml` — generated indexable URLs.
+
+These feeds are static files hosted by GitHub Pages, not a live query API. They update when the site build runs successfully. The feeds include only public-facing fields; hiring availability can change and must be checked at the original employer/application source. No AI platform is guaranteed to index or cite this data.
